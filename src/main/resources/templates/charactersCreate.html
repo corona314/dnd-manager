@@ -42,7 +42,7 @@
             margin-top: 10px;
         }
 
-        input, select {
+        input {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
@@ -81,26 +81,40 @@
 
 <div class="container">
 
-    <!-- FORMULARIO CREAR PERSONAJE -->
     <h2>Crear personaje</h2>
 
     <form th:action="@{/characters/save}" method="post" th:object="${character}">
+
+        <label>Usuario ID</label>
+        <input type="number" th:field="*{user_id}" required>
+
         <label>Nombre</label>
         <input type="text" th:field="*{name}" required>
-
-        <label>Raza</label>
-        <input type="text" th:field="*{race}" required>
-
-        <label>Clase</label>
-        <input type="text" th:field="*{characterClass}" required>
 
         <label>Nivel</label>
         <input type="number" th:field="*{level}" min="1" max="20" required>
 
+        <label>HP máximo</label>
+        <input type="number" th:field="*{max_hp}" required>
+
+        <label>HP actual</label>
+        <input type="number" th:field="*{current_hp}" required>
+
+        <label>Velocidad</label>
+        <input type="number" th:field="*{speed}" required>
+
+        <label>Especie ID</label>
+        <input type="number" th:field="*{specie_id}" required>
+
+        <label>Clase ID</label>
+        <input type="number" th:field="*{class_id}" required>
+
+        <label>Subclase ID</label>
+        <input type="number" th:field="*{subclass_id}">
+
         <button type="submit">Guardar personaje</button>
     </form>
 
-    <!-- LISTA DE PERSONAJES -->
     <h2>Personajes guardados</h2>
 
     <div th:if="${#lists.isEmpty(characters)}">
@@ -109,9 +123,14 @@
 
     <div th:each="c : ${characters}" class="character-card">
         <strong th:text="${c.name}"></strong><br>
-        Raza: <span th:text="${c.race}"></span><br>
-        Clase: <span th:text="${c.characterClass}"></span><br>
-        Nivel: <span th:text="${c.level}"></span>
+        Usuario: <span th:text="${c.user_id}"></span><br>
+        Nivel: <span th:text="${c.level}"></span><br>
+        HP: <span th:text="${c.current_hp}"></span> /
+        <span th:text="${c.max_hp}"></span><br>
+        Velocidad: <span th:text="${c.speed}"></span><br>
+        Especie ID: <span th:text="${c.specie_id}"></span><br>
+        Clase ID: <span th:text="${c.class_id}"></span><br>
+        Subclase ID: <span th:text="${c.subclass_id}"></span>
     </div>
 
 </div>
