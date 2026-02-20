@@ -9,6 +9,11 @@ public class SpecieCatalogMapper {
     }
 
     public static SpecieCatalog toEntity(SpecieCatalogDTO s) {
-        return new SpecieCatalog(s.getId(), s.getName(), s.getSize(), s.getBase_speed(), s.getDescription());
+        SpecieCatalog entity = new SpecieCatalog();
+        entity.setName(s.getName());
+        entity.setSize(s.getSize());
+        entity.setBase_speed(s.getBase_speed());
+        entity.setDescription(s.getDescription());
+        return entity;
     }
 }

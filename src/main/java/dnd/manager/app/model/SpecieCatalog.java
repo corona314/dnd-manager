@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 
 @Entity
-@Table(name="specie_catalog")
+@Table(name="species_catalog")
 public class SpecieCatalog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +25,9 @@ public class SpecieCatalog {
     private int base_speed;
     private String description;
     
+    @Override
+    public String toString() {
+        return "Specie [id=" + id + ", name=" + name + ", size=" + size + ", base_speed=" + base_speed + 
+        ", description=" + description.substring(0, 30) + "...]";
+    }
 }
