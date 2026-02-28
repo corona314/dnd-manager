@@ -4,15 +4,17 @@ public class SpecieCatalogDTO {
     private Long id;
     private String name;
     private int size;
-    private int base_speed;
+    private int walkSpeed;
     private String description;
+    private int flySpeed;
 
-    public SpecieCatalogDTO(Long id, String name, int size, int base_speed, String description) {
+    public SpecieCatalogDTO(Long id, String name, int size, int walkSpeed, String description, int flySpeed) {
         this.id = id;
         this.name = name;
         this.size = size;
-        this.base_speed = base_speed;
+        this.walkSpeed = walkSpeed;
         this.description = description;
+        this.flySpeed = flySpeed;
     }
 
     public Long getId() {
@@ -39,12 +41,12 @@ public class SpecieCatalogDTO {
         this.size = size;
     }
 
-    public int getBase_speed() {
-        return base_speed;
+    public int getWalkSpeed() {
+        return walkSpeed;
     }
 
-    public void setBase_speed(int base_speed) {
-        this.base_speed = base_speed;
+    public void setWalkSpeed(int base_speed) {
+        this.walkSpeed = base_speed;
     }
 
     public String getDescription() {
@@ -53,5 +55,13 @@ public class SpecieCatalogDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getFlySpeed() {
+        return flySpeed;
+    }
+
+    public void setFlySpeed(int flySpeed) {
+        this.flySpeed = flySpeed;
     }
 }

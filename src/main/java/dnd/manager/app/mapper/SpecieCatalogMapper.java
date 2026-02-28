@@ -5,15 +5,16 @@ import dnd.manager.app.model.SpecieCatalog;
 
 public class SpecieCatalogMapper {
     public static SpecieCatalogDTO toDTO(SpecieCatalog s) {
-        return new SpecieCatalogDTO(s.getId(), s.getName(), s.getSize(), s.getBase_speed(), s.getDescription());
+        return new SpecieCatalogDTO(s.getId(), s.getName(), s.getSize(), s.getWalkSpeed(), s.getDescription(), s.getFlySpeed());
     }
 
     public static SpecieCatalog toEntity(SpecieCatalogDTO s) {
         SpecieCatalog entity = new SpecieCatalog();
         entity.setName(s.getName());
         entity.setSize(s.getSize());
-        entity.setBase_speed(s.getBase_speed());
+        entity.setWalkSpeed(s.getWalkSpeed());
         entity.setDescription(s.getDescription());
+        entity.setFlySpeed(s.getFlySpeed());
         return entity;
     }
 }
