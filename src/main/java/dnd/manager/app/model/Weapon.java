@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 public class Weapon {
 
     @Id
-    private Integer objectId;
+    private Long objectId;
 
     private String damageDice;
 

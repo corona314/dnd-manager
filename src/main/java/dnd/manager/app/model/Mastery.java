@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 public class Mastery {
 
     @Id
-    private Integer id;
+    private Long id;
 
     private String name;
     private String description;

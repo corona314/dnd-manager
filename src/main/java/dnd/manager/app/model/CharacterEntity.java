@@ -20,9 +20,9 @@ public class CharacterEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    private Integer userId;
+    private Long userId;
     private String name;
     private Integer level;
     private Integer maxHp;

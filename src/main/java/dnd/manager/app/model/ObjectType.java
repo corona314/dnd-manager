@@ -9,6 +9,6 @@ import jakarta.persistence.Table;
 public class ObjectType {
 
     @Id
-    private Integer id;
+    private Long id;
     private String name;
 }

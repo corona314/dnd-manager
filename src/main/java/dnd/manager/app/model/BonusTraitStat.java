@@ -11,10 +11,10 @@ import jakarta.persistence.Table;
 public class BonusTraitStat {
 
     @Id
-    private Integer traitId;
+    private Long traitId;
 
     @Id
-    private Integer statId;
+    private Long statId;
 
     private Integer value;
 }

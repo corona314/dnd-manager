@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 public class Armor {
 
     @Id
-    private Integer objectId;
+    private Long objectId;
 
     private Integer acBase;
     private Integer acMax;
