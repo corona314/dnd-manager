@@ -18,7 +18,7 @@ public class CharacterStat {
 
     @ManyToOne
     @JoinColumn(name = "character_id")
-    private Character character;
+    private CharacterEntity character;
 
     @ManyToOne
     @JoinColumn(name = "stat_id")

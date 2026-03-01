@@ -18,7 +18,7 @@ public class CharacterResource {
 
     @ManyToOne
     @JoinColumn(name = "character_id")
-    private Character character;
+    private CharacterEntity character;
 
     private String name;
     private Integer currentValue;

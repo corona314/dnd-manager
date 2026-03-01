@@ -18,7 +18,7 @@ public class CharacterSkill {
 
     @ManyToOne
     @JoinColumn(name = "character_id")
-    private Character character;
+    private CharacterEntity character;
 
     @ManyToOne
     @JoinColumn(name = "skill_id")

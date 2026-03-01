@@ -2,8 +2,6 @@ package dnd.manager.app.model;
 
 import java.util.List;
 
-import org.aspectj.apache.bcel.generic.ObjectType;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
