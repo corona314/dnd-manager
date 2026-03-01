@@ -3,6 +3,7 @@ package dnd.manager.app.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -18,6 +19,10 @@ public class Armor {
     private Integer acMax;
     private Integer strMin;
     private Boolean stealthDis;
+    
+    @ManyToOne
+    @JoinColumn(name = "armor_type_id")
+    private ArmorType armorType;
 
     @OneToOne
     @MapsId
