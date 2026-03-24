@@ -2,6 +2,7 @@ package dnd.manager.app.model;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -11,25 +12,36 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "weapon")
+@Getter
+@Setter
+@NoArgsConstructor
+
 public class Weapon {
 
     @Id
     private Long objectId;
 
+    @Column(name = "damage_dice", nullable = false)
     private String damageDice;
 
     @ManyToOne
-    @JoinColumn(name = "damage_type_id")
+    @JoinColumn(name = "damage_type_id", nullable = false)
     private DamageType damageType;
 
     @ManyToOne
-    @JoinColumn(name = "mastery_id")
+    @JoinColumn(name = "mastery_id", nullable = false)
     private Mastery mastery;
 
+    @Column(name = "range_normal")
     private Integer rangeNormal;
+
+    @Column(name = "range_long")
     private Integer rangeLong;
 
     @OneToOne

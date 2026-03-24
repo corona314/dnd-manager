@@ -16,4 +16,12 @@ public class ArmorService {
     public List<Armor> findAll() {
         return repository.findAll();
     }
+
+    public Armor findById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public List<Armor> findByArmorTypeId(Long armorTypeId){
+        return repository.findByArmorTypeId(armorTypeId);
+    }
 }
