@@ -44,7 +44,7 @@ public class Feat {
     private String featCategory;
 
     @OneToMany(mappedBy = "feat", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FeatStatBonus> statBonuses;
+    private List<BonusFeatStat> statBonuses;
 
     @OneToMany(mappedBy = "feat", fetch = FetchType.LAZY)
     private List<CharacterFeat> characterFeats;

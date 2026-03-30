@@ -1,11 +1,11 @@
 package dnd.manager.app.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import dnd.manager.app.model.Stat;
 import dnd.manager.app.repository.StatRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StatService {
@@ -20,17 +20,19 @@ public class StatService {
         return statRepository.findAll();
     }
 
-    public Stat findById(Long id) {
-        return statRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Stat not found with id: " + id));
+    public Optional<Stat> findById(Long id) {
+        return statRepository.findById(id);
     }
 
-    public Stat findByCode(String code) {
-        return statRepository.findByCode(code)
-                .orElseThrow(() -> new RuntimeException("Stat not found with code: " + code));
+    public Optional<Stat> findByCode(String code) {
+        return statRepository.findByCode(code);
     }
 
-    public int calculateModifier(int baseValue) {
-        return (int) Math.floor((baseValue - 10) / 2.0);
+    public Stat save(Stat stat) {
+        return statRepository.save(stat);
+    }
+
+    public void deleteById(Long id) {
+        statRepository.deleteById(id);
     }
 }

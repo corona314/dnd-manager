@@ -3,11 +3,11 @@ package dnd.manager.app.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class FeatStatBonusId implements Serializable {
+public class BonusFeatStatId implements Serializable {
         private Long feat;
         private Long stat;
 
-        public FeatStatBonusId() {}
+        public BonusFeatStatId() {}
 
         public Long getFeat() { return feat; }
         public void setFeat(Long feat) { this.feat = feat; }
@@ -18,8 +18,8 @@ public class FeatStatBonusId implements Serializable {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof FeatStatBonusId)) return false;
-            FeatStatBonusId that = (FeatStatBonusId) o;
+            if (!(o instanceof BonusFeatStatId)) return false;
+            BonusFeatStatId that = (BonusFeatStatId) o;
             return Objects.equals(feat, that.feat) && Objects.equals(stat, that.stat);
         }
 

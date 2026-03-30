@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "feat_stat_bonus")
+@Table(name = "bonus_feat_stat")
 @Getter
 @Setter
 @NoArgsConstructor
 
-@IdClass(FeatStatBonusId.class)
-public class FeatStatBonus {
+@IdClass(BonusFeatStatId.class)
+public class BonusFeatStat {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
