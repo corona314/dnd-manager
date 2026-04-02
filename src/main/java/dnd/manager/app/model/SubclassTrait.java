@@ -1,5 +1,6 @@
 package dnd.manager.app.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -29,5 +30,8 @@ public class SubclassTrait {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trait_id", nullable = false)
     private Trait trait;
+
+    @Column(name = "level", nullable = false)
+    private Integer level;
 
 }

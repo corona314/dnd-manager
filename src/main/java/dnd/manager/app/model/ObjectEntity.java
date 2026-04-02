@@ -35,7 +35,7 @@ public class ObjectEntity {
     @Column(name = "weight")
     private Float weight;
     
-    @Column(name = "name")
+    @Column(name = "price")
     private Integer price;
 
     @ManyToOne

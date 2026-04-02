@@ -7,11 +7,11 @@ import dnd.manager.app.model.ArmorType;
 import dnd.manager.app.repository.ArmorTypeRepository;
 
 @Service
-class ArmorTypeService {
+public class ArmorClassService {
 
     private final ArmorTypeRepository armorTypeRepository;
 
-    ArmorTypeService(ArmorTypeRepository armorTypeRepository) {
+    public ArmorClassService(ArmorTypeRepository armorTypeRepository) {
         this.armorTypeRepository = armorTypeRepository;
     }
 
