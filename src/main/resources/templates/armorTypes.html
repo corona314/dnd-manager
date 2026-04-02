@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Lista de Armor Types</title>
+    <style>
+        body {font-family: Arial, sans-serif; background: #1e1e1e; color: #f0f0f0; margin: 0; padding: 0;}
+        header {background: #111; padding: 20px; text-align: center; font-size: 24px;}
+        .container {width: 80%; margin: 30px auto;}
+        table {width: 100%; border-collapse: collapse; margin-top: 20px;}
+        th, td {padding: 10px; border: 1px solid #444; text-align: left;}
+        th {background: #333;}
+        tr:nth-child(even) {background: #252525;}
+        a {color: #4CAF50; text-decoration: none;}
+        a:hover {text-decoration: underline;}
+    </style>
+</head>
+<body>
+<header>Armor Types</header>
+<div class="container">
+    <h2>Listado de ArmorType</h2>
+    <div th:if="${#lists.isEmpty(armorTypes)}">No hay tipos de armadura.</div>
+
+    <table th:if="${!#lists.isEmpty(armorTypes)}">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="armorType : ${armorTypes}">
+                <td th:text="${armorType.id}">1</td>
+                <td th:text="${armorType.name}">Nombre</td>
+                <td><a th:href="@{/armorType/{id}(id=${armorType.id})}">Ver</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

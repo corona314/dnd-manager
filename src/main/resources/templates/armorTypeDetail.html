@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Detalle ArmorType</title>
+    <style>
+        body {font-family: Arial, sans-serif; background: #1e1e1e; color: #f0f0f0; margin: 0; padding: 0;}
+        header {background: #111; padding: 20px; text-align: center; font-size: 24px;}
+        .container {width: 80%; margin: 30px auto;}
+        .card {background: #2b2b2b; padding: 20px; border-radius: 8px;}
+        a {color: #4CAF50; text-decoration: none;}
+        a:hover {text-decoration: underline;}
+    </style>
+</head>
+<body>
+<header>Detalle Armor Type</header>
+<div class="container">
+    <div class="card">
+        <h2 th:text="${armorType.name}">Nombre</h2>
+        <p>ID: <span th:text="${armorType.id}">1</span></p>
+        <p>Nombre: <span th:text="${armorType.name}"></span></p>
+    </div>
+    <div style="margin-top: 20px;">
+        <a th:href="@{/armorType}">Volver a la lista</a>
+    </div>
+</div>
+</body>
+</html>
