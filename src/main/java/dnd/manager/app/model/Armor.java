@@ -38,4 +38,20 @@ public class Armor {
     @MapsId
     @JoinColumn(name = "object_id")
     private ObjectEntity object;
+
+    public ObjectEntity getObject() {
+        return object;
+    }
+
+    public void setObject(ObjectEntity object) {
+        this.object = object;
+    }
+
+    public ArmorType getArmorType() {
+        return armorType;
+    }
+
+    public void setArmorType(ArmorType armorType) {
+        this.armorType = armorType;
+    }
 }

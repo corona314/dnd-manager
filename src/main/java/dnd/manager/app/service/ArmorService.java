@@ -2,9 +2,12 @@ package dnd.manager.app.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import dnd.manager.app.model.Armor;
 import dnd.manager.app.repository.ArmorRepository;
 
+@Service
 public class ArmorService {
 
     private final ArmorRepository repository;
@@ -23,5 +26,13 @@ public class ArmorService {
 
     public List<Armor> findByArmorTypeId(Long armorTypeId){
         return repository.findByArmorTypeId(armorTypeId);
+    }
+
+    public Armor save(Armor armor) {
+        return repository.save(armor);
+    }
+
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 }

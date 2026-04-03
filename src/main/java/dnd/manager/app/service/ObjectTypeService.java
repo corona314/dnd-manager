@@ -8,7 +8,7 @@ import dnd.manager.app.repository.ObjectTypeRepository;
 
 
 @Service
-class ObjectTypeService {
+public class ObjectTypeService {
 
     private final ObjectTypeRepository objectTypeRepository;
 

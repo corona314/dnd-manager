@@ -2,9 +2,12 @@ package dnd.manager.app.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import dnd.manager.app.model.BonusTraitStat;
 import dnd.manager.app.repository.BonusTraitStatRepository;
 
+@Service
 public class BonusTraitStatService {
 
     private final BonusTraitStatRepository bonusTraitStatRepository;

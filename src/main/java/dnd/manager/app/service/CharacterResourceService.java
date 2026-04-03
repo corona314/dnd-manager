@@ -1,8 +1,11 @@
 package dnd.manager.app.service;
 
+import org.springframework.stereotype.Service;
+
 import dnd.manager.app.model.CharacterResource;
 import dnd.manager.app.repository.CharacterResourceRepository;
 
+@Service
 public class CharacterResourceService {
 
     private final CharacterResourceRepository characterRepository;

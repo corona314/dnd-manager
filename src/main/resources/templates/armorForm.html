@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Crear/Editar Armadura</title>
+</head>
+<body>
+<h1>Armadura</h1>
+<form th:action="@{/armors}" th:object="${armor}" method="post">
+    <h2>Datos del objeto (nuevo)</h2>
+    <div><label>Nombre del objeto</label> <input th:field="*{object.name}" required /></div>
+    <div><label>Peso</label> <input type="number" th:field="*{object.weight}" step="0.1"/></div>
+    <div><label>Precio</label> <input type="number" th:field="*{object.price}"/></div>
+    <div><label>Tipo de objeto</label>
+        <select th:field="*{object.objectType.id}">
+            <option th:each="type : ${objectTypes}" th:value="${type.id}" th:text="${type.name}"></option>
+        </select>
+    </div>
+    <div><label>Magico</label> <input type="checkbox" th:field="*{object.magic}" /></div>
+
+    <h2>Datos de armadura</h2>
+    <div><label>AC Base</label> <input type="number" th:field="*{acBase}" required /></div>
+    <div><label>AC Max</label> <input type="number" th:field="*{acMax}" required /></div>
+    <div><label>Str Min</label> <input type="number" th:field="*{strMin}" /></div>
+    <div><label>Stealth Dis</label> <input type="checkbox" th:field="*{stealthDis}" /></div>
+    <div><label>Tipo de armadura</label>
+        <select th:field="*{armorType.id}">
+            <option th:each="type : ${armorTypes}" th:value="${type.id}" th:text="${type.name}"></option>
+        </select>
+    </div>
+    <button type="submit">Guardar</button>
+</form>
+<a th:href="@{/armors}">Volver</a>
+</body>
+</html>
