@@ -35,34 +35,34 @@ public class CharacterEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "level", nullable = false)
+    @Column(name = "level")
     private Integer level;
 
-    @Column(name = "max_hp", nullable = false)
+    @Column(name = "max_hp")
     private Integer maxHp;
 
     @ManyToOne
-    @JoinColumn(name = "specie_id", nullable = false)
-    private Specie specie;
+    @JoinColumn(name = "species_id")
+    private Species species;
 
     @ManyToOne
-    @JoinColumn(name = "class_id", nullable = false)
+    @JoinColumn(name = "class_id")
     private ClassEntity classEntity;
 
     @ManyToOne
     @JoinColumn(name = "subclass_id")
     private Subclass subclass;
 
-    @Column(name = "current_hp", nullable = false)
+    @Column(name = "current_hp")
     private Integer currentHp;
 
-    @Column(name = "walk_speed", nullable = false)
+    @Column(name = "walk_speed")
     private Integer walkSpeed;
 
-    @Column(name = "fly_speed", nullable = false)
+    @Column(name = "fly_speed")
     private Integer flySpeed;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "character")

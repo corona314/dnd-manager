@@ -15,7 +15,7 @@ public  class SubclassTraitId implements Serializable {
     }
 
     public Long getSubclass() { return subclass; }
-    public void setSubclass(Long specie) { this.subclass = specie; }
+    public void setSubclass(Long species) { this.subclass = species; }
 
     public Long getTrait() { return trait; }
     public void setTrait(Long trait) { this.trait = trait; }

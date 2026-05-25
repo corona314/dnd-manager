@@ -258,7 +258,7 @@ CREATE TABLE `character` (
   CONSTRAINT `character_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `fk_character_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
   CONSTRAINT `fk_character_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
-  CONSTRAINT `fk_character_species` FOREIGN KEY (`specie_id`) REFERENCES `specie` (`id`),
+  CONSTRAINT `fk_character_species` FOREIGN KEY (`specie_id`) REFERENCES `species` (`id`),
   CONSTRAINT `fk_character_subclass` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -764,13 +764,13 @@ INSERT INTO `skill` VALUES (1,'Athletics',1),(2,'Acrobatics',2),(3,'Sleight of H
 UNLOCK TABLES;
 
 --
--- Table structure for table `specie`
+-- Table structure for table `species`
 --
 
-DROP TABLE IF EXISTS `specie`;
+DROP TABLE IF EXISTS `species`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `specie` (
+CREATE TABLE `species` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `size` varchar(20) DEFAULT NULL,
@@ -783,13 +783,13 @@ CREATE TABLE `specie` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `specie`
+-- Dumping data for table `species`
 --
 
-LOCK TABLES `specie` WRITE;
-/*!40000 ALTER TABLE `specie` DISABLE KEYS */;
-INSERT INTO `specie` VALUES (1,'Aasimar','3',30,'Aasimar, descended from celestial beings, possess an aura of light and supernatural abilities.',0),(2,'Human','3',30,'Humans are versatile and adaptable, able to learn many skills.',0),(3,'Dragonborn','3',30,'Dragonborn, humanoids with draconic heritage, command respect with their elemental breath.',0),(4,'Dwarf','3',25,'Dwarves are sturdy and resilient, skilled in mining and forging.',0),(5,'Elf','3',30,'Elves are agile and long-lived, closely connected to magic and nature.',0),(6,'Gnome','2',25,'Gnomes are clever and curious, masters of invention and illusion.',0),(7,'Half-Elf','3',30,'Half-Elves blend elven grace and human versatility.',0),(8,'Half-Orc','3',30,'Half-Orcs are strong and fearsome, with instincts for combat and physical endurance.',0),(9,'Halfling','2',25,'Halflings are small and nimble, masters of stealth and luck.',0),(10,'Orc','3',30,'Orcs are powerful warriors, aggressive and resilient.',0),(11,'Tiefling','3',30,'Tieflings have infernal heritage, granting magical abilities and fiendish traits.',0),(12,'Tabaxi','3',30,'Tabaxi are feline humanoids, fast and curious, excellent explorers.',0),(13,'Aarakocra','3',25,'Aarakocra are winged humanoids, capable of flight and swift movement.',50),(14,'Kenku','3',30,'Kenku are crow-like humanoids, unable to fly but excellent imitators and stealthy.',0),(15,'Firbolg','4',30,'Firbolgs are peaceful giants connected to nature, strong and silent.',0),(16,'Triton','3',30,'Tritons are aquatic beings with control over water and the ability to breathe underwater.',0),(17,'Goliath','4',30,'Goliaths are mountain giants, exceptional in strength and endurance.',0),(18,'Lizardfolk','3',30,'Lizardfolk are reptilian humanoids, adapted to water and physically strong.',0);
-/*!40000 ALTER TABLE `specie` ENABLE KEYS */;
+LOCK TABLES `species` WRITE;
+/*!40000 ALTER TABLE `species` DISABLE KEYS */;
+INSERT INTO `species` VALUES (1,'Aasimar','3',30,'Aasimar, descended from celestial beings, possess an aura of light and supernatural abilities.',0),(2,'Human','3',30,'Humans are versatile and adaptable, able to learn many skills.',0),(3,'Dragonborn','3',30,'Dragonborn, humanoids with draconic heritage, command respect with their elemental breath.',0),(4,'Dwarf','3',25,'Dwarves are sturdy and resilient, skilled in mining and forging.',0),(5,'Elf','3',30,'Elves are agile and long-lived, closely connected to magic and nature.',0),(6,'Gnome','2',25,'Gnomes are clever and curious, masters of invention and illusion.',0),(7,'Half-Elf','3',30,'Half-Elves blend elven grace and human versatility.',0),(8,'Half-Orc','3',30,'Half-Orcs are strong and fearsome, with instincts for combat and physical endurance.',0),(9,'Halfling','2',25,'Halflings are small and nimble, masters of stealth and luck.',0),(10,'Orc','3',30,'Orcs are powerful warriors, aggressive and resilient.',0),(11,'Tiefling','3',30,'Tieflings have infernal heritage, granting magical abilities and fiendish traits.',0),(12,'Tabaxi','3',30,'Tabaxi are feline humanoids, fast and curious, excellent explorers.',0),(13,'Aarakocra','3',25,'Aarakocra are winged humanoids, capable of flight and swift movement.',50),(14,'Kenku','3',30,'Kenku are crow-like humanoids, unable to fly but excellent imitators and stealthy.',0),(15,'Firbolg','4',30,'Firbolgs are peaceful giants connected to nature, strong and silent.',0),(16,'Triton','3',30,'Tritons are aquatic beings with control over water and the ability to breathe underwater.',0),(17,'Goliath','4',30,'Goliaths are mountain giants, exceptional in strength and endurance.',0),(18,'Lizardfolk','3',30,'Lizardfolk are reptilian humanoids, adapted to water and physically strong.',0);
+/*!40000 ALTER TABLE `species` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -804,7 +804,7 @@ CREATE TABLE `specie_trait` (
   `trait_id` int NOT NULL,
   PRIMARY KEY (`specie_id`,`trait_id`),
   KEY `specie_trait_trait` (`trait_id`),
-  CONSTRAINT `specie_trait_specie` FOREIGN KEY (`specie_id`) REFERENCES `specie` (`id`),
+  CONSTRAINT `specie_trait_specie` FOREIGN KEY (`specie_id`) REFERENCES `species` (`id`),
   CONSTRAINT `specie_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

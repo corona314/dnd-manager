@@ -12,18 +12,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "specie_trait")
+@Table(name = "species_trait")
 @Getter
 @Setter
 @NoArgsConstructor
 
-@IdClass(SpecieTraitId.class)
-public class SpecieTrait {
+@IdClass(SpeciesTraitId.class)
+public class SpeciesTrait {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "specie_id", nullable = false)
-    private Specie specie;
+    @JoinColumn(name = "species_id", nullable = false)
+    private Species species;
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)

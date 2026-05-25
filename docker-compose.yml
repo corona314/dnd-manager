@@ -8,4 +8,4 @@ services:
       MYSQL_DATABASE: DnDB
     volumes:
       - ./data:/var/lib/mysql
-      - ./backup.sql:/docker-entrypoint-initdb.d/DnDB.sqlS
+      - ./DnDB.sql:/docker-entrypoint-initdb.d/DnDB.sql

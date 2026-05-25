@@ -104,7 +104,7 @@
         <input type="number" th:field="*{speed}" required>
 
         <label>Especie ID</label>
-        <input type="number" th:field="*{specie_id}" required>
+        <input type="number" th:field="*{species_id}" required>
 
         <label>Clase ID</label>
         <input type="number" th:field="*{class_id}" required>
@@ -128,7 +128,7 @@
         HP: <span th:text="${c.current_hp}"></span> /
         <span th:text="${c.max_hp}"></span><br>
         Velocidad: <span th:text="${c.speed}"></span><br>
-        Especie ID: <span th:text="${c.specie_id}"></span><br>
+        Especie ID: <span th:text="${c.species_id}"></span><br>
         Clase ID: <span th:text="${c.class_id}"></span><br>
         Subclase ID: <span th:text="${c.subclass_id}"></span>
     </div>
