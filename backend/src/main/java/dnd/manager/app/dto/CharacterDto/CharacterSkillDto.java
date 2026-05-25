@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record CharacterSkillDto(
     @NotNull Long skillId,
-    boolean proficient,
-    boolean expertise
+    Boolean proficient,
+    Boolean expertise
 ) {}

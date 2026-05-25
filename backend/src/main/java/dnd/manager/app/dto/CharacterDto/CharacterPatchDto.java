@@ -1,16 +1,12 @@
 package dnd.manager.app.dto.CharacterDto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import dnd.manager.app.model.CharacterEntities.CharacterStatus;
-
 /*
-    Clase con toda la información del personaje
+    Clase con atributos que puede editar el usuario
 */
 
-public record CharacterResponseDto(
-    Long id,
+public record CharacterPatchDto(
     String name,
     Integer level,
     Integer maxHp,
@@ -21,10 +17,7 @@ public record CharacterResponseDto(
     Long classId,
     Long subclassId,
     Long backgroundId,
-    CharacterStatus status,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt,
-    LocalDateTime finalizedAt,
     List<CharacterStatDto> stats,
     List<CharacterSkillDto> skills
+    
 ) {}

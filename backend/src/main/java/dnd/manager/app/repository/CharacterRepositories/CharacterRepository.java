@@ -10,4 +10,5 @@ public interface CharacterRepository extends JpaRepository<CharacterEntity, Long
 
     List<CharacterEntity> findByUserId(Long userId);
 
+    CharacterEntity findByUserIdAndId(Long userId, Long id);
 }

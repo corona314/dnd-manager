@@ -1,8 +1,10 @@
 package dnd.manager.app.mapper;
 
-import java.util.Collections;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
 import dnd.manager.app.dto.CharacterDto.CharacterStatDto;
@@ -10,10 +12,12 @@ import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterSkill;
 import dnd.manager.app.model.CharacterEntities.CharacterStat;
+import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 
+@Component
 public class CharacterMapper {
 
-    public static CharacterSummaryDto toSummaryDto(CharacterEntity e) {
+    public CharacterSummaryDto toSummaryDto(CharacterEntity e) {
         return new CharacterSummaryDto(
             e.getId(),
             e.getName(),
@@ -23,7 +27,7 @@ public class CharacterMapper {
         );
     }
 
-    public static CharacterResponseDto toResponseDto(CharacterEntity e) {
+    public CharacterResponseDto toResponseDto(CharacterEntity e) {
         return new CharacterResponseDto(
             e.getId(),
             e.getName(),
@@ -40,22 +44,32 @@ public class CharacterMapper {
             e.getCreatedAt(),
             e.getUpdatedAt(),
             e.getFinalizedAt(),
-            mapStats(e.getStats()),
-            mapSkills(e.getSkills())
+            e.getStats() != null ? e.getStats().stream().map(this::toStatDto).toList() : List.of(),
+            e.getSkills() != null ? e.getSkills().stream().map(this::toSkillDto).toList() : List.of()
         );
     }
 
-    private static List<CharacterStatDto> mapStats(List<CharacterStat> stats) {
-        if (stats == null) return Collections.emptyList();
-        return stats.stream()
-            .map(s -> new CharacterStatDto(s.getStat().getId(), s.getBaseValue()))
-            .toList();
+    private CharacterStatDto toStatDto(CharacterStat stat) {
+        return new CharacterStatDto(
+            stat.getStat().getId(),
+            stat.getBaseValue()
+        );
     }
 
-    private static List<CharacterSkillDto> mapSkills(List<CharacterSkill> skills) {
-        if (skills == null) return Collections.emptyList();
-        return skills.stream()
-            .map(s -> new CharacterSkillDto(s.getSkill().getId(), s.getProficient(), s.getExpertise()))
-            .toList();
+    private CharacterSkillDto toSkillDto(CharacterSkill skill) {
+        return new CharacterSkillDto(
+            skill.getSkill().getId(),
+            skill.getProficient(),
+            skill.getExpertise()
+        );
     }
+
+    public CharacterEntity toEntity(CharacterCreateDto dto) {
+    CharacterEntity entity = new CharacterEntity();
+    entity.setName(dto.name());
+    entity.setLevel(dto.level());
+    entity.setStatus(CharacterStatus.DRAFT);
+    return entity;
+}
+
 }
