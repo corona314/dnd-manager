@@ -15,12 +15,12 @@ import dnd.manager.app.service.ItemServices.ItemTypeService;
 
 @Controller
 @RequestMapping("/item")
-public class ObjectController {
+public class ItemController {
 
     private final ItemService objectService;
     private final ItemTypeService objectTypeService;
 
-    public ObjectController(ItemService objectService, ItemTypeService objectTypeService) {
+    public ItemController(ItemService objectService, ItemTypeService objectTypeService) {
         this.objectService = objectService;
         this.objectTypeService = objectTypeService;
     }

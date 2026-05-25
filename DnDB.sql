@@ -262,8 +262,7 @@ CREATE TABLE `character` (
   CONSTRAINT `fk_character_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
   CONSTRAINT `fk_character_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
   CONSTRAINT `fk_character_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
-  CONSTRAINT `fk_character_subclass` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`),
-  CONSTRAINT `chk_level` CHECK ((`level` between 1 and 20))
+  CONSTRAINT `fk_character_subclass` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
 /*!40101 SET character_set_client = @saved_cs_client */;
 

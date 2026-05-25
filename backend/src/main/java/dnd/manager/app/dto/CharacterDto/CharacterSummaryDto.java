@@ -1,4 +1,4 @@
-package dnd.manager.app.DTO;
+package dnd.manager.app.dto.CharacterDto;
 
 import java.time.LocalDateTime;
 
