@@ -1,9 +1,7 @@
 package dnd.manager.app.service;
 
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import dnd.manager.app.model.Armor;
 import dnd.manager.app.repository.ArmorRepository;
 
