@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.44, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.9, for Linux (x86_64)
 --
--- Host: localhost    Database: dnd_manager
+-- Host: 127.0.0.1    Database: DnDB
 -- ------------------------------------------------------
--- Server version	8.0.44
+-- Server version	8.4.9
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -23,16 +23,16 @@ DROP TABLE IF EXISTS `armor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `armor` (
-  `object_id` int NOT NULL,
+  `item_id` int NOT NULL,
   `ac_base` int NOT NULL,
   `ac_max` int NOT NULL,
   `str_min` int DEFAULT '0',
   `stealth_dis` tinyint NOT NULL DEFAULT '0',
   `armor_type_id` int NOT NULL,
-  PRIMARY KEY (`object_id`),
+  PRIMARY KEY (`item_id`),
   KEY `armor_armor_type` (`armor_type_id`),
   CONSTRAINT `armor_armor_type` FOREIGN KEY (`armor_type_id`) REFERENCES `armor_type` (`id`),
-  CONSTRAINT `armor_object` FOREIGN KEY (`object_id`) REFERENCES `object` (`id`)
+  CONSTRAINT `armor_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -175,30 +175,30 @@ LOCK TABLES `bonus_feat_stat` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `bonus_trait_object`
+-- Table structure for table `bonus_trait_item`
 --
 
-DROP TABLE IF EXISTS `bonus_trait_object`;
+DROP TABLE IF EXISTS `bonus_trait_item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `bonus_trait_object` (
+CREATE TABLE `bonus_trait_item` (
   `trait_id` int NOT NULL,
-  `object_id` int NOT NULL,
+  `item_id` int NOT NULL,
   `value` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`trait_id`,`object_id`),
-  KEY `bonus_trait_object_object` (`object_id`),
-  CONSTRAINT `bonus_trait_object_object` FOREIGN KEY (`object_id`) REFERENCES `object` (`id`),
-  CONSTRAINT `bonus_trait_object_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  PRIMARY KEY (`trait_id`,`item_id`),
+  KEY `bonus_trait_item_item` (`item_id`),
+  CONSTRAINT `bonus_trait_item_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
+  CONSTRAINT `bonus_trait_item_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `bonus_trait_object`
+-- Dumping data for table `bonus_trait_item`
 --
 
-LOCK TABLES `bonus_trait_object` WRITE;
-/*!40000 ALTER TABLE `bonus_trait_object` DISABLE KEYS */;
-/*!40000 ALTER TABLE `bonus_trait_object` ENABLE KEYS */;
+LOCK TABLES `bonus_trait_item` WRITE;
+/*!40000 ALTER TABLE `bonus_trait_item` DISABLE KEYS */;
+/*!40000 ALTER TABLE `bonus_trait_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -240,17 +240,20 @@ CREATE TABLE `character` (
   `user_id` int NOT NULL,
   `name` varchar(45) NOT NULL,
   `level` int NOT NULL,
-  `max_hp` int NOT NULL,
-  `specie_id` int NOT NULL,
-  `class_id` int NOT NULL,
+  `max_hp` int DEFAULT NULL,
+  `species_id` int DEFAULT NULL,
+  `class_id` int DEFAULT NULL,
   `subclass_id` int DEFAULT NULL,
   `background_id` int DEFAULT NULL,
-  `current_hp` int NOT NULL,
-  `walk_speed` int NOT NULL DEFAULT '0',
-  `fly_speed` int NOT NULL DEFAULT '0',
-  `created_at` datetime NOT NULL,
+  `current_hp` int DEFAULT NULL,
+  `walk_speed` int DEFAULT '0',
+  `fly_speed` int DEFAULT '0',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `finalized_at` datetime DEFAULT NULL,
+  `status` enum('DRAFT','FINAL') DEFAULT 'DRAFT',
   PRIMARY KEY (`id`),
-  KEY `fk_character_species` (`specie_id`),
+  KEY `fk_character_species` (`species_id`),
   KEY `fk_character_class` (`class_id`),
   KEY `fk_character_subclass` (`subclass_id`),
   KEY `character_user` (`user_id`),
@@ -258,8 +261,9 @@ CREATE TABLE `character` (
   CONSTRAINT `character_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `fk_character_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
   CONSTRAINT `fk_character_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
-  CONSTRAINT `fk_character_species` FOREIGN KEY (`specie_id`) REFERENCES `species` (`id`),
-  CONSTRAINT `fk_character_subclass` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`)
+  CONSTRAINT `fk_character_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
+  CONSTRAINT `fk_character_subclass` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`),
+  CONSTRAINT `chk_level` CHECK ((`level` between 1 and 20))
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -303,32 +307,32 @@ LOCK TABLES `character_feat` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `character_object`
+-- Table structure for table `character_item`
 --
 
-DROP TABLE IF EXISTS `character_object`;
+DROP TABLE IF EXISTS `character_item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `character_object` (
+CREATE TABLE `character_item` (
   `character_id` int NOT NULL,
-  `object_id` int NOT NULL,
+  `item_id` int NOT NULL,
   `quantity` int DEFAULT '1',
   `equipped` tinyint DEFAULT '0',
   `attuned` tinyint DEFAULT '0',
-  PRIMARY KEY (`character_id`,`object_id`),
-  KEY `character_object_object` (`object_id`),
-  CONSTRAINT `character_object_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
-  CONSTRAINT `character_object_object` FOREIGN KEY (`object_id`) REFERENCES `object` (`id`)
+  PRIMARY KEY (`character_id`,`item_id`),
+  KEY `character_item_item` (`item_id`),
+  CONSTRAINT `character_item_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
+  CONSTRAINT `character_item_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `character_object`
+-- Dumping data for table `character_item`
 --
 
-LOCK TABLES `character_object` WRITE;
-/*!40000 ALTER TABLE `character_object` DISABLE KEYS */;
-/*!40000 ALTER TABLE `character_object` ENABLE KEYS */;
+LOCK TABLES `character_item` WRITE;
+/*!40000 ALTER TABLE `character_item` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -393,12 +397,11 @@ DROP TABLE IF EXISTS `character_skill`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `character_skill` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `character_id` int NOT NULL,
   `skill_id` int NOT NULL,
   `proficient` tinyint(1) NOT NULL DEFAULT '0',
   `expertise` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`character_id`,`skill_id`),
   KEY `character_id` (`character_id`),
   KEY `skill_id` (`skill_id`),
   CONSTRAINT `character_skill_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
@@ -453,11 +456,10 @@ DROP TABLE IF EXISTS `character_stat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `character_stat` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `character_id` int NOT NULL,
   `stat_id` int NOT NULL,
   `base_value` int NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`character_id`,`stat_id`),
   KEY `character_id` (`character_id`),
   KEY `stat_id` (`stat_id`),
   CONSTRAINT `character_stat_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
@@ -655,69 +657,69 @@ LOCK TABLES `mastery` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `object`
+-- Table structure for table `item`
 --
 
-DROP TABLE IF EXISTS `object`;
+DROP TABLE IF EXISTS `item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `object` (
+CREATE TABLE `item` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(120) NOT NULL,
   `weight` float DEFAULT '0',
   `price` int DEFAULT '0',
-  `object_type_id` int NOT NULL,
+  `item_type_id` int NOT NULL,
   `magic` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`),
-  KEY `object_object_type` (`object_type_id`),
-  CONSTRAINT `object_object_type` FOREIGN KEY (`object_type_id`) REFERENCES `object_type` (`id`)
+  KEY `item_item_type` (`item_type_id`),
+  CONSTRAINT `item_item_type` FOREIGN KEY (`item_type_id`) REFERENCES `item_type` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `object`
+-- Dumping data for table `item`
 --
 
-LOCK TABLES `object` WRITE;
-/*!40000 ALTER TABLE `object` DISABLE KEYS */;
-/*!40000 ALTER TABLE `object` ENABLE KEYS */;
+LOCK TABLES `item` WRITE;
+/*!40000 ALTER TABLE `item` DISABLE KEYS */;
+/*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `object_trait`
+-- Table structure for table `item_trait`
 --
 
-DROP TABLE IF EXISTS `object_trait`;
+DROP TABLE IF EXISTS `item_trait`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `object_trait` (
-  `object_id` int NOT NULL,
+CREATE TABLE `item_trait` (
+  `item_id` int NOT NULL,
   `trait_id` int NOT NULL,
-  PRIMARY KEY (`object_id`,`trait_id`),
-  KEY `object_trait_trait` (`trait_id`),
-  CONSTRAINT `object_trait_object` FOREIGN KEY (`object_id`) REFERENCES `object` (`id`),
-  CONSTRAINT `object_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  PRIMARY KEY (`item_id`,`trait_id`),
+  KEY `item_trait_trait` (`trait_id`),
+  CONSTRAINT `item_trait_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
+  CONSTRAINT `item_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `object_trait`
+-- Dumping data for table `item_trait`
 --
 
-LOCK TABLES `object_trait` WRITE;
-/*!40000 ALTER TABLE `object_trait` DISABLE KEYS */;
-/*!40000 ALTER TABLE `object_trait` ENABLE KEYS */;
+LOCK TABLES `item_trait` WRITE;
+/*!40000 ALTER TABLE `item_trait` DISABLE KEYS */;
+/*!40000 ALTER TABLE `item_trait` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `object_type`
+-- Table structure for table `item_type`
 --
 
-DROP TABLE IF EXISTS `object_type`;
+DROP TABLE IF EXISTS `item_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `object_type` (
+CREATE TABLE `item_type` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
@@ -726,13 +728,13 @@ CREATE TABLE `object_type` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `object_type`
+-- Dumping data for table `item_type`
 --
 
-LOCK TABLES `object_type` WRITE;
-/*!40000 ALTER TABLE `object_type` DISABLE KEYS */;
-INSERT INTO `object_type` VALUES (1,'Armor'),(3,'Object'),(2,'Weapon');
-/*!40000 ALTER TABLE `object_type` ENABLE KEYS */;
+LOCK TABLES `item_type` WRITE;
+/*!40000 ALTER TABLE `item_type` DISABLE KEYS */;
+INSERT INTO `item_type` VALUES (1,'Armor'),(3,'Item'),(2,'Weapon');
+/*!40000 ALTER TABLE `item_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -793,29 +795,29 @@ INSERT INTO `species` VALUES (1,'Aasimar','3',30,'Aasimar, descended from celest
 UNLOCK TABLES;
 
 --
--- Table structure for table `specie_trait`
+-- Table structure for table `species_trait`
 --
 
-DROP TABLE IF EXISTS `specie_trait`;
+DROP TABLE IF EXISTS `species_trait`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `specie_trait` (
-  `specie_id` int NOT NULL,
+CREATE TABLE `species_trait` (
+  `species_id` int NOT NULL,
   `trait_id` int NOT NULL,
-  PRIMARY KEY (`specie_id`,`trait_id`),
-  KEY `specie_trait_trait` (`trait_id`),
-  CONSTRAINT `specie_trait_specie` FOREIGN KEY (`specie_id`) REFERENCES `species` (`id`),
-  CONSTRAINT `specie_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  PRIMARY KEY (`species_id`,`trait_id`),
+  KEY `species_trait_trait` (`trait_id`),
+  CONSTRAINT `species_trait_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
+  CONSTRAINT `species_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `specie_trait`
+-- Dumping data for table `species_trait`
 --
 
-LOCK TABLES `specie_trait` WRITE;
-/*!40000 ALTER TABLE `specie_trait` DISABLE KEYS */;
-/*!40000 ALTER TABLE `specie_trait` ENABLE KEYS */;
+LOCK TABLES `species_trait` WRITE;
+/*!40000 ALTER TABLE `species_trait` DISABLE KEYS */;
+/*!40000 ALTER TABLE `species_trait` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1077,18 +1079,18 @@ DROP TABLE IF EXISTS `weapon`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `weapon` (
-  `object_id` int NOT NULL,
+  `item_id` int NOT NULL,
   `damage_dice` varchar(20) NOT NULL,
   `damage_type_id` int NOT NULL,
   `mastery_id` int NOT NULL,
   `range_normal` int DEFAULT '0',
   `range_long` int DEFAULT '0',
-  PRIMARY KEY (`object_id`),
+  PRIMARY KEY (`item_id`),
   KEY `weapon_damage_type` (`damage_type_id`),
   KEY `weapon_mastery` (`mastery_id`),
   CONSTRAINT `weapon_damage_type` FOREIGN KEY (`damage_type_id`) REFERENCES `damage_type` (`id`),
   CONSTRAINT `weapon_mastery` FOREIGN KEY (`mastery_id`) REFERENCES `mastery` (`id`),
-  CONSTRAINT `weapon_object` FOREIGN KEY (`object_id`) REFERENCES `object` (`id`)
+  CONSTRAINT `weapon_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1139,7 +1141,7 @@ CREATE TABLE `weapon_weapon_property` (
   `value` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`weapon_id`,`property_id`),
   KEY `weapon_weapon_property_weapon_property` (`property_id`),
-  CONSTRAINT `weapon_weapon_property_weapon` FOREIGN KEY (`weapon_id`) REFERENCES `weapon` (`object_id`),
+  CONSTRAINT `weapon_weapon_property_weapon` FOREIGN KEY (`weapon_id`) REFERENCES `weapon` (`item_id`),
   CONSTRAINT `weapon_weapon_property_weapon_property` FOREIGN KEY (`property_id`) REFERENCES `weapon_property` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1162,4 +1164,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-03 19:04:14
+-- Dump completed on 2026-05-25 19:46:16

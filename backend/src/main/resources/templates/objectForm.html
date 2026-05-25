@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Crear/Editar Objeto</title>
+</head>
+<body>
+<h1>Objeto</h1>
+<form th:action="@{/item}" th:item="${objectEntity}" method="post">
+    <div><label>Nombre</label> <input th:field="*{name}" required /></div>
+    <div><label>Peso</label> <input type="number" th:field="*{weight}" step="0.1"/></div>
+    <div><label>Precio</label> <input type="number" th:field="*{price}"/></div>
+    <div><label>Tipo de objeto</label>
+        <select th:field="*{objectType.id}" required>
+            <option th:each="type : ${objectTypes}" th:value="${type.id}" th:text="${type.name}"></option>
+        </select>
+    </div>
+    <div><label>Magic</label> <input type="checkbox" th:field="*{magic}" /></div>
+    <button type="submit">Guardar</button>
+</form>
+<a th:href="@{/item}">Volver</a>
+</body>
+</html>
