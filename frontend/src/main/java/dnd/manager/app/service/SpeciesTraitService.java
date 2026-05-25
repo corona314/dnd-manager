@@ -11,9 +11,9 @@ import java.util.Optional;
 @Service
 public class SpeciesTraitService {
 
-    private final SpeciesTraitRepository specieTraitRepository;
+    private final SpeciesTraitRepository speciesTraitRepository;
 
-    public SpecieTraitService(SpeciesTraitRepository speciesTraitRepository) {
+    public SpeciesTraitService(SpeciesTraitRepository speciesTraitRepository) {
         this.speciesTraitRepository = speciesTraitRepository;
     }
 

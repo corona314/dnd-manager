@@ -5,6 +5,8 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -65,6 +67,16 @@ public class CharacterEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;    
+    
+    @Column(name = "finalized_at")
+    private LocalDateTime finalizedAt;    
+    
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private CharacterStatus status = CharacterStatus.DRAFT;
+
     @OneToMany(mappedBy = "character")
     private List<CharacterSkill> skills;
 
@@ -86,4 +98,6 @@ public class CharacterEntity {
 
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
     private List<CharacterSavingThrow> savingThrows;
+
+
 }

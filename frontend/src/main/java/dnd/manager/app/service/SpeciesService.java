@@ -14,7 +14,7 @@ public class SpeciesService {
     private final SpeciesRepository speciesRepository;
     private final SpeciesTraitRepository speciesTraitRepository;
 
-    public SpecieService(SpecieRepository speciesRepository, SpeciesTraitRepository specieTraitRepository) {
+    public SpeciesService(SpeciesRepository speciesRepository, SpeciesTraitRepository speciesTraitRepository) {
         this.speciesRepository = speciesRepository;
         this.speciesTraitRepository = speciesTraitRepository;
     }
@@ -45,6 +45,6 @@ public class SpeciesService {
 
     // Traits de una especie concreta
     public List<?> findTraitsBySpecie(Long speciesId) {
-        return speciesTraitRepository.findBySpecieId(speciesId);
+        return speciesTraitRepository.findBySpeciesId(speciesId);
     }
 }

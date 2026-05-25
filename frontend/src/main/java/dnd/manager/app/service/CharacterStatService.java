@@ -3,7 +3,9 @@ package dnd.manager.app.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import dnd.manager.app.model.Armor;
+import dnd.manager.app.model.CharacterStat;
 import dnd.manager.app.repository.ArmorRepository;
+import dnd.manager.app.repository.CharacterStatRepository;
 
 @Service
 public class CharacterStatService {
@@ -18,10 +20,6 @@ public class CharacterStatService {
         return repository.findAll();
     }
 
-    public CharacterStat findById(Long id) {
-        return repository.findById(id).orElse(null);
-    }
-
     public List<CharacterStat> findByCharacterId(Long characterId){
         return repository.findByCharacterId(characterId);
     }
@@ -30,7 +28,4 @@ public class CharacterStatService {
         return repository.save(characterStat);
     }
 
-    public void deleteById(Long id) {
-        repository.deleteById(id);
-    }
 }
