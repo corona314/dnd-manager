@@ -263,7 +263,7 @@ CREATE TABLE `character` (
   CONSTRAINT `fk_character_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
   CONSTRAINT `fk_character_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
   CONSTRAINT `fk_character_subclass` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -631,31 +631,6 @@ LOCK TABLES `feat` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `mastery`
---
-
-DROP TABLE IF EXISTS `mastery`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `mastery` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) NOT NULL,
-  `description` text,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `mastery`
---
-
-LOCK TABLES `mastery` WRITE;
-/*!40000 ALTER TABLE `mastery` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mastery` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `item`
 --
 
@@ -734,6 +709,31 @@ LOCK TABLES `item_type` WRITE;
 /*!40000 ALTER TABLE `item_type` DISABLE KEYS */;
 INSERT INTO `item_type` VALUES (1,'Armor'),(3,'Item'),(2,'Weapon');
 /*!40000 ALTER TABLE `item_type` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mastery`
+--
+
+DROP TABLE IF EXISTS `mastery`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mastery` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mastery`
+--
+
+LOCK TABLES `mastery` WRITE;
+/*!40000 ALTER TABLE `mastery` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mastery` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1050,15 +1050,15 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(60) NOT NULL DEFAULT '',
-  `email` varchar(120) NOT NULL DEFAULT '',
+  `email` varchar(254) NOT NULL DEFAULT '',
   `password_hash` varchar(255) NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_email_UNIQUE` (`email`),
   UNIQUE KEY `user_username_UNIQUE` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1067,6 +1067,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1,'test','test@test.com','$2a$12$PMGp8LvQHzsAOeRnOlZ8ROcQIxMRPDaMsJzCNNDWjn2Bdwjlh2Nvu','2026-05-25 22:57:48');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1088,8 +1089,8 @@ CREATE TABLE `weapon` (
   KEY `weapon_damage_type` (`damage_type_id`),
   KEY `weapon_mastery` (`mastery_id`),
   CONSTRAINT `weapon_damage_type` FOREIGN KEY (`damage_type_id`) REFERENCES `damage_type` (`id`),
-  CONSTRAINT `weapon_mastery` FOREIGN KEY (`mastery_id`) REFERENCES `mastery` (`id`),
-  CONSTRAINT `weapon_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`)
+  CONSTRAINT `weapon_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
+  CONSTRAINT `weapon_mastery` FOREIGN KEY (`mastery_id`) REFERENCES `mastery` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1163,4 +1164,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-25 19:46:16
+-- Dump completed on 2026-05-26 19:46:56

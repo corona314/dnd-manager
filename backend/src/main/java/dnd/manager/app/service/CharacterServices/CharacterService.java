@@ -44,12 +44,13 @@ public class CharacterService {
     }
 
     // Crear personaje en modo DRAFT
-    public CharacterResponseDto create(CharacterCreateDto dto) {
-        User user = userRepository.findById(dto.userId())
+    public CharacterResponseDto create(Long userId, CharacterCreateDto dto) {
+        User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
-                    
+        
         CharacterEntity entity = mapper.toEntity(dto);
         entity.setUser(user);
+        entity.setStatus(CharacterStatus.DRAFT);;
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
         return mapper.toResponseDto(repository.save(entity));

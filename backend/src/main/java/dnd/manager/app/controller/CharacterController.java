@@ -7,20 +7,19 @@ import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
 import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
-import dnd.manager.app.mapper.CharacterMapper;
-import dnd.manager.app.model.CharacterEntities.CharacterEntity;
+import dnd.manager.app.model.User;
 import dnd.manager.app.service.CharacterServices.CharacterService;
 
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
@@ -32,30 +31,30 @@ public class CharacterController {
         this.service  = service;
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CharacterSummaryDto>> getByUserId(@PathVariable Long userId){
-        return ResponseEntity.ok(service.findByUserId(userId));
+    @GetMapping("/me")
+    public ResponseEntity<List<CharacterSummaryDto>> getMyCharacters(@AuthenticationPrincipal User user){
+        return ResponseEntity.ok(service.findByUserId(user.getId()));
     }
 
-    @GetMapping("/user/{userId}/{id}")
-    public ResponseEntity<CharacterResponseDto> getMethodName(@PathVariable Long userId, @PathVariable Long id) {
-        return ResponseEntity.ok(service.findByUserIdAndId(userId, id));
+    @GetMapping("/{id}")
+    public ResponseEntity<CharacterResponseDto> getById(@AuthenticationPrincipal User user, @PathVariable Long id) {
+        return ResponseEntity.ok(service.findByUserIdAndId(user.getId(), id));
     }
     
     @PostMapping
-    public ResponseEntity<CharacterResponseDto> create(@RequestBody CharacterCreateDto dto) {
+    public ResponseEntity<CharacterResponseDto> create(@AuthenticationPrincipal User user, @RequestBody CharacterCreateDto dto) {
         
-        return ResponseEntity.ok(service.create(dto));
+        return ResponseEntity.ok(service.create(user.getId(), dto));
     }
 
-    @PatchMapping("/user/{userId}/{id}")
-    public ResponseEntity<CharacterResponseDto> patch(@PathVariable Long userId, @PathVariable Long id, @RequestBody CharacterPatchDto dto) {
-        return ResponseEntity.ok(service.patch(userId, id, dto));
+    @PatchMapping("/{id}")
+    public ResponseEntity<CharacterResponseDto> patch(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody CharacterPatchDto dto) {
+        return ResponseEntity.ok(service.patch(user.getId(), id, dto));
     }
 
-    @DeleteMapping("/user/{userId}/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long userId, @PathVariable Long id) {
-        service.delete(userId, id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal User user, @PathVariable Long id) {
+        service.delete(user.getId(), id);
         return ResponseEntity.noContent().build();
     }    
 }

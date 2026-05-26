@@ -1,9 +1,13 @@
 package dnd.manager.app.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import jakarta.persistence.CascadeType;
@@ -23,7 +27,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 
-public class User {
+public class User implements UserDetails {
 
     @Id
     private Long id;
@@ -31,7 +35,7 @@ public class User {
     @Column(name = "username", nullable = false, unique = true, length = 60)
     private String username;
 
-    @Column(name = "email", nullable = false, unique = true, length = 120)
+    @Column(name = "email", nullable = false, unique = true, length = 254)
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
@@ -43,5 +47,34 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterEntity> characters;
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return new ArrayList<>(); // sin roles aún
+    }
+
+    @Override
+    public String getPassword() {
+        return passwordHash;
+    }
+
+    //TODO: A futuro con email y verificación
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
 
 }
