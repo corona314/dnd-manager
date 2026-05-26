@@ -73,6 +73,13 @@ public class CharacterService {
         return mapper.toResponseDto(repository.save(entity));
     }
 
+
+    public void delete(Long userId, Long id) {
+        CharacterEntity entity = repository.findByUserIdAndId(userId, id);
+        repository.delete(entity);
+    }
+
+
     // Finalizar personaje
     public CharacterResponseDto finalize(Long id) {
         CharacterEntity entity = repository.findById(id)
@@ -84,4 +91,5 @@ public class CharacterService {
 
         return mapper.toResponseDto(repository.save(entity));
     }
+
 }

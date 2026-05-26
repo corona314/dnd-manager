@@ -14,6 +14,7 @@ import dnd.manager.app.service.CharacterServices.CharacterService;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,5 +52,10 @@ public class CharacterController {
     public ResponseEntity<CharacterResponseDto> patch(@PathVariable Long userId, @PathVariable Long id, @RequestBody CharacterPatchDto dto) {
         return ResponseEntity.ok(service.patch(userId, id, dto));
     }
-    
+
+    @DeleteMapping("/user/{userId}/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long userId, @PathVariable Long id) {
+        service.delete(userId, id);
+        return ResponseEntity.noContent().build();
+    }    
 }
