@@ -10,7 +10,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.status(404).body(e.getMessage());
+        return ResponseEntity.status(400).body(e.getMessage());
     }
 
     @ExceptionHandler(NoResourceFoundException.class)

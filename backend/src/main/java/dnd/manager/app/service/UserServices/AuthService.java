@@ -31,7 +31,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.password()));
         userRepository.save(user);
 
-        return new AuthResponseDto("REGISTER_OK");
+        return new AuthResponseDto("OK" + user.getId());
     }
 
     public AuthResponseDto login(LoginRequestDto request) {
