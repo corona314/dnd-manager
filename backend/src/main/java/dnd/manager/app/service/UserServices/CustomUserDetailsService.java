@@ -1,4 +1,4 @@
-package dnd.manager.app.service.User;
+package dnd.manager.app.service.UserServices;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

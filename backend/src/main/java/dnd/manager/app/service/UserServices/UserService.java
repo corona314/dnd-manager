@@ -1,4 +1,4 @@
-package dnd.manager.app.service.User;
+package dnd.manager.app.service.UserServices;
 
 import dnd.manager.app.model.User;
 import dnd.manager.app.repository.UserRepository;

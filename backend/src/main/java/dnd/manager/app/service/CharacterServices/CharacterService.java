@@ -50,7 +50,7 @@ public class CharacterService {
         
         CharacterEntity entity = mapper.toEntity(dto);
         entity.setUser(user);
-        entity.setStatus(CharacterStatus.DRAFT);;
+        entity.setStatus(CharacterStatus.DRAFT);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
         return mapper.toResponseDto(repository.save(entity));
@@ -82,13 +82,12 @@ public class CharacterService {
 
 
     // Finalizar personaje
-    public CharacterResponseDto finalize(Long id) {
-        CharacterEntity entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
+    public CharacterResponseDto finalize(Long userId, Long id) {
+        CharacterEntity entity = repository.findByUserIdAndId(userId, id);
 
         entity.setStatus(CharacterStatus.FINAL);
-        entity.setFinalizedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
+        entity.setFinalizedAt(LocalDateTime.now());
 
         return mapper.toResponseDto(repository.save(entity));
     }

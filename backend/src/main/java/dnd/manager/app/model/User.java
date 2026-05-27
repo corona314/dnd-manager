@@ -8,7 +8,6 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -35,11 +34,11 @@ public class User implements UserDetails {
     @Column(name = "username", nullable = false, unique = true, length = 60)
     private String username;
 
-    @Column(name = "email", nullable = false, unique = true, length = 254)
+    @Column(name = "email", unique = true, length = 254)
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
+    private String password;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -56,7 +55,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return passwordHash;
+        return password;
     }
 
     //TODO: A futuro con email y verificación
