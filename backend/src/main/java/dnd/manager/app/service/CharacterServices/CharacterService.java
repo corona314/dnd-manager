@@ -50,6 +50,7 @@ public class CharacterService {
         
         CharacterEntity entity = mapper.toEntity(dto);
         entity.setUser(user);
+        entity.setLevel(0);
         entity.setStatus(CharacterStatus.DRAFT);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
@@ -63,7 +64,6 @@ public class CharacterService {
         
         if (entity == null) throw new RuntimeException("Character not found");        
         if (dto.name() != null) entity.setName(dto.name());
-        if (dto.level() != null) entity.setLevel(dto.level());
         if (dto.maxHp() != null) entity.setMaxHp(dto.maxHp());
         if (dto.currentHp() != null) entity.setCurrentHp(dto.currentHp());
         if (dto.walkSpeed() != null) entity.setWalkSpeed(dto.walkSpeed());
@@ -85,11 +85,16 @@ public class CharacterService {
     public CharacterResponseDto finalize(Long userId, Long id) {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);
 
+        validateComplete(entity);
         entity.setStatus(CharacterStatus.FINAL);
         entity.setUpdatedAt(LocalDateTime.now());
         entity.setFinalizedAt(LocalDateTime.now());
-
+        entity.setLevel(entity.getLevel()+1);
         return mapper.toResponseDto(repository.save(entity));
+    }
+
+    private void validateComplete(CharacterEntity e){
+        
     }
 
 }

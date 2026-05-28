@@ -67,7 +67,6 @@ public class CharacterMapper {
     public CharacterEntity toEntity(CharacterCreateDto dto) {
     CharacterEntity entity = new CharacterEntity();
     entity.setName(dto.name());
-    entity.setLevel(dto.level());
     entity.setStatus(CharacterStatus.DRAFT);
     return entity;
 }

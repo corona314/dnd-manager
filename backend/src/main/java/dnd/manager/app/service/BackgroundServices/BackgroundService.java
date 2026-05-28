@@ -7,21 +7,21 @@ import org.springframework.stereotype.Service;
 import dnd.manager.app.model.BackgroundEntities.Background;
 import dnd.manager.app.repository.BackgroundRepositories.BackgroundRepository;
 import dnd.manager.app.repository.BackgroundRepositories.BackgroundSkillRepository;
-import dnd.manager.app.repository.BackgroundRepositories.BackgroundTraitRepository;
+import dnd.manager.app.repository.BackgroundRepositories.BackgroundFeatureRepository;
 
 @Service
 public class BackgroundService {
 
     private final BackgroundRepository backgroundRepository;
     private final BackgroundSkillRepository backgroundSkillRepository;
-    private final BackgroundTraitRepository backgroundTraitRepository;
+    private final BackgroundFeatureRepository backgroundFeatureRepository;
 
     public BackgroundService(BackgroundRepository backgroundRepository,
                              BackgroundSkillRepository backgroundSkillRepository,
-                             BackgroundTraitRepository backgroundTraitRepository) {
+                             BackgroundFeatureRepository backgroundFeatureRepository) {
         this.backgroundRepository = backgroundRepository;
         this.backgroundSkillRepository = backgroundSkillRepository;
-        this.backgroundTraitRepository = backgroundTraitRepository;
+        this.backgroundFeatureRepository = backgroundFeatureRepository;
     }
 
     public List<Background> findAll() {
@@ -46,8 +46,8 @@ public class BackgroundService {
         return backgroundSkillRepository.findByBackgroundId(backgroundId);
     }
 
-    // Traits/feats que otorga este trasfondo (incluye el Origin Feat)
-    public List<?> findTraitsByBackground(Long backgroundId) {
-        return backgroundTraitRepository.findByBackgroundId(backgroundId);
+    // Features/feats que otorga este trasfondo (incluye el Origin Feat)
+    public List<?> findFeaturesByBackground(Long backgroundId) {
+        return backgroundFeatureRepository.findByBackgroundId(backgroundId);
     }
 }

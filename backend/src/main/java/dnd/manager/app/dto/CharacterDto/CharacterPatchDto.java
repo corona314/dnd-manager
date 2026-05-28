@@ -8,7 +8,6 @@ import java.util.List;
 
 public record CharacterPatchDto(
     String name,
-    Integer level,
     Integer maxHp,
     Integer currentHp,
     Integer walkSpeed,

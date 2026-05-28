@@ -6,18 +6,18 @@ import org.springframework.stereotype.Service;
 
 import dnd.manager.app.model.SubclassEntities.Subclass;
 import dnd.manager.app.repository.SubclassRepositories.SubclassRepository;
-import dnd.manager.app.repository.SubclassRepositories.SubclassTraitRepository;
+import dnd.manager.app.repository.SubclassRepositories.SubclassFeatureRepository;
 
 @Service
 public class SubclassService {
 
     private final SubclassRepository subclassRepository;
-    private final SubclassTraitRepository subclassTraitRepository;
+    private final SubclassFeatureRepository subclassFeatureRepository;
 
     public SubclassService(SubclassRepository subclassRepository,
-                           SubclassTraitRepository subclassTraitRepository) {
+                           SubclassFeatureRepository subclassFeatureRepository) {
         this.subclassRepository = subclassRepository;
-        this.subclassTraitRepository = subclassTraitRepository;
+        this.subclassFeatureRepository = subclassFeatureRepository;
     }
 
     public List<Subclass> findAll() {
@@ -42,8 +42,8 @@ public class SubclassService {
         subclassRepository.deleteById(id);
     }
 
-    // Traits de subclase filtrados por nivel del personaje
-    public List<?> findTraitsBySubclassAndLevel(Long subclassId, Integer level) {
-        return subclassTraitRepository.findBySubclassIdAndLevelLessThanEqual(subclassId, level);
+    // Features de subclase filtrados por nivel del personaje
+    public List<?> findFeaturesBySubclassAndLevel(Long subclassId, Integer level) {
+        return subclassFeatureRepository.findBySubclassIdAndLevelLessThanEqual(subclassId, level);
     }
 }

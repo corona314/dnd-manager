@@ -3,7 +3,7 @@ package dnd.manager.app.model.SubclassEntities;
 import java.util.List;
 
 import dnd.manager.app.model.ClassEntities.ClassEntity;
-import dnd.manager.app.model.TraitEntities.Trait;
+import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,9 +39,9 @@ public class Subclass {
 
     @ManyToMany
     @JoinTable(
-        name = "subclass_trait",
+        name = "subclass_feature",
         joinColumns = @JoinColumn(name = "subclass_id"),
-        inverseJoinColumns = @JoinColumn(name = "trait_id")
+        inverseJoinColumns = @JoinColumn(name = "feature_id")
     )
-    private List<Trait> traits;
+    private List<Feature> features;
 }

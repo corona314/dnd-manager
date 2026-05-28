@@ -8,7 +8,7 @@ import dnd.manager.app.model.ClassEntities.ClassEntity;
 import dnd.manager.app.model.SubclassEntities.Subclass;
 import dnd.manager.app.repository.ClassRepositories.ClassRepository;
 import dnd.manager.app.repository.ClassRepositories.ClassSavingThrowRepository;
-import dnd.manager.app.repository.ClassRepositories.ClassTraitRepository;
+import dnd.manager.app.repository.ClassRepositories.ClassFeatureRepository;
 import dnd.manager.app.repository.SubclassRepositories.SubclassRepository;
 
 @Service
@@ -16,16 +16,16 @@ public class ClassService {
 
     private final ClassRepository classRepository;
     private final SubclassRepository subclassRepository;
-    private final ClassTraitRepository classTraitRepository;
+    private final ClassFeatureRepository classFeatureRepository;
     private final ClassSavingThrowRepository classSavingThrowRepository;
 
     public ClassService(ClassRepository classRepository,
                         SubclassRepository subclassRepository,
-                        ClassTraitRepository classTraitRepository,
+                        ClassFeatureRepository classFeatureRepository,
                         ClassSavingThrowRepository classSavingThrowRepository) {
         this.classRepository = classRepository;
         this.subclassRepository = subclassRepository;
-        this.classTraitRepository = classTraitRepository;
+        this.classFeatureRepository = classFeatureRepository;
         this.classSavingThrowRepository = classSavingThrowRepository;
     }
 
@@ -51,9 +51,9 @@ public class ClassService {
         return subclassRepository.findByClassEntityId(classId);
     }
 
-    // Traits que otorga una clase, filtrados por nivel
-    public List<?> findTraitsByClassAndLevel(Long classId, Integer level) {
-        return classTraitRepository.findByClassEntityIdAndLevelLessThanEqual(classId, level);
+    // Features que otorga una clase, filtrados por nivel
+    public List<?> findFeaturesByClassAndLevel(Long classId, Integer level) {
+        return classFeatureRepository.findByClassEntityIdAndLevelLessThanEqual(classId, level);
     }
 
     // Saving throws de una clase

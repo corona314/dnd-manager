@@ -28,5 +28,5 @@ public class ClassEntity {
     private String name;
 
     @OneToMany(mappedBy = "classEntity")
-    private List<ClassTrait> classTraits;
+    private List<ClassFeature> classFeatures;
 }

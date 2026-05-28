@@ -4,7 +4,7 @@ import java.util.List;
 
 import dnd.manager.app.model.ItemEntities.ArmorEntities.Armor;
 import dnd.manager.app.model.ItemEntities.WeaponEntities.Weapon;
-import dnd.manager.app.model.TraitEntities.Trait;
+import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -55,10 +55,10 @@ public class Item {
 
     @ManyToMany
     @JoinTable(
-        name = "item_trait",
+        name = "item_feature",
         joinColumns = @JoinColumn(name = "item_id"),
-        inverseJoinColumns = @JoinColumn(name = "trait_id")
+        inverseJoinColumns = @JoinColumn(name = "feature_id")
     )
-    private List<Trait> traits;
+    private List<Feature> features;
 
 }

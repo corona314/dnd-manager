@@ -5,18 +5,18 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import dnd.manager.app.repository.SpeciesRepositories.SpeciesRepository;
-import dnd.manager.app.repository.SpeciesRepositories.SpeciesTraitRepository;
+import dnd.manager.app.repository.SpeciesRepositories.SpeciesFeatureRepository;
 import dnd.manager.app.model.SpeciesEntities.Species;
 
 @Service
 public class SpeciesService {
 
     private final SpeciesRepository speciesRepository;
-    private final SpeciesTraitRepository speciesTraitRepository;
+    private final SpeciesFeatureRepository speciesFeatureRepository;
 
-    public SpeciesService(SpeciesRepository speciesRepository, SpeciesTraitRepository speciesTraitRepository) {
+    public SpeciesService(SpeciesRepository speciesRepository, SpeciesFeatureRepository speciesFeatureRepository) {
         this.speciesRepository = speciesRepository;
-        this.speciesTraitRepository = speciesTraitRepository;
+        this.speciesFeatureRepository = speciesFeatureRepository;
     }
 
     public List<Species> findAll() {
@@ -43,8 +43,8 @@ public class SpeciesService {
                 .toList();
     }
 
-    // Traits de una especie concreta
-    public List<?> findTraitsBySpecie(Long speciesId) {
-        return speciesTraitRepository.findBySpeciesId(speciesId);
+    // Features de una especie concreta
+    public List<?> findFeaturesBySpecie(Long speciesId) {
+        return speciesFeatureRepository.findBySpeciesId(speciesId);
     }
 }

@@ -1,7 +1,7 @@
 package dnd.manager.app.model.BonusEntities;
 
 import dnd.manager.app.model.Stat;
-import dnd.manager.app.model.TraitEntities.Trait;
+import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -14,16 +14,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "bonus_trait_stat")
+@Table(name = "bonus_feature_stat")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(BonusTraitStatId.class)
-public class BonusTraitStat {
+@IdClass(BonusFeatureStatId.class)
+public class BonusFeatureStat {
 
     @Id
-    @Column(name = "trait_id")
-    private Long traitId;
+    @Column(name = "feature_id")
+    private Long featureId;
 
     @Id
     @Column(name = "stat_id")
@@ -33,8 +33,8 @@ public class BonusTraitStat {
     private Integer value;
 
     @ManyToOne
-    @JoinColumn(name = "trait_id", insertable = false, updatable = false)
-    private Trait trait;
+    @JoinColumn(name = "feature_id", insertable = false, updatable = false)
+    private Feature feature;
 
     @ManyToOne
     @JoinColumn(name = "stat_id", insertable = false, updatable = false)

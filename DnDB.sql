@@ -122,29 +122,29 @@ LOCK TABLES `background_skill` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `background_trait`
+-- Table structure for table `background_feature`
 --
 
-DROP TABLE IF EXISTS `background_trait`;
+DROP TABLE IF EXISTS `background_feature`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `background_trait` (
+CREATE TABLE `background_feature` (
   `background_id` int NOT NULL,
-  `trait_id` int NOT NULL,
-  PRIMARY KEY (`background_id`,`trait_id`),
-  KEY `background_trait_trait` (`trait_id`),
-  CONSTRAINT `background_trait_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
-  CONSTRAINT `background_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  `feature_id` int NOT NULL,
+  PRIMARY KEY (`background_id`,`feature_id`),
+  KEY `background_feature_feature` (`feature_id`),
+  CONSTRAINT `background_feature_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
+  CONSTRAINT `background_feature_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `background_trait`
+-- Dumping data for table `background_feature`
 --
 
-LOCK TABLES `background_trait` WRITE;
-/*!40000 ALTER TABLE `background_trait` DISABLE KEYS */;
-/*!40000 ALTER TABLE `background_trait` ENABLE KEYS */;
+LOCK TABLES `background_feature` WRITE;
+/*!40000 ALTER TABLE `background_feature` DISABLE KEYS */;
+/*!40000 ALTER TABLE `background_feature` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -175,57 +175,57 @@ LOCK TABLES `bonus_feat_stat` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `bonus_trait_item`
+-- Table structure for table `bonus_feature_item`
 --
 
-DROP TABLE IF EXISTS `bonus_trait_item`;
+DROP TABLE IF EXISTS `bonus_feature_item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `bonus_trait_item` (
-  `trait_id` int NOT NULL,
+CREATE TABLE `bonus_feature_item` (
+  `feature_id` int NOT NULL,
   `item_id` int NOT NULL,
   `value` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`trait_id`,`item_id`),
-  KEY `bonus_trait_item_item` (`item_id`),
-  CONSTRAINT `bonus_trait_item_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
-  CONSTRAINT `bonus_trait_item_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  PRIMARY KEY (`feature_id`,`item_id`),
+  KEY `bonus_feature_item_item` (`item_id`),
+  CONSTRAINT `bonus_feature_item_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
+  CONSTRAINT `bonus_feature_item_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `bonus_trait_item`
+-- Dumping data for table `bonus_feature_item`
 --
 
-LOCK TABLES `bonus_trait_item` WRITE;
-/*!40000 ALTER TABLE `bonus_trait_item` DISABLE KEYS */;
-/*!40000 ALTER TABLE `bonus_trait_item` ENABLE KEYS */;
+LOCK TABLES `bonus_feature_item` WRITE;
+/*!40000 ALTER TABLE `bonus_feature_item` DISABLE KEYS */;
+/*!40000 ALTER TABLE `bonus_feature_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `bonus_trait_stat`
+-- Table structure for table `bonus_feature_stat`
 --
 
-DROP TABLE IF EXISTS `bonus_trait_stat`;
+DROP TABLE IF EXISTS `bonus_feature_stat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `bonus_trait_stat` (
-  `trait_id` int NOT NULL,
+CREATE TABLE `bonus_feature_stat` (
+  `feature_id` int NOT NULL,
   `stat_id` int NOT NULL,
   `value` int NOT NULL,
-  PRIMARY KEY (`trait_id`,`stat_id`),
-  KEY `bonus_trait_stat_stat` (`stat_id`),
-  CONSTRAINT `bonus_trait_stat_stat` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`),
-  CONSTRAINT `bonus_trait_stat_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  PRIMARY KEY (`feature_id`,`stat_id`),
+  KEY `bonus_feature_stat_stat` (`stat_id`),
+  CONSTRAINT `bonus_feature_stat_stat` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`),
+  CONSTRAINT `bonus_feature_stat_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `bonus_trait_stat`
+-- Dumping data for table `bonus_feature_stat`
 --
 
-LOCK TABLES `bonus_trait_stat` WRITE;
-/*!40000 ALTER TABLE `bonus_trait_stat` DISABLE KEYS */;
-/*!40000 ALTER TABLE `bonus_trait_stat` ENABLE KEYS */;
+LOCK TABLES `bonus_feature_stat` WRITE;
+/*!40000 ALTER TABLE `bonus_feature_stat` DISABLE KEYS */;
+/*!40000 ALTER TABLE `bonus_feature_stat` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -552,30 +552,30 @@ LOCK TABLES `class_spell` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `class_trait`
+-- Table structure for table `class_feature`
 --
 
-DROP TABLE IF EXISTS `class_trait`;
+DROP TABLE IF EXISTS `class_feature`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `class_trait` (
+CREATE TABLE `class_feature` (
   `class_id` int NOT NULL,
-  `trait_id` int NOT NULL,
+  `feature_id` int NOT NULL,
   `level` int NOT NULL,
-  PRIMARY KEY (`class_id`,`trait_id`),
-  KEY `class_trait_trait` (`trait_id`),
-  CONSTRAINT `class_trait_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
-  CONSTRAINT `class_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  PRIMARY KEY (`class_id`,`feature_id`),
+  KEY `class_feature_feature` (`feature_id`),
+  CONSTRAINT `class_feature_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
+  CONSTRAINT `class_feature_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `class_trait`
+-- Dumping data for table `class_feature`
 --
 
-LOCK TABLES `class_trait` WRITE;
-/*!40000 ALTER TABLE `class_trait` DISABLE KEYS */;
-/*!40000 ALTER TABLE `class_trait` ENABLE KEYS */;
+LOCK TABLES `class_feature` WRITE;
+/*!40000 ALTER TABLE `class_feature` DISABLE KEYS */;
+/*!40000 ALTER TABLE `class_feature` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -661,29 +661,29 @@ LOCK TABLES `item` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `item_trait`
+-- Table structure for table `item_feature`
 --
 
-DROP TABLE IF EXISTS `item_trait`;
+DROP TABLE IF EXISTS `item_feature`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `item_trait` (
+CREATE TABLE `item_feature` (
   `item_id` int NOT NULL,
-  `trait_id` int NOT NULL,
-  PRIMARY KEY (`item_id`,`trait_id`),
-  KEY `item_trait_trait` (`trait_id`),
-  CONSTRAINT `item_trait_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
-  CONSTRAINT `item_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  `feature_id` int NOT NULL,
+  PRIMARY KEY (`item_id`,`feature_id`),
+  KEY `item_feature_feature` (`feature_id`),
+  CONSTRAINT `item_feature_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
+  CONSTRAINT `item_feature_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `item_trait`
+-- Dumping data for table `item_feature`
 --
 
-LOCK TABLES `item_trait` WRITE;
-/*!40000 ALTER TABLE `item_trait` DISABLE KEYS */;
-/*!40000 ALTER TABLE `item_trait` ENABLE KEYS */;
+LOCK TABLES `item_feature` WRITE;
+/*!40000 ALTER TABLE `item_feature` DISABLE KEYS */;
+/*!40000 ALTER TABLE `item_feature` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -789,34 +789,34 @@ CREATE TABLE `species` (
 
 LOCK TABLES `species` WRITE;
 /*!40000 ALTER TABLE `species` DISABLE KEYS */;
-INSERT INTO `species` VALUES (1,'Aasimar','3',30,'Aasimar, descended from celestial beings, possess an aura of light and supernatural abilities.',0),(2,'Human','3',30,'Humans are versatile and adaptable, able to learn many skills.',0),(3,'Dragonborn','3',30,'Dragonborn, humanoids with draconic heritage, command respect with their elemental breath.',0),(4,'Dwarf','3',25,'Dwarves are sturdy and resilient, skilled in mining and forging.',0),(5,'Elf','3',30,'Elves are agile and long-lived, closely connected to magic and nature.',0),(6,'Gnome','2',25,'Gnomes are clever and curious, masters of invention and illusion.',0),(7,'Half-Elf','3',30,'Half-Elves blend elven grace and human versatility.',0),(8,'Half-Orc','3',30,'Half-Orcs are strong and fearsome, with instincts for combat and physical endurance.',0),(9,'Halfling','2',25,'Halflings are small and nimble, masters of stealth and luck.',0),(10,'Orc','3',30,'Orcs are powerful warriors, aggressive and resilient.',0),(11,'Tiefling','3',30,'Tieflings have infernal heritage, granting magical abilities and fiendish traits.',0),(12,'Tabaxi','3',30,'Tabaxi are feline humanoids, fast and curious, excellent explorers.',0),(13,'Aarakocra','3',25,'Aarakocra are winged humanoids, capable of flight and swift movement.',50),(14,'Kenku','3',30,'Kenku are crow-like humanoids, unable to fly but excellent imitators and stealthy.',0),(15,'Firbolg','4',30,'Firbolgs are peaceful giants connected to nature, strong and silent.',0),(16,'Triton','3',30,'Tritons are aquatic beings with control over water and the ability to breathe underwater.',0),(17,'Goliath','4',30,'Goliaths are mountain giants, exceptional in strength and endurance.',0),(18,'Lizardfolk','3',30,'Lizardfolk are reptilian humanoids, adapted to water and physically strong.',0);
+INSERT INTO `species` VALUES (1,'Aasimar','3',30,'Aasimar, descended from celestial beings, possess an aura of light and supernatural abilities.',0),(2,'Human','3',30,'Humans are versatile and adaptable, able to learn many skills.',0),(3,'Dragonborn','3',30,'Dragonborn, humanoids with draconic heritage, command respect with their elemental breath.',0),(4,'Dwarf','3',25,'Dwarves are sturdy and resilient, skilled in mining and forging.',0),(5,'Elf','3',30,'Elves are agile and long-lived, closely connected to magic and nature.',0),(6,'Gnome','2',25,'Gnomes are clever and curious, masters of invention and illusion.',0),(7,'Half-Elf','3',30,'Half-Elves blend elven grace and human versatility.',0),(8,'Half-Orc','3',30,'Half-Orcs are strong and fearsome, with instincts for combat and physical endurance.',0),(9,'Halfling','2',25,'Halflings are small and nimble, masters of stealth and luck.',0),(10,'Orc','3',30,'Orcs are powerful warriors, aggressive and resilient.',0),(11,'Tiefling','3',30,'Tieflings have infernal heritage, granting magical abilities and fiendish features.',0),(12,'Tabaxi','3',30,'Tabaxi are feline humanoids, fast and curious, excellent explorers.',0),(13,'Aarakocra','3',25,'Aarakocra are winged humanoids, capable of flight and swift movement.',50),(14,'Kenku','3',30,'Kenku are crow-like humanoids, unable to fly but excellent imitators and stealthy.',0),(15,'Firbolg','4',30,'Firbolgs are peaceful giants connected to nature, strong and silent.',0),(16,'Triton','3',30,'Tritons are aquatic beings with control over water and the ability to breathe underwater.',0),(17,'Goliath','4',30,'Goliaths are mountain giants, exceptional in strength and endurance.',0),(18,'Lizardfolk','3',30,'Lizardfolk are reptilian humanoids, adapted to water and physically strong.',0);
 /*!40000 ALTER TABLE `species` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `species_trait`
+-- Table structure for table `species_feature`
 --
 
-DROP TABLE IF EXISTS `species_trait`;
+DROP TABLE IF EXISTS `species_feature`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `species_trait` (
+CREATE TABLE `species_feature` (
   `species_id` int NOT NULL,
-  `trait_id` int NOT NULL,
-  PRIMARY KEY (`species_id`,`trait_id`),
-  KEY `species_trait_trait` (`trait_id`),
-  CONSTRAINT `species_trait_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
-  CONSTRAINT `species_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  `feature_id` int NOT NULL,
+  PRIMARY KEY (`species_id`,`feature_id`),
+  KEY `species_feature_feature` (`feature_id`),
+  CONSTRAINT `species_feature_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
+  CONSTRAINT `species_feature_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `species_trait`
+-- Dumping data for table `species_feature`
 --
 
-LOCK TABLES `species_trait` WRITE;
-/*!40000 ALTER TABLE `species_trait` DISABLE KEYS */;
-/*!40000 ALTER TABLE `species_trait` ENABLE KEYS */;
+LOCK TABLES `species_feature` WRITE;
+/*!40000 ALTER TABLE `species_feature` DISABLE KEYS */;
+/*!40000 ALTER TABLE `species_feature` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -963,83 +963,83 @@ LOCK TABLES `subclass` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `subclass_trait`
+-- Table structure for table `subclass_feature`
 --
 
-DROP TABLE IF EXISTS `subclass_trait`;
+DROP TABLE IF EXISTS `subclass_feature`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `subclass_trait` (
+CREATE TABLE `subclass_feature` (
   `subclass_id` int NOT NULL,
-  `trait_id` int NOT NULL,
+  `feature_id` int NOT NULL,
   `level` int NOT NULL,
-  PRIMARY KEY (`subclass_id`,`trait_id`),
-  KEY `subclass_trait_trait` (`trait_id`),
-  CONSTRAINT `subclass_trait_class` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`),
-  CONSTRAINT `subclass_trait_trait` FOREIGN KEY (`trait_id`) REFERENCES `trait` (`id`)
+  PRIMARY KEY (`subclass_id`,`feature_id`),
+  KEY `subclass_feature_feature` (`feature_id`),
+  CONSTRAINT `subclass_feature_class` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`),
+  CONSTRAINT `subclass_feature_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `subclass_trait`
+-- Dumping data for table `subclass_feature`
 --
 
-LOCK TABLES `subclass_trait` WRITE;
-/*!40000 ALTER TABLE `subclass_trait` DISABLE KEYS */;
-/*!40000 ALTER TABLE `subclass_trait` ENABLE KEYS */;
+LOCK TABLES `subclass_feature` WRITE;
+/*!40000 ALTER TABLE `subclass_feature` DISABLE KEYS */;
+/*!40000 ALTER TABLE `subclass_feature` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `trait`
+-- Table structure for table `feature`
 --
 
-DROP TABLE IF EXISTS `trait`;
+DROP TABLE IF EXISTS `feature`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `trait` (
+CREATE TABLE `feature` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `description` text,
   `type` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`),
-  KEY `trait_trait_type` (`type`),
-  CONSTRAINT `trait_trait_type` FOREIGN KEY (`type`) REFERENCES `trait_type` (`id`)
+  KEY `feature_feature_type` (`type`),
+  CONSTRAINT `feature_feature_type` FOREIGN KEY (`type`) REFERENCES `feature_type` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `trait`
+-- Dumping data for table `feature`
 --
 
-LOCK TABLES `trait` WRITE;
-/*!40000 ALTER TABLE `trait` DISABLE KEYS */;
-/*!40000 ALTER TABLE `trait` ENABLE KEYS */;
+LOCK TABLES `feature` WRITE;
+/*!40000 ALTER TABLE `feature` DISABLE KEYS */;
+/*!40000 ALTER TABLE `feature` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `trait_type`
+-- Table structure for table `feature_type`
 --
 
-DROP TABLE IF EXISTS `trait_type`;
+DROP TABLE IF EXISTS `feature_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `trait_type` (
+CREATE TABLE `feature_type` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `trait_type_name_UNIQUE` (`name`)
+  UNIQUE KEY `feature_type_name_UNIQUE` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `trait_type`
+-- Dumping data for table `feature_type`
 --
 
-LOCK TABLES `trait_type` WRITE;
-/*!40000 ALTER TABLE `trait_type` DISABLE KEYS */;
-INSERT INTO `trait_type` VALUES (5,'background'),(2,'class'),(4,'feat'),(7,'general'),(6,'item'),(1,'racial'),(3,'subclass');
-/*!40000 ALTER TABLE `trait_type` ENABLE KEYS */;
+LOCK TABLES `feature_type` WRITE;
+/*!40000 ALTER TABLE `feature_type` DISABLE KEYS */;
+INSERT INTO `feature_type` VALUES (5,'background'),(2,'class'),(4,'feat'),(7,'general'),(6,'item'),(1,'racial'),(3,'subclass');
+/*!40000 ALTER TABLE `feature_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

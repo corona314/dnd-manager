@@ -1,6 +1,6 @@
-package dnd.manager.app.model.SpeciesEntities;
+package dnd.manager.app.model.BackgroundEntities;
 
-import dnd.manager.app.model.TraitEntities.Trait;
+import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -13,22 +13,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "species_trait")
+@Table(name = "background_feature")
 @Getter
 @Setter
 @NoArgsConstructor
-
-@IdClass(SpeciesTraitId.class)
-public class SpeciesTrait {
-
-    @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "species_id", nullable = false)
-    private Species species;
+@IdClass(BackgroundFeatureId.class)
+public class BackgroundFeature {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trait_id", nullable = false)
-    private Trait trait;
+    @JoinColumn(name = "background_id", nullable = false)
+    private Background background;
+
+    @Id
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "feature_id", nullable = false)
+    private Feature feature;
 
 }

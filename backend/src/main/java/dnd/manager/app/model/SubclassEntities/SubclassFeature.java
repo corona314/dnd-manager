@@ -1,6 +1,6 @@
 package dnd.manager.app.model.SubclassEntities;
 
-import dnd.manager.app.model.TraitEntities.Trait;
+import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "subclass_trait")
+@Table(name = "subclass_feature")
 @Getter
 @Setter
 @NoArgsConstructor
 
-@IdClass(SubclassTraitId.class)
-public class SubclassTrait {
+@IdClass(SubclassFeatureId.class)
+public class SubclassFeature {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,8 +29,8 @@ public class SubclassTrait {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trait_id", nullable = false)
-    private Trait trait;
+    @JoinColumn(name = "feature_id", nullable = false)
+    private Feature feature;
 
     @Column(name = "level", nullable = false)
     private Integer level;
