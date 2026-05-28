@@ -54,7 +54,7 @@ public class Spell {
     @Column(name = "components", length = 10)
     private String components;
 
-    @Column(name = "material", length = 255)
+    @Column(name = "material", columnDefinition = "TEXT")
     private String material;
 
     @Column(name = "concentration", nullable = false)
@@ -66,8 +66,18 @@ public class Spell {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "higher_levels", columnDefinition = "TEXT")
-    private String higherLevels;
+    @Column(name = "attack_roll")
+    private Boolean attackRoll;
+    
+    @Column(name = "saving_throw_stat_id")
+    private Long savingThrowStatId;
+    
+    @Column(name = "damage_roll")
+    private Long damageRoll;
+    
+    @Column(name = "damage_type_id")
+    private Long damageTypeId;
+
 
     @OneToMany(mappedBy = "spell", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterSpell> characterSpells;
