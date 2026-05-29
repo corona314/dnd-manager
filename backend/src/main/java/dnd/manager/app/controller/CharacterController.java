@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
 import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
+import dnd.manager.app.dto.CharacterDto.CharacterStatDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.User;
 import dnd.manager.app.service.CharacterServices.CharacterService;
@@ -57,4 +58,10 @@ public class CharacterController {
         service.delete(user.getId(), id);
         return ResponseEntity.noContent().build();
     }    
+
+    // Replace
+    @PatchMapping("/{id}/stats")
+    public ResponseEntity<CharacterResponseDto> replaceStats(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody List<CharacterStatDto> dto) {
+        return ResponseEntity.ok(service.replaceStats(user.getId(), id, dto));
+    }
 }

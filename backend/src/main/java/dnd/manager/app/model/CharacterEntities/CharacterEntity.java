@@ -85,7 +85,7 @@ public class CharacterEntity {
     @OneToMany(mappedBy = "character")
     private List<CharacterSkill> skills;
 
-    @OneToMany(mappedBy = "character")
+    @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
     private List<CharacterStat> stats;
 
     @OneToMany(mappedBy = "character")
@@ -96,6 +96,9 @@ public class CharacterEntity {
     private Background background;
 
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
+    private List<CharacterItem> items;
+
+    @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
     private List<CharacterFeat> feats;
 
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
@@ -103,6 +106,5 @@ public class CharacterEntity {
 
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
     private List<CharacterSavingThrow> savingThrows;
-
 
 }

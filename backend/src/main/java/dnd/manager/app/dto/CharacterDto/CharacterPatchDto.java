@@ -15,8 +15,6 @@ public record CharacterPatchDto(
     Long speciesId,
     Long classId,
     Long subclassId,
-    Long backgroundId,
-    List<CharacterStatDto> stats,
-    List<CharacterSkillDto> skills
-    
+    Long backgroundId
+
 ) {}

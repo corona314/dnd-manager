@@ -6,6 +6,8 @@ import dnd.manager.app.model.DamageType;
 import dnd.manager.app.model.ItemEntities.Item;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -45,10 +47,12 @@ public class Weapon {
 
     @Column(name = "range_long")
     private Integer rangeLong;
-
+    
+    @Enumerated(EnumType.STRING)
     @Column(name = "weapon_category", nullable = false)
     private WeaponCategory weaponCategory;
-
+    
+    @Enumerated(EnumType.STRING)
     @Column(name = "weapon_type", nullable = false)
     private WeaponType weaponType;
 

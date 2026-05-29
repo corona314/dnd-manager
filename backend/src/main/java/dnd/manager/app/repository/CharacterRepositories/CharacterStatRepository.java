@@ -12,4 +12,6 @@ public interface CharacterStatRepository extends JpaRepository<CharacterStat, Ch
 
     List<CharacterStat> findByCharacterId(Long id);
 
+    void deleteByCharacterId(Long id);
+
 }

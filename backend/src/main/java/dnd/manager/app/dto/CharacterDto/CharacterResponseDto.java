@@ -26,5 +26,7 @@ public record CharacterResponseDto(
     LocalDateTime updatedAt,
     LocalDateTime finalizedAt,
     List<CharacterStatDto> stats,
-    List<CharacterSkillDto> skills
+    List<CharacterSkillDto> skills,
+    List<CharacterItemDto> items
+
 ) {}

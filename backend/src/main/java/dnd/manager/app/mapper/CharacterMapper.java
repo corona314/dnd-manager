@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
+import dnd.manager.app.dto.CharacterDto.CharacterItemDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
 import dnd.manager.app.dto.CharacterDto.CharacterStatDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
+import dnd.manager.app.model.CharacterEntities.CharacterItem;
 import dnd.manager.app.model.CharacterEntities.CharacterSkill;
 import dnd.manager.app.model.CharacterEntities.CharacterStat;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
@@ -45,8 +47,17 @@ public class CharacterMapper {
             e.getUpdatedAt(),
             e.getFinalizedAt(),
             e.getStats() != null ? e.getStats().stream().map(this::toStatDto).toList() : List.of(),
-            e.getSkills() != null ? e.getSkills().stream().map(this::toSkillDto).toList() : List.of()
+            e.getSkills() != null ? e.getSkills().stream().map(this::toSkillDto).toList() : List.of(),
+            e.getItems() != null ? e.getItems().stream().map(this::toItemDto).toList() : List.of()
         );
+    }
+
+    public CharacterEntity toEntity(CharacterCreateDto dto) {
+    CharacterEntity entity = new CharacterEntity();
+    entity.setName(dto.name());
+    entity.setStatus(CharacterStatus.DRAFT);
+    return entity;
+
     }
 
     private CharacterStatDto toStatDto(CharacterStat stat) {
@@ -64,11 +75,11 @@ public class CharacterMapper {
         );
     }
 
-    public CharacterEntity toEntity(CharacterCreateDto dto) {
-    CharacterEntity entity = new CharacterEntity();
-    entity.setName(dto.name());
-    entity.setStatus(CharacterStatus.DRAFT);
-    return entity;
-}
-
+    private CharacterItemDto toItemDto(CharacterItem item){
+        return new CharacterItemDto(
+            item.getQuantity(), 
+            item.getEquipped(), 
+            item.getAttuned()
+        );
+    }
 }
