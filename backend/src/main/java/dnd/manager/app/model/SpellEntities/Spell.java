@@ -80,7 +80,6 @@ public class Spell {
     @Column(name = "damage_type_id")
     private DamageType damageType;
 
-
     @OneToMany(mappedBy = "spell", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterSpell> characterSpells;
 

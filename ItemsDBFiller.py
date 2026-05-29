@@ -310,7 +310,6 @@ def process_weapon(cursor, item_id: int, weapon_data: dict,
 
 
 def process_armor(cursor, item_id: int, armor_data: dict, armor_type_cache: dict):
-    """Inserta/actualiza fila en `armor`."""
 
     category = (armor_data.get("category") or "").lower()
     armor_type_id = armor_type_cache.get(category)
@@ -319,21 +318,19 @@ def process_armor(cursor, item_id: int, armor_data: dict, armor_type_cache: dict
         print(f"     ! armor_type '{category}' no reconocido, item_id={item_id} saltado")
         return False
 
-    # Parsear AC desde el texto display
-    ac_display = armor_data.get("armor_class") or ""
-    ac_base, parsed_ac_max = parse_ac_display(ac_display)
+    ac_base = armor_data.get("ac_base") or 0
+    dex_cap = armor_data.get("ac_cap_dexmod")
 
-    # LOGICA QUE QUIERES:
-    #
-    # light  -> solo ac_base, ac_max NULL
-    # medium -> ac_base y ac_max
-    # heavy  -> ac_base y ac_max iguales
+    # Regla de almacenamiento que quieres:
+    # light  -> ac_base, ac_max = NULL
+    # medium -> ac_base, ac_base + cap (si existe)
+    # heavy  -> ac_base, ac_base
 
     if category == "light":
         ac_max = None
 
     elif category == "medium":
-        ac_max = parsed_ac_max
+        ac_max = ac_base + dex_cap if dex_cap is not None else None
 
     elif category == "heavy":
         ac_max = ac_base

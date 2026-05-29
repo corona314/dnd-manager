@@ -21,7 +21,7 @@ import lombok.Setter;
 public class Armor {
 
     @Id
-    private Long objectId;
+    private Long itemId;
     @Column(name = "ac_base", nullable = false)
     private Integer acBase;
     @Column(name = "ac_max")

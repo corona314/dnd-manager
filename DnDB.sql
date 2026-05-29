@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `armor`;
 CREATE TABLE `armor` (
   `item_id` int NOT NULL,
   `ac_base` int NOT NULL,
-  `ac_max` int NOT NULL,
+  `ac_max` int DEFAULT NULL,
   `str_min` int DEFAULT '0',
   `stealth_dis` tinyint NOT NULL DEFAULT '0',
   `armor_type_id` int NOT NULL,
@@ -42,6 +42,7 @@ CREATE TABLE `armor` (
 
 LOCK TABLES `armor` WRITE;
 /*!40000 ALTER TABLE `armor` DISABLE KEYS */;
+INSERT INTO `armor` VALUES (20,14,16,0,0,2),(37,16,16,13,1,3),(38,13,15,0,0,2),(77,15,17,0,1,2),(83,12,14,0,0,2),(103,11,NULL,0,0,1),(136,11,NULL,0,1,1),(143,18,18,15,1,3),(160,14,14,0,1,3),(169,14,16,0,1,2),(184,17,17,15,1,3),(187,12,NULL,0,0,1);
 /*!40000 ALTER TABLE `armor` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -57,7 +58,7 @@ CREATE TABLE `armor_type` (
   `name` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -594,7 +595,7 @@ CREATE TABLE `damage_type` (
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -603,6 +604,7 @@ CREATE TABLE `damage_type` (
 
 LOCK TABLES `damage_type` WRITE;
 /*!40000 ALTER TABLE `damage_type` DISABLE KEYS */;
+INSERT INTO `damage_type` VALUES (3,'Bludgeoning'),(2,'Piercing'),(1,'Slashing');
 /*!40000 ALTER TABLE `damage_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -702,11 +704,13 @@ CREATE TABLE `item` (
   `price` int DEFAULT '0',
   `item_type_id` int NOT NULL,
   `magic` tinyint NOT NULL DEFAULT '0',
+  `attunement` tinyint(1) NOT NULL DEFAULT '0',
+  `rarity` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`),
   KEY `item_item_type` (`item_type_id`),
   CONSTRAINT `item_item_type` FOREIGN KEY (`item_type_id`) REFERENCES `item_type` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=204 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -715,6 +719,7 @@ CREATE TABLE `item` (
 
 LOCK TABLES `item` WRITE;
 /*!40000 ALTER TABLE `item` DISABLE KEYS */;
+INSERT INTO `item` VALUES (1,'Acid',1,2500,2,0,0,NULL),(2,'Airship',0,4000000,3,0,0,NULL),(3,'Alchemist\'s Fire',1,5000,2,0,0,NULL),(4,'Alchemist\'s Supplies (50 GP)',8,5000,3,0,0,NULL),(5,'Antitoxin',0,5000,3,0,0,NULL),(6,'Arrows (20)',1,100,3,0,0,NULL),(7,'Backpack',5,200,3,0,0,NULL),(8,'Ball Bearings',2,100,3,0,0,NULL),(9,'Barrel',70,200,3,0,0,NULL),(10,'Basket',2,40,3,0,0,NULL),(11,'Battleaxe',4,1000,2,0,0,NULL),(12,'Bedroll',7,100,3,0,0,NULL),(13,'Bell',0,100,3,0,0,NULL),(14,'Blanket',3,50,3,0,0,NULL),(15,'Block and Tackle',5,100,3,0,0,NULL),(16,'Blowgun',1,1000,2,0,0,NULL),(17,'Bolts (20)',1.5,100,3,0,0,NULL),(18,'Book',5,2500,3,0,0,NULL),(19,'Bottle, Glass',2,200,3,0,0,NULL),(20,'Breastplate',20,40000,1,0,0,NULL),(21,'Brewer\'s Supplies (20 GP)',9,2000,3,0,0,NULL),(22,'Bucket',2,5,3,0,0,NULL),(23,'Bullets, Firearm (10)',2,300,3,0,0,NULL),(24,'Bullets, Sling (20)',1.5,4,3,0,0,NULL),(25,'Burglar\'s Pack',42,1600,3,0,0,NULL),(26,'Calligrapher\'s Supplies (10 GP)',5,1000,3,0,0,NULL),(27,'Caltrops',2,100,3,0,0,NULL),(28,'Camel',0,5000,3,0,0,NULL),(29,'Candle',0,1,3,0,0,NULL),(30,'Carpenter\'s Tools (8 GP)',6,800,3,0,0,NULL),(31,'Carriage',600,10000,3,0,0,NULL),(32,'Cart',200,1500,3,0,0,NULL),(33,'Cartographer\'s Tools (15 GP)',6,1500,3,0,0,NULL),(34,'Case, Crossbow Bolt',1,100,3,0,0,NULL),(35,'Case, Map or Scroll',1,100,3,0,0,NULL),(36,'Chain',10,500,3,0,0,NULL),(37,'Chain Mail',55,7500,1,0,0,NULL),(38,'Chain Shirt',20,5000,1,0,0,NULL),(39,'Chariot',100,25000,3,0,0,NULL),(40,'Chest',25,500,3,0,0,NULL),(41,'Climber\'s Kit',12,2500,3,0,0,NULL),(42,'Clothes, Fine',6,1500,3,0,0,NULL),(43,'Clothes, Traveler\'s',4,200,3,0,0,NULL),(44,'Club',2,10,2,0,0,NULL),(45,'Cobbler\'s Tools (5 GP)',5,500,3,0,0,NULL),(46,'Component Pouch',2,2500,3,0,0,NULL),(47,'Cook\'s Utensils (1 GP)',8,100,3,0,0,NULL),(48,'Costume',4,500,3,0,0,NULL),(49,'Crowbar',5,200,3,0,0,NULL),(50,'Dagger',1,200,2,0,0,NULL),(51,'Dart',1,5,2,0,0,NULL),(52,'Diplomat\'s Pack',39,3900,3,0,0,NULL),(53,'Disguise Kit',3,2500,3,0,0,NULL),(54,'Druidic Focus, Sprig of Mistletoe',0,100,3,0,0,NULL),(55,'Druidic Focus, Wooden Staff',4,500,3,0,0,NULL),(56,'Druidic Focus, Yew Wand',1,1000,3,0,0,NULL),(57,'Dungeoneer\'s Pack',55,1200,3,0,0,NULL),(58,'Elephant',0,20000,3,0,0,NULL),(59,'Entertainer\'s Pack',58,4000,3,0,0,NULL),(60,'Explorer\'s Pack',55,1000,3,0,0,NULL),(61,'Feed (per day)',10,5,3,0,0,NULL),(62,'Flail',2,1000,2,0,0,NULL),(63,'Flask',1,2,3,0,0,NULL),(64,'Forgery Kit',5,1500,3,0,0,NULL),(65,'Galley',0,3000000,3,0,0,NULL),(66,'Gaming Set, Dice',0,10,3,0,0,NULL),(67,'Gaming Set, Dragonchess',1,100,3,0,0,NULL),(68,'Gaming Set, Playing Cards',0,50,3,0,0,NULL),(69,'Gaming Set, Three-Dragon Ante',0,100,3,0,0,NULL),(70,'Glaive',6,2000,2,0,0,NULL),(71,'Glassblower\'s Tools (30 GP)',5,3000,3,0,0,NULL),(72,'Grappling Hook',4,200,3,0,0,NULL),(73,'Greataxe',7,3000,2,0,0,NULL),(74,'Greatclub',10,20,2,0,0,NULL),(75,'Greatsword',6,5000,2,0,0,NULL),(76,'Halberd',6,2000,2,0,0,NULL),(77,'Half Plate Armor',40,75000,1,0,0,NULL),(78,'Hand Crossbow',3,7500,2,0,0,NULL),(79,'Handaxe',2,500,2,0,0,NULL),(80,'Healer\'s Kit',3,500,3,0,0,NULL),(81,'Heavy Crossbow',18,5000,2,0,0,NULL),(82,'Herbalism Kit',3,500,3,0,0,NULL),(83,'Hide Armor',12,1000,1,0,0,NULL),(84,'Holy Symbol, Amulet)',1,500,3,0,0,NULL),(85,'Holy Symbol, Emblem)',0,500,3,0,0,NULL),(86,'Holy Symbol, Reliquary',2,500,3,0,0,NULL),(87,'Holy Water',1,2500,2,0,0,NULL),(88,'Horse (Draft)',0,5000,3,0,0,NULL),(89,'Horse (Riding)',0,7500,3,0,0,NULL),(90,'Hunting Trap',25,500,3,0,0,NULL),(91,'Ink',0,1000,3,0,0,NULL),(92,'Ink Pen',0,2,3,0,0,NULL),(93,'Ioun Stone',0,0,3,0,0,NULL),(94,'Javelin',2,50,2,0,0,NULL),(95,'Jeweler\'s Tools (25 GP)',2,2500,3,0,0,NULL),(96,'Jug',4,2,3,0,0,NULL),(97,'Keelboat',0,300000,3,0,0,NULL),(98,'Ladder',25,10,3,0,0,NULL),(99,'Lamp',1,50,3,0,0,NULL),(100,'Lance',6,1000,2,0,0,NULL),(101,'Lantern, Bullseye',2,1000,3,0,0,NULL),(102,'Lantern, Hooded',2,500,3,0,0,NULL),(103,'Leather Armor',10,1000,1,0,0,NULL),(104,'Leatherworker\'s Tools (5 GP)',5,500,3,0,0,NULL),(105,'Light Crossbow',5,2500,2,0,0,NULL),(106,'Light Hammer',2,200,2,0,0,NULL),(107,'Lock',1,1000,3,0,0,NULL),(108,'Longbow',2,5000,2,0,0,NULL),(109,'Longship',0,1000000,3,0,0,NULL),(110,'Longsword',3,1500,2,0,0,NULL),(111,'Mace',4,500,2,0,0,NULL),(112,'Magnifying Glass',0,10000,3,0,0,NULL),(113,'Manacles',6,200,3,0,0,NULL),(114,'Map',0,100,3,0,0,NULL),(115,'Mason\'s Tools (10 GP)',8,1000,3,0,0,NULL),(116,'Mastiff',0,2500,3,0,0,NULL),(117,'Maul',10,1000,2,0,0,NULL),(118,'Mirror',0.5,500,3,0,0,NULL),(119,'Morningstar',4,1500,2,0,0,NULL),(120,'Mule',0,800,3,0,0,NULL),(121,'Musical Instrument, Bagpipes',6,3000,3,0,0,NULL),(122,'Musical Instrument, Drum',3,600,3,0,0,NULL),(123,'Musical Instrument, Dulcimer',10,2500,3,0,0,NULL),(124,'Musical Instrument, Flute',1,200,3,0,0,NULL),(125,'Musical Instrument, Horn',2,300,3,0,0,NULL),(126,'Musical Instrument, Lute',2,3500,3,0,0,NULL),(127,'Musical Instrument, Lyre',2,3000,3,0,0,NULL),(128,'Musical Instrument, Pan Flute',2,1200,3,0,0,NULL),(129,'Musical Instrument, Shawm',1,200,3,0,0,NULL),(130,'Musical Instrument, Viol',1,3000,3,0,0,NULL),(131,'Musket',10,50000,2,0,0,NULL),(132,'Navigator\'s Tools',2,2500,3,0,0,NULL),(133,'Needles (50)',1,100,3,0,0,NULL),(134,'Net',3,100,2,0,0,NULL),(135,'Oil',1,10,2,0,0,NULL),(136,'Padded Armor',8,500,1,0,0,NULL),(137,'Painter\'s Supplies (10 GP)',5,1000,3,0,0,NULL),(138,'Paper',0,20,3,0,0,NULL),(139,'Parchment',0,10,3,0,0,NULL),(140,'Perfume',0,500,3,0,0,NULL),(141,'Pike',18,500,2,0,0,NULL),(142,'Pistol',3,25000,2,0,0,NULL),(143,'Plate Armor',65,150000,1,0,0,NULL),(144,'Poison, Basic',0,10000,3,0,0,NULL),(145,'Poisoner\'s Kit',2,5000,3,0,0,NULL),(146,'Pole',7,5,3,0,0,NULL),(147,'Pony',0,3000,3,0,0,NULL),(148,'Pot, Iron',10,200,3,0,0,NULL),(149,'Potion of Giant Strength',0,0,3,0,0,NULL),(150,'Potion of Healing',0.5,5000,3,0,0,NULL),(151,'Potions of Healing',0,0,3,0,0,NULL),(152,'Potter\'s Tools (10 GP)',3,1000,3,0,0,NULL),(153,'Pouch',1,50,3,0,0,NULL),(154,'Priest\'s Pack',29,3300,3,0,0,NULL),(155,'Quarterstaff',4,20,2,0,0,NULL),(156,'Quiver',1,100,3,0,0,NULL),(157,'Ram, Portable',35,400,3,0,0,NULL),(158,'Rapier',2,2500,2,0,0,NULL),(159,'Rations',2,50,3,0,0,NULL),(160,'Ring Mail',40,3000,1,0,0,NULL),(161,'Robe',4,100,3,0,0,NULL),(162,'Rope',5,100,3,0,0,NULL),(163,'Rowboat',100,5000,3,0,0,NULL),(164,'Sack',0.5,1,3,0,0,NULL),(165,'Saddle (Exotic)',40,6000,3,0,0,NULL),(166,'Saddle (Military)',30,2000,3,0,0,NULL),(167,'Saddle (Riding)',25,1000,3,0,0,NULL),(168,'Sailing Ship',0,1000000,3,0,0,NULL),(169,'Scale Mail',45,5000,1,0,0,NULL),(170,'Scholar\'s Pack',22,4000,3,0,0,NULL),(171,'Scimitar',3,2500,2,0,0,NULL),(172,'Shield',6,1000,4,0,0,NULL),(173,'Shortbow',2,2500,2,0,0,NULL),(174,'Shortsword',2,1000,2,0,0,NULL),(175,'Shovel',5,200,3,0,0,NULL),(176,'Sickle',2,100,2,0,0,NULL),(177,'Signal Whistle',0,5,3,0,0,NULL),(178,'Sled',300,2000,3,0,0,NULL),(179,'Sling',0,10,2,0,0,NULL),(180,'Smith\'s Tools (20 GP)',8,2000,3,0,0,NULL),(181,'Spear',3,100,2,0,0,NULL),(182,'Spell Scroll',0,3000,3,0,0,NULL),(183,'Spikes, Iron',5,100,3,0,0,NULL),(184,'Splint Armor',60,20000,1,0,0,NULL),(185,'Spyglass',1,100000,3,0,0,NULL),(186,'String',0,10,3,0,0,NULL),(187,'Studded Leather Armor',13,4500,1,0,0,NULL),(188,'Tent',20,200,3,0,0,NULL),(189,'Thieves\' Tools',1,2500,3,0,0,NULL),(190,'Tinderbox',1,50,3,0,0,NULL),(191,'Tinker\'s Tools (50 GP)',10,5000,3,0,0,NULL),(192,'Torch',1,1,2,0,0,NULL),(193,'Trident',4,500,2,0,0,NULL),(194,'Vial',0,100,3,0,0,NULL),(195,'Wagon',400,3500,3,0,0,NULL),(196,'War Pick',2,500,2,0,0,NULL),(197,'Warhammer',5,1500,2,0,0,NULL),(198,'Warhorse',0,40000,3,0,0,NULL),(199,'Warship',0,2500000,3,0,0,NULL),(200,'Waterskin',5,20,3,0,0,NULL),(201,'Weaver\'s Tools (1 GP)',5,100,3,0,0,NULL),(202,'Whip',3,200,2,0,0,NULL),(203,'Woodcarver\'s Tools (1 GP)',5,100,3,0,0,NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -765,7 +770,7 @@ CREATE TABLE `item_type` (
 
 LOCK TABLES `item_type` WRITE;
 /*!40000 ALTER TABLE `item_type` DISABLE KEYS */;
-INSERT INTO `item_type` VALUES (1,'Armor'),(3,'Item'),(2,'Weapon');
+INSERT INTO `item_type` VALUES (1,'Armor'),(3,'Item'),(4,'Shield'),(2,'Weapon');
 /*!40000 ALTER TABLE `item_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -782,7 +787,7 @@ CREATE TABLE `mastery` (
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -791,7 +796,33 @@ CREATE TABLE `mastery` (
 
 LOCK TABLES `mastery` WRITE;
 /*!40000 ALTER TABLE `mastery` DISABLE KEYS */;
+INSERT INTO `mastery` VALUES (1,'Topple','If you hit a creature with this weapon, you can force the creature to make a Constitution saving throw (DC 8 plus the ability modifier used to make the attack roll and your Proficiency Bonus). On a failed save, the creature has the Prone condition.'),(2,'Vex','If you hit a creature with this weapon and deal damage to the creature, you have Advantage on your next attack roll against that creature before the end of your next turn.'),(3,'Slow','If you hit a creature with this weapon and deal damage to it, you can reduce its Speed by 10 feet until the start of your next turn. If the creature is hit more than once by weapons that have this property, the Speed reduction doesn\'t exceed 10 feet.'),(4,'Nick','When you make the extra attack of the Light property, you can make it as part of the Attack action instead of as a Bonus Action. You can make this extra attack only once per turn.'),(5,'Sap','If you hit a creature with this weapon, that creature has Disadvantage on its next attack roll before the start of your next turn.'),(6,'Graze','If your attack roll with this weapon misses a creature, you can deal damage to that creature equal to the ability modifier you used to make the attack roll. This damage is the same type dealt by the weapon, and the damage can be increased only by increasing the ability modifier.'),(7,'Cleave','If you hit a creature with a melee attack roll using this weapon, you can make a melee attack roll with the weapon against a second creature within 5 feet of the first that is also within your reach. On a hit, the second creature takes the weapon\'s damage, but don\'t add your ability modifier to that damage unless that modifier is negative. You can make this extra attack only once per turn.'),(8,'Push','If you hit a creature with this weapon, you can push the creature up to 10 feet straight away from yourself if it is Large or smaller.');
 /*!40000 ALTER TABLE `mastery` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shield`
+--
+
+DROP TABLE IF EXISTS `shield`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `shield` (
+  `item_id` int NOT NULL,
+  `ac_bonus` int NOT NULL DEFAULT '2',
+  PRIMARY KEY (`item_id`),
+  CONSTRAINT `fk_shield_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shield`
+--
+
+LOCK TABLES `shield` WRITE;
+/*!40000 ALTER TABLE `shield` DISABLE KEYS */;
+INSERT INTO `shield` VALUES (172,2);
+/*!40000 ALTER TABLE `shield` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1155,6 +1186,8 @@ CREATE TABLE `weapon` (
   `mastery_id` int NOT NULL,
   `range_normal` int DEFAULT '0',
   `range_long` int DEFAULT '0',
+  `weapon_category` enum('Simple','Martial') DEFAULT NULL,
+  `weapon_type` enum('Melee','Ranged') DEFAULT NULL,
   PRIMARY KEY (`item_id`),
   KEY `weapon_damage_type` (`damage_type_id`),
   KEY `weapon_mastery` (`mastery_id`),
@@ -1170,6 +1203,7 @@ CREATE TABLE `weapon` (
 
 LOCK TABLES `weapon` WRITE;
 /*!40000 ALTER TABLE `weapon` DISABLE KEYS */;
+INSERT INTO `weapon` VALUES (11,'1d8',1,1,0,0,'Martial','Melee'),(16,'1',2,2,0,0,'Martial','Ranged'),(44,'1d4',3,3,0,0,'Simple','Melee'),(50,'1d4',2,4,0,0,'Simple','Ranged'),(51,'1d4',2,2,0,0,'Simple','Ranged'),(62,'1d8',3,5,0,0,'Martial','Melee'),(70,'1d10',1,6,0,0,'Martial','Melee'),(73,'1d12',1,7,0,0,'Martial','Melee'),(74,'1d8',3,8,0,0,'Simple','Melee'),(75,'2d6',1,6,0,0,'Martial','Melee'),(76,'1d10',1,7,0,0,'Martial','Melee'),(78,'1d6',2,2,0,0,'Martial','Ranged'),(79,'1d6',1,2,0,0,'Simple','Ranged'),(81,'1d10',2,8,0,0,'Martial','Ranged'),(94,'1d6',2,3,0,0,'Simple','Ranged'),(100,'1d10',2,1,0,0,'Martial','Melee'),(105,'1d8',2,3,0,0,'Simple','Ranged'),(106,'1d4',3,4,0,0,'Simple','Ranged'),(108,'1d8',2,3,0,0,'Martial','Ranged'),(110,'1d8',1,5,0,0,'Martial','Melee'),(111,'1d6',3,5,0,0,'Simple','Melee'),(117,'2d6',3,1,0,0,'Martial','Melee'),(119,'1d8',2,5,0,0,'Martial','Melee'),(131,'1d12',2,3,0,0,'Martial','Ranged'),(141,'1d10',2,8,0,0,'Martial','Melee'),(142,'1d10',2,2,0,0,'Martial','Ranged'),(155,'1d6',3,1,0,0,'Simple','Melee'),(158,'1d8',2,2,0,0,'Martial','Melee'),(171,'1d6',1,4,0,0,'Martial','Melee'),(173,'1d6',2,2,0,0,'Simple','Ranged'),(174,'1d6',2,2,0,0,'Martial','Melee'),(176,'1d4',1,4,0,0,'Simple','Melee'),(179,'1d4',3,3,0,0,'Simple','Ranged'),(181,'1d6',2,5,0,0,'Simple','Ranged'),(193,'1d8',2,1,0,0,'Martial','Ranged'),(196,'1d8',2,5,0,0,'Martial','Melee'),(197,'1d8',3,8,0,0,'Martial','Melee'),(202,'1d4',1,3,0,0,'Martial','Melee');
 /*!40000 ALTER TABLE `weapon` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1186,7 +1220,7 @@ CREATE TABLE `weapon_property` (
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1195,6 +1229,7 @@ CREATE TABLE `weapon_property` (
 
 LOCK TABLES `weapon_property` WRITE;
 /*!40000 ALTER TABLE `weapon_property` DISABLE KEYS */;
+INSERT INTO `weapon_property` VALUES (1,'Versatile','A Versatile weapon can be used with one or two hands. A damage value in parentheses appears with the property. The weapon deals that damage when used with two hands to make a melee attack.'),(2,'Ammunition','You can use a weapon that has the Ammunition property to make a ranged attack only if you have ammunition to fire from it. The type of ammunition required is specified with the weapon\'s range. Each attack expends one piece of ammunition. Drawing the ammunition is part of the attack (you need a free hand to load a one-handed weapon). After a fight, you can spend 1 minute to recover half the ammunition (round down) you used in the fight; the rest is lost.'),(3,'Loading','You can fire only one piece of ammunition from a Loading weapon when you use an action, a Bonus Action, or a Reaction to fire it, regardless of the number of attacks you can normally make.'),(4,'Light','When you take the Attack action on your turn and attack with a Light weapon, you can make one extra attack as a Bonus Action later on the same turn. That extra attack must be made with a different Light weapon, and you don\'t add your ability modifier to the extra attack\'s damage unless that modifier is negative.'),(5,'Finesse','When making an attack with a Finesse weapon, use your choice of your Strength or Dexterity modifier for the attack and damage rolls. You must use the same modifier for both rolls.'),(6,'Thrown','If a weapon has the Thrown property, you can throw the weapon to make a ranged attack, and you can draw that weapon as part of the attack. If the weapon is a Melee weapon, use the same ability modifier for the attack and damage rolls that you use for a melee attack with that weapon.'),(7,'Heavy','You have Disadvantage on attack rolls with a Heavy weapon if it\'s a Melee weapon and your Strength score isn\'t at least 13 or if it\'s a Ranged weapon and your Dexterity score isn\'t at least 13.'),(8,'Reach','A Reach weapon adds 5 feet to your reach when you attack with it, as well as when determining your reach for Opportunity Attacks with it.'),(9,'Two-Handed','A Two-Handed weapon requires two hands when you attack with it.');
 /*!40000 ALTER TABLE `weapon_property` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1222,6 +1257,7 @@ CREATE TABLE `weapon_weapon_property` (
 
 LOCK TABLES `weapon_weapon_property` WRITE;
 /*!40000 ALTER TABLE `weapon_weapon_property` DISABLE KEYS */;
+INSERT INTO `weapon_weapon_property` VALUES (11,1,'1d10'),(16,2,'Range 25/100; Needle'),(16,3,NULL),(44,4,NULL),(50,4,NULL),(50,5,NULL),(50,6,'Range 20/60'),(51,5,NULL),(51,6,'Range 20/60'),(70,7,NULL),(70,8,NULL),(70,9,NULL),(73,7,NULL),(73,9,NULL),(74,9,NULL),(75,7,NULL),(75,9,NULL),(76,7,NULL),(76,8,NULL),(76,9,NULL),(78,2,'Range 30/120; Bolt'),(78,3,NULL),(78,4,NULL),(79,4,NULL),(79,6,'Range 20/60'),(81,2,'Range 100/400; Bolt'),(81,3,NULL),(81,7,NULL),(81,9,NULL),(94,6,'Range 30/120'),(100,7,NULL),(100,8,NULL),(100,9,'unless mounted'),(105,2,'Range 80/320; Bolt'),(105,3,NULL),(105,9,NULL),(106,4,NULL),(106,6,'Range 20/60'),(108,2,'Range 150/600; Arrow'),(108,7,NULL),(108,9,NULL),(110,1,'1d10'),(117,7,NULL),(117,9,NULL),(131,2,'Range 40/120; Bullet'),(131,3,NULL),(131,9,NULL),(141,7,NULL),(141,8,NULL),(141,9,NULL),(142,2,'Range 30/90; Bullet'),(142,3,NULL),(155,1,'1d8'),(158,5,NULL),(171,4,NULL),(171,5,NULL),(173,2,'Range 80/320; Arrow'),(173,9,NULL),(174,4,NULL),(174,5,NULL),(176,4,NULL),(179,2,'Range 30/120; Bullet'),(181,1,'1d8'),(181,6,'Range 20/60'),(193,1,'1d10'),(193,6,'Range 20/60'),(196,1,'1d10'),(197,1,'1d10'),(202,5,NULL),(202,8,NULL);
 /*!40000 ALTER TABLE `weapon_weapon_property` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -1234,4 +1270,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-29  0:02:00
+-- Dump completed on 2026-05-29 20:34:47
