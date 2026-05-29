@@ -24,7 +24,7 @@ public class Armor {
     private Long objectId;
     @Column(name = "ac_base", nullable = false)
     private Integer acBase;
-    @Column(name = "ac_max", nullable = false)
+    @Column(name = "ac_max")
     private Integer acMax;
     @Column(name = "str_min")
     private Integer strMin;
@@ -40,11 +40,11 @@ public class Armor {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    public Item getObject() {
+    public Item getItem() {
         return item;
     }
 
-    public void setObject(Item item) {
+    public void setItem(Item item) {
         this.item = item;
     }
 

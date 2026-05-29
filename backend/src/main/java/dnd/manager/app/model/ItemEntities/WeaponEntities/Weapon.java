@@ -27,7 +27,7 @@ import lombok.Setter;
 public class Weapon {
 
     @Id
-    private Long objectId;
+    private Long itemId;
 
     @Column(name = "damage_dice", nullable = false)
     private String damageDice;
@@ -45,6 +45,12 @@ public class Weapon {
 
     @Column(name = "range_long")
     private Integer rangeLong;
+
+    @Column(name = "weapon_category", nullable = false)
+    private WeaponCategory weaponCategory;
+
+    @Column(name = "weapon_type", nullable = false)
+    private WeaponType weaponType;
 
     @OneToOne
     @MapsId

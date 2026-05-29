@@ -2,6 +2,8 @@ package dnd.manager.app.model.SpellEntities;
 
 import java.util.List;
 
+import dnd.manager.app.model.DamageType;
+import dnd.manager.app.model.Stat;
 import dnd.manager.app.model.CharacterEntities.CharacterSpell;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -70,13 +72,13 @@ public class Spell {
     private Boolean attackRoll;
     
     @Column(name = "saving_throw_stat_id")
-    private Long savingThrowStatId;
+    private Stat savingThrowStat;
     
     @Column(name = "damage_roll")
     private Long damageRoll;
     
     @Column(name = "damage_type_id")
-    private Long damageTypeId;
+    private DamageType damageType;
 
 
     @OneToMany(mappedBy = "spell", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
