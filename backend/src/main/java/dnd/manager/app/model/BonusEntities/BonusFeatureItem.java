@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /*
-    Para armas o armaduras +1, +2, +3
+    Para armas +1, +2, +3
 */
 @Entity
 @Table(name = "bonus_feature_item")
