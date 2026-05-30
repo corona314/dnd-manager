@@ -1,6 +1,6 @@
 package dnd.manager.app.model.BackgroundEntities;
 
-import dnd.manager.app.model.FeatureEntities.Feature;
+import dnd.manager.app.model.ItemEntities.Item;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "background_feature")
+@Table(name = "background_tool")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(BackgroundFeatureId.class)
-public class BackgroundFeature {
+@IdClass(BackgroundToolId.class)
+public class BackgroundTool {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,7 +27,7 @@ public class BackgroundFeature {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "feature_id", nullable = false)
-    private Feature feature;
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
 
 }

@@ -13,6 +13,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/*
+    Para rasgos que dan bonificadores a las stats (+1 a STR)
+*/
 @Entity
 @Table(name = "bonus_feature_stat")
 @Getter

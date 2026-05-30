@@ -84,7 +84,7 @@ CREATE TABLE `background` (
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `background_name_UNIQUE` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,33 +93,35 @@ CREATE TABLE `background` (
 
 LOCK TABLES `background` WRITE;
 /*!40000 ALTER TABLE `background` DISABLE KEYS */;
+INSERT INTO `background` VALUES (1,'Acolyte',''),(2,'Criminal',''),(3,'Sage',''),(4,'Soldier','');
 /*!40000 ALTER TABLE `background` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `background_feature`
+-- Table structure for table `background_feat`
 --
 
-DROP TABLE IF EXISTS `background_feature`;
+DROP TABLE IF EXISTS `background_feat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `background_feature` (
+CREATE TABLE `background_feat` (
   `background_id` int NOT NULL,
-  `feature_id` int NOT NULL,
-  PRIMARY KEY (`background_id`,`feature_id`),
-  KEY `background_feature_feature` (`feature_id`),
-  CONSTRAINT `background_feature_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
-  CONSTRAINT `background_feature_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
+  `feat_id` int NOT NULL,
+  PRIMARY KEY (`background_id`,`feat_id`),
+  KEY `background_feat_feat` (`feat_id`),
+  CONSTRAINT `background_feat_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
+  CONSTRAINT `background_feat_feat` FOREIGN KEY (`feat_id`) REFERENCES `feat` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `background_feature`
+-- Dumping data for table `background_feat`
 --
 
-LOCK TABLES `background_feature` WRITE;
-/*!40000 ALTER TABLE `background_feature` DISABLE KEYS */;
-/*!40000 ALTER TABLE `background_feature` ENABLE KEYS */;
+LOCK TABLES `background_feat` WRITE;
+/*!40000 ALTER TABLE `background_feat` DISABLE KEYS */;
+INSERT INTO `background_feat` VALUES (2,2),(1,14),(3,14),(4,15);
+/*!40000 ALTER TABLE `background_feat` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -145,7 +147,62 @@ CREATE TABLE `background_skill` (
 
 LOCK TABLES `background_skill` WRITE;
 /*!40000 ALTER TABLE `background_skill` DISABLE KEYS */;
+INSERT INTO `background_skill` VALUES (4,1),(2,3),(2,4),(3,5),(3,6),(1,9),(1,11),(4,16);
 /*!40000 ALTER TABLE `background_skill` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `background_stat`
+--
+
+DROP TABLE IF EXISTS `background_stat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `background_stat` (
+  `background_id` int NOT NULL,
+  `stat_id` int NOT NULL,
+  PRIMARY KEY (`background_id`,`stat_id`),
+  KEY `background_stat_stat` (`stat_id`),
+  CONSTRAINT `background_stat_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
+  CONSTRAINT `background_stat_stat` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `background_stat`
+--
+
+LOCK TABLES `background_stat` WRITE;
+/*!40000 ALTER TABLE `background_stat` DISABLE KEYS */;
+INSERT INTO `background_stat` VALUES (4,1),(2,2),(4,2),(2,3),(3,3),(4,3),(1,4),(2,4),(3,4),(1,5),(3,5),(1,6);
+/*!40000 ALTER TABLE `background_stat` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `background_tool`
+--
+
+DROP TABLE IF EXISTS `background_tool`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `background_tool` (
+  `background_id` int NOT NULL,
+  `item_id` int NOT NULL,
+  PRIMARY KEY (`background_id`,`item_id`),
+  KEY `background_tool_item` (`item_id`),
+  CONSTRAINT `background_tool_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
+  CONSTRAINT `background_tool_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `background_tool`
+--
+
+LOCK TABLES `background_tool` WRITE;
+/*!40000 ALTER TABLE `background_tool` DISABLE KEYS */;
+INSERT INTO `background_tool` VALUES (1,26),(3,26),(4,66),(4,67),(4,68),(4,69),(2,189);
+/*!40000 ALTER TABLE `background_tool` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -316,9 +373,9 @@ DROP TABLE IF EXISTS `character_item`;
 CREATE TABLE `character_item` (
   `character_id` int NOT NULL,
   `item_id` int NOT NULL,
-  `quantity` int DEFAULT '1',
-  `equipped` tinyint DEFAULT '0',
-  `attuned` tinyint DEFAULT '0',
+  `quantity` int NOT NULL DEFAULT '1',
+  `equipped` tinyint NOT NULL DEFAULT '0',
+  `attuned` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`character_id`,`item_id`),
   KEY `character_item_item` (`item_id`),
   CONSTRAINT `character_item_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
@@ -477,6 +534,33 @@ LOCK TABLES `character_stat` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `character_tool`
+--
+
+DROP TABLE IF EXISTS `character_tool`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_tool` (
+  `character_id` int NOT NULL,
+  `item_id` int NOT NULL,
+  `proficient` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`character_id`,`item_id`),
+  KEY `character_tool_item` (`item_id`),
+  CONSTRAINT `character_tool_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
+  CONSTRAINT `character_tool_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_tool`
+--
+
+LOCK TABLES `character_tool` WRITE;
+/*!40000 ALTER TABLE `character_tool` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_tool` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `class`
 --
 
@@ -624,7 +708,7 @@ CREATE TABLE `feat` (
   `feat_category` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `feat_name_UNIQUE` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -633,6 +717,7 @@ CREATE TABLE `feat` (
 
 LOCK TABLES `feat` WRITE;
 /*!40000 ALTER TABLE `feat` DISABLE KEYS */;
+INSERT INTO `feat` VALUES (1,'Ability Score Improvement','• Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can\'t increase an ability score above 20.\n• You can take this feat more than once.','Level 4+',1,'General'),(2,'Alert','You gain the following benefits.\n• When you roll Initiative, you can add your Proficiency Bonus to the roll.\n• Immediately after you roll Initiative, you can swap your Initiative with the Initiative of one willing ally in the same combat. You can\'t make this swap if you or the ally has the Incapacitated condition.',NULL,0,'Origin'),(3,'Archery','• You gain a +2 bonus to attack rolls you make with Ranged weapons.','Fighting Style Feature',0,'Fighting Style'),(4,'Boon of Combat Prowess','You gain the following benefits.\n• Increase one ability score of your choice by 1, to a maximum of 30.\n• When you miss with an attack roll, you can hit instead. Once you use this benefit, you can\'t use it again until the start of your next turn.','Level 19+',0,'Epic Boon'),(5,'Boon of Dimensional Travel','You gain the following benefits.\n• Increase one ability score of your choice by 1, to a maximum of 30.\n• Immediately after you take the Attack action or the Magic action, you can teleport up to 30 feet to an unoccupied space you can see.','Level 19+',0,'Epic Boon'),(6,'Boon of Fate','You gain the following benefits.\n• Increase one ability score of your choice by 1, to a maximum of 30.\n• When you or another creature within 60 feet of you succeeds on or fails a D20 Test, you can roll 2d4 and apply the total rolled as a bonus or penalty to the d20 roll. Once you use this benefit, you can\'t use it again until you roll Initiative or finish a Short or Long Rest.','Level 19+',0,'Epic Boon'),(7,'Boon of Irresistible Offense','You gain the following benefits.\n• Increase one ability score of your choice by 1, to a maximum of 30.\n• The Bludgeoning, Piercing, and Slashing damage you deal always ignores Resistance.\n• When you roll a 20 on the d20 for an attack roll, you can deal extra damage to the target equal to the ability score increased by this feat. The extra damage\'s type is the same as the attack\'s type.','Level 19+',0,'Epic Boon'),(8,'Boon of Spell Recall','You gain the following benefits.\n• Increase one ability score of your choice by 1, to a maximum of 30.\n• Whenever you cast a spell with a level 1–4 spell slot, roll 1d4. If the number you roll is the same as the slot\'s level, the slot isn\'t expended.','Level 19+, Spellcasting Feature',0,'Epic Boon'),(9,'Boon of the Night Spirit','You gain the following benefits.\n• Increase one ability score of your choice by 1, to a maximum of 30.\n• While within Dim Light or Darkness, you can give yourself the Invisible condition as a Bonus Action. The condition ends on you immediately after you take an action, a Bonus Action, or a Reaction.\n• While within Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant.','Level 19+',0,'Epic Boon'),(10,'Boon of the Truesight','You gain the following benefits.\n• Increase one ability score of your choice by 1, to a maximum of 30.\n• You have Truesight with a range of 60 feet.','Level 19+',0,'Epic Boon'),(11,'Defense','• While you\'re wearing Light, Medium, or Heavy armor, you gain a +1 bonus to Armor Class.','Fighting Style Feature',0,'Fighting Style'),(12,'Grappler','You gain the following benefits.\n• Increase your Strength or Dexterity score by 1, to a maximum of 20.\n• When you hit a creature with an Unarmed Strike as part of the Attack action on your turn, you can use both the Damage and the Grapple option. You can use this benefit only once per turn.\n• You have Advantage on attack rolls against a creature Grappled by you.\n• You don\'t have to spend extra movement to move a creature Grappled by you if the creature is your size or smaller.','Level 4+, Strength or Dexterity 13+',0,'General'),(13,'Great Weapon Fighting','• When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the Two-Handed or Versatile property to gain this benefit.','Fighting Style Feature',0,'Fighting Style'),(14,'Magic Initiate','You gain the following benefits.\n• You learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list. Intelligence, Wisdom, or Charisma is your spellcasting ability for this feat\'s spells (choose when you select this feat).\n• Choose a level 1 spell from the same list you selected for this feat\'s cantrips. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have.\n• Whenever you gain a new level, you can replace one of the spells you chose for this feat with a different spell of the same level from the chosen spell list.\n• You can take this feat more than once, but you must choose a different spell list each time.',NULL,1,'Origin'),(15,'Savage Attacker','• You\'ve trained to deal particularly damaging strikes. Once per turn when you hit a target with a weapon, you can roll the weapon\'s damage dice twice and use either roll against the target.',NULL,0,'Origin'),(16,'Skilled','• You gain proficiency in any combination of three skills or tools of your choice.\n• You can take this feat more than once.',NULL,1,'Origin'),(17,'Two-Weapon Fighting','• When you make an extra attack as a result of using a weapon that has the Light property, you can add your ability modifier to the damage of that attack if you aren\'t already adding it to the damage.','Fighting Style Feature',0,'Fighting Style');
 /*!40000 ALTER TABLE `feat` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -719,7 +804,7 @@ CREATE TABLE `item` (
 
 LOCK TABLES `item` WRITE;
 /*!40000 ALTER TABLE `item` DISABLE KEYS */;
-INSERT INTO `item` VALUES (1,'Acid',1,2500,2,0,0,NULL),(2,'Airship',0,4000000,3,0,0,NULL),(3,'Alchemist\'s Fire',1,5000,2,0,0,NULL),(4,'Alchemist\'s Supplies (50 GP)',8,5000,3,0,0,NULL),(5,'Antitoxin',0,5000,3,0,0,NULL),(6,'Arrows (20)',1,100,3,0,0,NULL),(7,'Backpack',5,200,3,0,0,NULL),(8,'Ball Bearings',2,100,3,0,0,NULL),(9,'Barrel',70,200,3,0,0,NULL),(10,'Basket',2,40,3,0,0,NULL),(11,'Battleaxe',4,1000,2,0,0,NULL),(12,'Bedroll',7,100,3,0,0,NULL),(13,'Bell',0,100,3,0,0,NULL),(14,'Blanket',3,50,3,0,0,NULL),(15,'Block and Tackle',5,100,3,0,0,NULL),(16,'Blowgun',1,1000,2,0,0,NULL),(17,'Bolts (20)',1.5,100,3,0,0,NULL),(18,'Book',5,2500,3,0,0,NULL),(19,'Bottle, Glass',2,200,3,0,0,NULL),(20,'Breastplate',20,40000,1,0,0,NULL),(21,'Brewer\'s Supplies (20 GP)',9,2000,3,0,0,NULL),(22,'Bucket',2,5,3,0,0,NULL),(23,'Bullets, Firearm (10)',2,300,3,0,0,NULL),(24,'Bullets, Sling (20)',1.5,4,3,0,0,NULL),(25,'Burglar\'s Pack',42,1600,3,0,0,NULL),(26,'Calligrapher\'s Supplies (10 GP)',5,1000,3,0,0,NULL),(27,'Caltrops',2,100,3,0,0,NULL),(28,'Camel',0,5000,3,0,0,NULL),(29,'Candle',0,1,3,0,0,NULL),(30,'Carpenter\'s Tools (8 GP)',6,800,3,0,0,NULL),(31,'Carriage',600,10000,3,0,0,NULL),(32,'Cart',200,1500,3,0,0,NULL),(33,'Cartographer\'s Tools (15 GP)',6,1500,3,0,0,NULL),(34,'Case, Crossbow Bolt',1,100,3,0,0,NULL),(35,'Case, Map or Scroll',1,100,3,0,0,NULL),(36,'Chain',10,500,3,0,0,NULL),(37,'Chain Mail',55,7500,1,0,0,NULL),(38,'Chain Shirt',20,5000,1,0,0,NULL),(39,'Chariot',100,25000,3,0,0,NULL),(40,'Chest',25,500,3,0,0,NULL),(41,'Climber\'s Kit',12,2500,3,0,0,NULL),(42,'Clothes, Fine',6,1500,3,0,0,NULL),(43,'Clothes, Traveler\'s',4,200,3,0,0,NULL),(44,'Club',2,10,2,0,0,NULL),(45,'Cobbler\'s Tools (5 GP)',5,500,3,0,0,NULL),(46,'Component Pouch',2,2500,3,0,0,NULL),(47,'Cook\'s Utensils (1 GP)',8,100,3,0,0,NULL),(48,'Costume',4,500,3,0,0,NULL),(49,'Crowbar',5,200,3,0,0,NULL),(50,'Dagger',1,200,2,0,0,NULL),(51,'Dart',1,5,2,0,0,NULL),(52,'Diplomat\'s Pack',39,3900,3,0,0,NULL),(53,'Disguise Kit',3,2500,3,0,0,NULL),(54,'Druidic Focus, Sprig of Mistletoe',0,100,3,0,0,NULL),(55,'Druidic Focus, Wooden Staff',4,500,3,0,0,NULL),(56,'Druidic Focus, Yew Wand',1,1000,3,0,0,NULL),(57,'Dungeoneer\'s Pack',55,1200,3,0,0,NULL),(58,'Elephant',0,20000,3,0,0,NULL),(59,'Entertainer\'s Pack',58,4000,3,0,0,NULL),(60,'Explorer\'s Pack',55,1000,3,0,0,NULL),(61,'Feed (per day)',10,5,3,0,0,NULL),(62,'Flail',2,1000,2,0,0,NULL),(63,'Flask',1,2,3,0,0,NULL),(64,'Forgery Kit',5,1500,3,0,0,NULL),(65,'Galley',0,3000000,3,0,0,NULL),(66,'Gaming Set, Dice',0,10,3,0,0,NULL),(67,'Gaming Set, Dragonchess',1,100,3,0,0,NULL),(68,'Gaming Set, Playing Cards',0,50,3,0,0,NULL),(69,'Gaming Set, Three-Dragon Ante',0,100,3,0,0,NULL),(70,'Glaive',6,2000,2,0,0,NULL),(71,'Glassblower\'s Tools (30 GP)',5,3000,3,0,0,NULL),(72,'Grappling Hook',4,200,3,0,0,NULL),(73,'Greataxe',7,3000,2,0,0,NULL),(74,'Greatclub',10,20,2,0,0,NULL),(75,'Greatsword',6,5000,2,0,0,NULL),(76,'Halberd',6,2000,2,0,0,NULL),(77,'Half Plate Armor',40,75000,1,0,0,NULL),(78,'Hand Crossbow',3,7500,2,0,0,NULL),(79,'Handaxe',2,500,2,0,0,NULL),(80,'Healer\'s Kit',3,500,3,0,0,NULL),(81,'Heavy Crossbow',18,5000,2,0,0,NULL),(82,'Herbalism Kit',3,500,3,0,0,NULL),(83,'Hide Armor',12,1000,1,0,0,NULL),(84,'Holy Symbol, Amulet)',1,500,3,0,0,NULL),(85,'Holy Symbol, Emblem)',0,500,3,0,0,NULL),(86,'Holy Symbol, Reliquary',2,500,3,0,0,NULL),(87,'Holy Water',1,2500,2,0,0,NULL),(88,'Horse (Draft)',0,5000,3,0,0,NULL),(89,'Horse (Riding)',0,7500,3,0,0,NULL),(90,'Hunting Trap',25,500,3,0,0,NULL),(91,'Ink',0,1000,3,0,0,NULL),(92,'Ink Pen',0,2,3,0,0,NULL),(93,'Ioun Stone',0,0,3,0,0,NULL),(94,'Javelin',2,50,2,0,0,NULL),(95,'Jeweler\'s Tools (25 GP)',2,2500,3,0,0,NULL),(96,'Jug',4,2,3,0,0,NULL),(97,'Keelboat',0,300000,3,0,0,NULL),(98,'Ladder',25,10,3,0,0,NULL),(99,'Lamp',1,50,3,0,0,NULL),(100,'Lance',6,1000,2,0,0,NULL),(101,'Lantern, Bullseye',2,1000,3,0,0,NULL),(102,'Lantern, Hooded',2,500,3,0,0,NULL),(103,'Leather Armor',10,1000,1,0,0,NULL),(104,'Leatherworker\'s Tools (5 GP)',5,500,3,0,0,NULL),(105,'Light Crossbow',5,2500,2,0,0,NULL),(106,'Light Hammer',2,200,2,0,0,NULL),(107,'Lock',1,1000,3,0,0,NULL),(108,'Longbow',2,5000,2,0,0,NULL),(109,'Longship',0,1000000,3,0,0,NULL),(110,'Longsword',3,1500,2,0,0,NULL),(111,'Mace',4,500,2,0,0,NULL),(112,'Magnifying Glass',0,10000,3,0,0,NULL),(113,'Manacles',6,200,3,0,0,NULL),(114,'Map',0,100,3,0,0,NULL),(115,'Mason\'s Tools (10 GP)',8,1000,3,0,0,NULL),(116,'Mastiff',0,2500,3,0,0,NULL),(117,'Maul',10,1000,2,0,0,NULL),(118,'Mirror',0.5,500,3,0,0,NULL),(119,'Morningstar',4,1500,2,0,0,NULL),(120,'Mule',0,800,3,0,0,NULL),(121,'Musical Instrument, Bagpipes',6,3000,3,0,0,NULL),(122,'Musical Instrument, Drum',3,600,3,0,0,NULL),(123,'Musical Instrument, Dulcimer',10,2500,3,0,0,NULL),(124,'Musical Instrument, Flute',1,200,3,0,0,NULL),(125,'Musical Instrument, Horn',2,300,3,0,0,NULL),(126,'Musical Instrument, Lute',2,3500,3,0,0,NULL),(127,'Musical Instrument, Lyre',2,3000,3,0,0,NULL),(128,'Musical Instrument, Pan Flute',2,1200,3,0,0,NULL),(129,'Musical Instrument, Shawm',1,200,3,0,0,NULL),(130,'Musical Instrument, Viol',1,3000,3,0,0,NULL),(131,'Musket',10,50000,2,0,0,NULL),(132,'Navigator\'s Tools',2,2500,3,0,0,NULL),(133,'Needles (50)',1,100,3,0,0,NULL),(134,'Net',3,100,2,0,0,NULL),(135,'Oil',1,10,2,0,0,NULL),(136,'Padded Armor',8,500,1,0,0,NULL),(137,'Painter\'s Supplies (10 GP)',5,1000,3,0,0,NULL),(138,'Paper',0,20,3,0,0,NULL),(139,'Parchment',0,10,3,0,0,NULL),(140,'Perfume',0,500,3,0,0,NULL),(141,'Pike',18,500,2,0,0,NULL),(142,'Pistol',3,25000,2,0,0,NULL),(143,'Plate Armor',65,150000,1,0,0,NULL),(144,'Poison, Basic',0,10000,3,0,0,NULL),(145,'Poisoner\'s Kit',2,5000,3,0,0,NULL),(146,'Pole',7,5,3,0,0,NULL),(147,'Pony',0,3000,3,0,0,NULL),(148,'Pot, Iron',10,200,3,0,0,NULL),(149,'Potion of Giant Strength',0,0,3,0,0,NULL),(150,'Potion of Healing',0.5,5000,3,0,0,NULL),(151,'Potions of Healing',0,0,3,0,0,NULL),(152,'Potter\'s Tools (10 GP)',3,1000,3,0,0,NULL),(153,'Pouch',1,50,3,0,0,NULL),(154,'Priest\'s Pack',29,3300,3,0,0,NULL),(155,'Quarterstaff',4,20,2,0,0,NULL),(156,'Quiver',1,100,3,0,0,NULL),(157,'Ram, Portable',35,400,3,0,0,NULL),(158,'Rapier',2,2500,2,0,0,NULL),(159,'Rations',2,50,3,0,0,NULL),(160,'Ring Mail',40,3000,1,0,0,NULL),(161,'Robe',4,100,3,0,0,NULL),(162,'Rope',5,100,3,0,0,NULL),(163,'Rowboat',100,5000,3,0,0,NULL),(164,'Sack',0.5,1,3,0,0,NULL),(165,'Saddle (Exotic)',40,6000,3,0,0,NULL),(166,'Saddle (Military)',30,2000,3,0,0,NULL),(167,'Saddle (Riding)',25,1000,3,0,0,NULL),(168,'Sailing Ship',0,1000000,3,0,0,NULL),(169,'Scale Mail',45,5000,1,0,0,NULL),(170,'Scholar\'s Pack',22,4000,3,0,0,NULL),(171,'Scimitar',3,2500,2,0,0,NULL),(172,'Shield',6,1000,4,0,0,NULL),(173,'Shortbow',2,2500,2,0,0,NULL),(174,'Shortsword',2,1000,2,0,0,NULL),(175,'Shovel',5,200,3,0,0,NULL),(176,'Sickle',2,100,2,0,0,NULL),(177,'Signal Whistle',0,5,3,0,0,NULL),(178,'Sled',300,2000,3,0,0,NULL),(179,'Sling',0,10,2,0,0,NULL),(180,'Smith\'s Tools (20 GP)',8,2000,3,0,0,NULL),(181,'Spear',3,100,2,0,0,NULL),(182,'Spell Scroll',0,3000,3,0,0,NULL),(183,'Spikes, Iron',5,100,3,0,0,NULL),(184,'Splint Armor',60,20000,1,0,0,NULL),(185,'Spyglass',1,100000,3,0,0,NULL),(186,'String',0,10,3,0,0,NULL),(187,'Studded Leather Armor',13,4500,1,0,0,NULL),(188,'Tent',20,200,3,0,0,NULL),(189,'Thieves\' Tools',1,2500,3,0,0,NULL),(190,'Tinderbox',1,50,3,0,0,NULL),(191,'Tinker\'s Tools (50 GP)',10,5000,3,0,0,NULL),(192,'Torch',1,1,2,0,0,NULL),(193,'Trident',4,500,2,0,0,NULL),(194,'Vial',0,100,3,0,0,NULL),(195,'Wagon',400,3500,3,0,0,NULL),(196,'War Pick',2,500,2,0,0,NULL),(197,'Warhammer',5,1500,2,0,0,NULL),(198,'Warhorse',0,40000,3,0,0,NULL),(199,'Warship',0,2500000,3,0,0,NULL),(200,'Waterskin',5,20,3,0,0,NULL),(201,'Weaver\'s Tools (1 GP)',5,100,3,0,0,NULL),(202,'Whip',3,200,2,0,0,NULL),(203,'Woodcarver\'s Tools (1 GP)',5,100,3,0,0,NULL);
+INSERT INTO `item` VALUES (1,'Acid',1,2500,2,0,0,NULL),(2,'Airship',0,4000000,3,0,0,NULL),(3,'Alchemist\'s Fire',1,5000,2,0,0,NULL),(4,'Alchemist\'s Supplies',8,5000,3,0,0,NULL),(5,'Antitoxin',0,5000,3,0,0,NULL),(6,'Arrows (20)',1,100,3,0,0,NULL),(7,'Backpack',5,200,3,0,0,NULL),(8,'Ball Bearings',2,100,3,0,0,NULL),(9,'Barrel',70,200,3,0,0,NULL),(10,'Basket',2,40,3,0,0,NULL),(11,'Battleaxe',4,1000,2,0,0,NULL),(12,'Bedroll',7,100,3,0,0,NULL),(13,'Bell',0,100,3,0,0,NULL),(14,'Blanket',3,50,3,0,0,NULL),(15,'Block and Tackle',5,100,3,0,0,NULL),(16,'Blowgun',1,1000,2,0,0,NULL),(17,'Bolts (20)',1.5,100,3,0,0,NULL),(18,'Book',5,2500,3,0,0,NULL),(19,'Bottle, Glass',2,200,3,0,0,NULL),(20,'Breastplate',20,40000,1,0,0,NULL),(21,'Brewer\'s Supplies',9,2000,3,0,0,NULL),(22,'Bucket',2,5,3,0,0,NULL),(23,'Bullets, Firearm (10)',2,300,3,0,0,NULL),(24,'Bullets, Sling (20)',1.5,4,3,0,0,NULL),(25,'Burglar\'s Pack',42,1600,3,0,0,NULL),(26,'Calligrapher\'s Supplies',5,1000,3,0,0,NULL),(27,'Caltrops',2,100,3,0,0,NULL),(28,'Camel',0,5000,3,0,0,NULL),(29,'Candle',0,1,3,0,0,NULL),(30,'Carpenter\'s Tools',6,800,3,0,0,NULL),(31,'Carriage',600,10000,3,0,0,NULL),(32,'Cart',200,1500,3,0,0,NULL),(33,'Cartographer\'s Tools',6,1500,3,0,0,NULL),(34,'Case, Crossbow Bolt',1,100,3,0,0,NULL),(35,'Case, Map or Scroll',1,100,3,0,0,NULL),(36,'Chain',10,500,3,0,0,NULL),(37,'Chain Mail',55,7500,1,0,0,NULL),(38,'Chain Shirt',20,5000,1,0,0,NULL),(39,'Chariot',100,25000,3,0,0,NULL),(40,'Chest',25,500,3,0,0,NULL),(41,'Climber\'s Kit',12,2500,3,0,0,NULL),(42,'Clothes, Fine',6,1500,3,0,0,NULL),(43,'Clothes, Traveler\'s',4,200,3,0,0,NULL),(44,'Club',2,10,2,0,0,NULL),(45,'Cobbler\'s Tools',5,500,3,0,0,NULL),(46,'Component Pouch',2,2500,3,0,0,NULL),(47,'Cook\'s Utensils',8,100,3,0,0,NULL),(48,'Costume',4,500,3,0,0,NULL),(49,'Crowbar',5,200,3,0,0,NULL),(50,'Dagger',1,200,2,0,0,NULL),(51,'Dart',1,5,2,0,0,NULL),(52,'Diplomat\'s Pack',39,3900,3,0,0,NULL),(53,'Disguise Kit',3,2500,3,0,0,NULL),(54,'Druidic Focus, Sprig of Mistletoe',0,100,3,0,0,NULL),(55,'Druidic Focus, Wooden Staff',4,500,3,0,0,NULL),(56,'Druidic Focus, Yew Wand',1,1000,3,0,0,NULL),(57,'Dungeoneer\'s Pack',55,1200,3,0,0,NULL),(58,'Elephant',0,20000,3,0,0,NULL),(59,'Entertainer\'s Pack',58,4000,3,0,0,NULL),(60,'Explorer\'s Pack',55,1000,3,0,0,NULL),(61,'Feed (per day)',10,5,3,0,0,NULL),(62,'Flail',2,1000,2,0,0,NULL),(63,'Flask',1,2,3,0,0,NULL),(64,'Forgery Kit',5,1500,3,0,0,NULL),(65,'Galley',0,3000000,3,0,0,NULL),(66,'Gaming Set, Dice',0,10,3,0,0,NULL),(67,'Gaming Set, Dragonchess',1,100,3,0,0,NULL),(68,'Gaming Set, Playing Cards',0,50,3,0,0,NULL),(69,'Gaming Set, Three-Dragon Ante',0,100,3,0,0,NULL),(70,'Glaive',6,2000,2,0,0,NULL),(71,'Glassblower\'s Tools',5,3000,3,0,0,NULL),(72,'Grappling Hook',4,200,3,0,0,NULL),(73,'Greataxe',7,3000,2,0,0,NULL),(74,'Greatclub',10,20,2,0,0,NULL),(75,'Greatsword',6,5000,2,0,0,NULL),(76,'Halberd',6,2000,2,0,0,NULL),(77,'Half Plate Armor',40,75000,1,0,0,NULL),(78,'Hand Crossbow',3,7500,2,0,0,NULL),(79,'Handaxe',2,500,2,0,0,NULL),(80,'Healer\'s Kit',3,500,3,0,0,NULL),(81,'Heavy Crossbow',18,5000,2,0,0,NULL),(82,'Herbalism Kit',3,500,3,0,0,NULL),(83,'Hide Armor',12,1000,1,0,0,NULL),(84,'Holy Symbol, Amulet)',1,500,3,0,0,NULL),(85,'Holy Symbol, Emblem)',0,500,3,0,0,NULL),(86,'Holy Symbol, Reliquary',2,500,3,0,0,NULL),(87,'Holy Water',1,2500,2,0,0,NULL),(88,'Horse (Draft)',0,5000,3,0,0,NULL),(89,'Horse (Riding)',0,7500,3,0,0,NULL),(90,'Hunting Trap',25,500,3,0,0,NULL),(91,'Ink',0,1000,3,0,0,NULL),(92,'Ink Pen',0,2,3,0,0,NULL),(93,'Ioun Stone',0,0,3,0,0,NULL),(94,'Javelin',2,50,2,0,0,NULL),(95,'Jeweler\'s Tools',2,2500,3,0,0,NULL),(96,'Jug',4,2,3,0,0,NULL),(97,'Keelboat',0,300000,3,0,0,NULL),(98,'Ladder',25,10,3,0,0,NULL),(99,'Lamp',1,50,3,0,0,NULL),(100,'Lance',6,1000,2,0,0,NULL),(101,'Lantern, Bullseye',2,1000,3,0,0,NULL),(102,'Lantern, Hooded',2,500,3,0,0,NULL),(103,'Leather Armor',10,1000,1,0,0,NULL),(104,'Leatherworker\'s Tools',5,500,3,0,0,NULL),(105,'Light Crossbow',5,2500,2,0,0,NULL),(106,'Light Hammer',2,200,2,0,0,NULL),(107,'Lock',1,1000,3,0,0,NULL),(108,'Longbow',2,5000,2,0,0,NULL),(109,'Longship',0,1000000,3,0,0,NULL),(110,'Longsword',3,1500,2,0,0,NULL),(111,'Mace',4,500,2,0,0,NULL),(112,'Magnifying Glass',0,10000,3,0,0,NULL),(113,'Manacles',6,200,3,0,0,NULL),(114,'Map',0,100,3,0,0,NULL),(115,'Mason\'s Tools',8,1000,3,0,0,NULL),(116,'Mastiff',0,2500,3,0,0,NULL),(117,'Maul',10,1000,2,0,0,NULL),(118,'Mirror',0.5,500,3,0,0,NULL),(119,'Morningstar',4,1500,2,0,0,NULL),(120,'Mule',0,800,3,0,0,NULL),(121,'Musical Instrument, Bagpipes',6,3000,3,0,0,NULL),(122,'Musical Instrument, Drum',3,600,3,0,0,NULL),(123,'Musical Instrument, Dulcimer',10,2500,3,0,0,NULL),(124,'Musical Instrument, Flute',1,200,3,0,0,NULL),(125,'Musical Instrument, Horn',2,300,3,0,0,NULL),(126,'Musical Instrument, Lute',2,3500,3,0,0,NULL),(127,'Musical Instrument, Lyre',2,3000,3,0,0,NULL),(128,'Musical Instrument, Pan Flute',2,1200,3,0,0,NULL),(129,'Musical Instrument, Shawm',1,200,3,0,0,NULL),(130,'Musical Instrument, Viol',1,3000,3,0,0,NULL),(131,'Musket',10,50000,2,0,0,NULL),(132,'Navigator\'s Tools',2,2500,3,0,0,NULL),(133,'Needles (50)',1,100,3,0,0,NULL),(134,'Net',3,100,2,0,0,NULL),(135,'Oil',1,10,2,0,0,NULL),(136,'Padded Armor',8,500,1,0,0,NULL),(137,'Painter\'s Supplies',5,1000,3,0,0,NULL),(138,'Paper',0,20,3,0,0,NULL),(139,'Parchment',0,10,3,0,0,NULL),(140,'Perfume',0,500,3,0,0,NULL),(141,'Pike',18,500,2,0,0,NULL),(142,'Pistol',3,25000,2,0,0,NULL),(143,'Plate Armor',65,150000,1,0,0,NULL),(144,'Poison, Basic',0,10000,3,0,0,NULL),(145,'Poisoner\'s Kit',2,5000,3,0,0,NULL),(146,'Pole',7,5,3,0,0,NULL),(147,'Pony',0,3000,3,0,0,NULL),(148,'Pot, Iron',10,200,3,0,0,NULL),(149,'Potion of Giant Strength',0,0,3,0,0,NULL),(150,'Potion of Healing',0.5,5000,3,0,0,NULL),(151,'Potions of Healing',0,0,3,0,0,NULL),(152,'Potter\'s Tools',3,1000,3,0,0,NULL),(153,'Pouch',1,50,3,0,0,NULL),(154,'Priest\'s Pack',29,3300,3,0,0,NULL),(155,'Quarterstaff',4,20,2,0,0,NULL),(156,'Quiver',1,100,3,0,0,NULL),(157,'Ram, Portable',35,400,3,0,0,NULL),(158,'Rapier',2,2500,2,0,0,NULL),(159,'Rations',2,50,3,0,0,NULL),(160,'Ring Mail',40,3000,1,0,0,NULL),(161,'Robe',4,100,3,0,0,NULL),(162,'Rope',5,100,3,0,0,NULL),(163,'Rowboat',100,5000,3,0,0,NULL),(164,'Sack',0.5,1,3,0,0,NULL),(165,'Saddle (Exotic)',40,6000,3,0,0,NULL),(166,'Saddle (Military)',30,2000,3,0,0,NULL),(167,'Saddle (Riding)',25,1000,3,0,0,NULL),(168,'Sailing Ship',0,1000000,3,0,0,NULL),(169,'Scale Mail',45,5000,1,0,0,NULL),(170,'Scholar\'s Pack',22,4000,3,0,0,NULL),(171,'Scimitar',3,2500,2,0,0,NULL),(172,'Shield',6,1000,4,0,0,NULL),(173,'Shortbow',2,2500,2,0,0,NULL),(174,'Shortsword',2,1000,2,0,0,NULL),(175,'Shovel',5,200,3,0,0,NULL),(176,'Sickle',2,100,2,0,0,NULL),(177,'Signal Whistle',0,5,3,0,0,NULL),(178,'Sled',300,2000,3,0,0,NULL),(179,'Sling',0,10,2,0,0,NULL),(180,'Smith\'s Tools',8,2000,3,0,0,NULL),(181,'Spear',3,100,2,0,0,NULL),(182,'Spell Scroll',0,3000,3,0,0,NULL),(183,'Spikes, Iron',5,100,3,0,0,NULL),(184,'Splint Armor',60,20000,1,0,0,NULL),(185,'Spyglass',1,100000,3,0,0,NULL),(186,'String',0,10,3,0,0,NULL),(187,'Studded Leather Armor',13,4500,1,0,0,NULL),(188,'Tent',20,200,3,0,0,NULL),(189,'Thieves\' Tools',1,2500,3,0,0,NULL),(190,'Tinderbox',1,50,3,0,0,NULL),(191,'Tinker\'s Tools',10,5000,3,0,0,NULL),(192,'Torch',1,1,2,0,0,NULL),(193,'Trident',4,500,2,0,0,NULL),(194,'Vial',0,100,3,0,0,NULL),(195,'Wagon',400,3500,3,0,0,NULL),(196,'War Pick',2,500,2,0,0,NULL),(197,'Warhammer',5,1500,2,0,0,NULL),(198,'Warhorse',0,40000,3,0,0,NULL),(199,'Warship',0,2500000,3,0,0,NULL),(200,'Waterskin',5,20,3,0,0,NULL),(201,'Weaver\'s Tools',5,100,3,0,0,NULL),(202,'Whip',3,200,2,0,0,NULL),(203,'Woodcarver\'s Tools',5,100,3,0,0,NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -770,7 +855,7 @@ CREATE TABLE `item_type` (
 
 LOCK TABLES `item_type` WRITE;
 /*!40000 ALTER TABLE `item_type` DISABLE KEYS */;
-INSERT INTO `item_type` VALUES (1,'Armor'),(3,'Item'),(4,'Shield'),(2,'Weapon');
+INSERT INTO `item_type` VALUES (1,'Armor'),(3,'Item'),(4,'Shield'),(5,'Tool'),(2,'Weapon');
 /*!40000 ALTER TABLE `item_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1270,4 +1355,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-29 20:54:07
+-- Dump completed on 2026-05-30 16:03:09

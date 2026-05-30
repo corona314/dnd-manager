@@ -36,6 +36,6 @@ public class Background {
     private List<BackgroundSkill> backgroundSkills;
 
     @OneToMany(mappedBy = "background", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BackgroundFeature> backgroundFeatures;
+    private List<BackgroundStat> backgroundFeats;
 
 }

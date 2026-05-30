@@ -1,13 +1,6 @@
 """
-seed_items.py
+range_fixer.py
 -------------
-Pobla las siguientes tablas a partir de /v2/items/ (SRD 2024):
-
-    item                   → fila base
-    weapon                 → stats del arma
-    armor                  → stats de armadura
-    ...
-
 Incluye FIX de range_normal / range_long ya insertados a 0.
 """
 

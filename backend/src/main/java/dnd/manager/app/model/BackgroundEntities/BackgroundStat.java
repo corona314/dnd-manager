@@ -1,8 +1,6 @@
-package dnd.manager.app.model.BonusEntities;
+package dnd.manager.app.model.BackgroundEntities;
 
-import dnd.manager.app.model.Feat;
 import dnd.manager.app.model.Stat;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -13,29 +11,23 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-/*
-    Para dotes que dan bonificadores a las stats (+1 a STR o CON)
-*/
+
 @Entity
-@Table(name = "bonus_feat_stat")
+@Table(name = "background_stat")
 @Getter
 @Setter
 @NoArgsConstructor
-
-@IdClass(BonusFeatStatId.class)
-public class BonusFeatStat {
+@IdClass(BackgroundStatId.class)
+public class BackgroundStat {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "feat_id", nullable = false)
-    private Feat feat;
+    @JoinColumn(name = "background_id", nullable = false)
+    private Background background;
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stat_id", nullable = false)
     private Stat stat;
-
-    @Column(name = "value", nullable = false)
-    private Integer value = 1;
 
 }

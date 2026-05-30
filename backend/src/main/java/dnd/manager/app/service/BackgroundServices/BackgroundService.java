@@ -7,18 +7,18 @@ import org.springframework.stereotype.Service;
 import dnd.manager.app.model.BackgroundEntities.Background;
 import dnd.manager.app.repository.BackgroundRepositories.BackgroundRepository;
 import dnd.manager.app.repository.BackgroundRepositories.BackgroundSkillRepository;
-import dnd.manager.app.repository.BackgroundRepositories.BackgroundFeatureRepository;
+import dnd.manager.app.repository.BackgroundRepositories.BackgroundFeatRepository;
 
 @Service
 public class BackgroundService {
 
     private final BackgroundRepository backgroundRepository;
     private final BackgroundSkillRepository backgroundSkillRepository;
-    private final BackgroundFeatureRepository backgroundFeatureRepository;
+    private final BackgroundFeatRepository backgroundFeatureRepository;
 
     public BackgroundService(BackgroundRepository backgroundRepository,
                              BackgroundSkillRepository backgroundSkillRepository,
-                             BackgroundFeatureRepository backgroundFeatureRepository) {
+                             BackgroundFeatRepository backgroundFeatureRepository) {
         this.backgroundRepository = backgroundRepository;
         this.backgroundSkillRepository = backgroundSkillRepository;
         this.backgroundFeatureRepository = backgroundFeatureRepository;
