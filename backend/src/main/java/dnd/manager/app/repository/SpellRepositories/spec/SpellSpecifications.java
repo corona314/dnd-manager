@@ -1,8 +1,12 @@
 package dnd.manager.app.repository.SpellRepositories.spec;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import dnd.manager.app.model.SpellEntities.Spell;
+import jakarta.persistence.criteria.Predicate;
 
 public class SpellSpecifications {
 
@@ -21,20 +25,28 @@ public class SpellSpecifications {
             schoolId == null ? null : cb.equal(root.get("school").get("id"), schoolId);
     }
 
-    public static Specification<Spell> hasVerbalComponent(String components){
-        return (root, query, cb) ->
-            components == null ? null : cb.like(root.get("components"), "%V%");
-    }
-
+    public static Specification<Spell> hasComponent(String components){
+        return (root, query, cb) -> {
+            
+            if(components == null) return null;
+            
+            List<Predicate> predicates = new ArrayList<>();
     
-    public static Specification<Spell> hasSomaticComponent(String components){
-        return (root, query, cb) ->
-        components == null ? null : cb.like(root.get("components"), "%S%");
-    }
-    
-    public static Specification<Spell> hasMaterialComponent(String components){
-        return (root, query, cb) ->
-            components == null ? null : cb.like(root.get("components"), "%M%");
+            if (components.contains("S")){
+                if (components.contains("!S")) predicates.add(cb.notLike(root.get("components"), "%S%"));
+                else predicates.add(cb.like(root.get("components"), "%S%"));
+            }
+            if (components.contains("M")){
+                if (components.contains("!M")) predicates.add(cb.notLike(root.get("components"), "%M%"));
+                else predicates.add(cb.like(root.get("components"), "%M%"));
+                
+            }
+            if (components.contains("V")){
+                if (components.contains("!V")) predicates.add(cb.notLike(root.get("components"), "%V%"));
+                else predicates.add(cb.like(root.get("components"), "%V%"));
+            }
+            return predicates.isEmpty() ? null : cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     public static Specification<Spell> isConcentration(Boolean concentration){
