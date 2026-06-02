@@ -71,13 +71,15 @@ public class Spell {
     @Column(name = "attack_roll")
     private Boolean attackRoll;
     
-    @Column(name = "saving_throw_stat_id")
+    @ManyToOne
+    @JoinColumn(name = "saving_throw_stat_id")
     private Stat savingThrowStat;
     
-    @Column(name = "damage_roll")
-    private Long damageRoll;
+    @Column(name = "damage_roll", length = 20)
+    private String damageRoll;
     
-    @Column(name = "damage_type_id")
+    @ManyToOne
+    @JoinColumn(name = "damage_type_id")    
     private DamageType damageType;
 
     @OneToMany(mappedBy = "spell", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

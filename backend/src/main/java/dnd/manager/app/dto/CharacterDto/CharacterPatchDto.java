@@ -1,7 +1,5 @@
 package dnd.manager.app.dto.CharacterDto;
 
-import java.util.List;
-
 /*
     Clase con atributos que puede editar el usuario
 */
