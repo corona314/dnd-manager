@@ -47,6 +47,19 @@ def fetch_all(url: str) -> list:
         url = data.get("next")
     return results
 
+def ensure_damage_type(cursor, name: str, cache: dict) -> int | None:
+    if not name:
+        return None
+    key = name.lower()
+    if key in cache:
+        return cache[key]
+    cursor.execute("INSERT IGNORE INTO damage_type (name) VALUES (%s)", (name,))
+    cursor.execute("SELECT id FROM damage_type WHERE name = %s", (name,))
+    row = cursor.fetchone()
+    if row:
+        cache[key] = row[0]
+        return row[0]
+    return None
 
 def build_components(verbal: bool, somatic: bool, material: bool) -> str:
     parts = []
@@ -210,7 +223,7 @@ def seed_spells(cursor, spells: list, school_map: dict, stat_map: dict, damage_t
 
         # Damage type (primer elemento del array)
         dmg_types   = s.get("damage_types") or []
-        dmg_type_id = damage_type_map.get(dmg_types[0].lower()) if dmg_types else None
+        dmg_type_id = ensure_damage_type(cursor, dmg_types[0], damage_type_map) if dmg_types else None
 
         cursor.execute(
             """

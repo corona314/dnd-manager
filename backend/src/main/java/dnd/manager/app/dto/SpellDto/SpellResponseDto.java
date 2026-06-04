@@ -13,8 +13,8 @@ public record SpellResponseDto(
     Boolean concentration,
     Boolean ritual,
     String description,
-    Boolean attackRoll,
     String savingThrowStat,
+    Boolean attackRoll,
     String damageRoll,
     String damageType
 ) {}

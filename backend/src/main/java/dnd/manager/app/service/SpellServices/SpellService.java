@@ -1,5 +1,6 @@
 package dnd.manager.app.service.SpellServices;
 
+import dnd.manager.app.dto.SpellDto.SpellResponseDto;
 import dnd.manager.app.dto.SpellDto.SpellSummaryDto;
 import dnd.manager.app.mapper.SpellMapper;
 import dnd.manager.app.model.SpellEntities.Spell;
@@ -9,9 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 import static dnd.manager.app.repository.SpellRepositories.spec.SpellSpecifications.*;
 
 @Service
@@ -25,20 +23,10 @@ public class SpellService {
         this.mapper = mapper;
     }
 
-    public List<Spell> findAll() {
-        return spellRepository.findAll();
-    }
 
-    public Optional<Spell> findById(Long id) {
-        return spellRepository.findById(id);
-    }
 
-    public Spell save(Spell spell) {
-        return spellRepository.save(spell);
-    }
-
-    public void deleteById(Long id) {
-        spellRepository.deleteById(id);
+    public SpellResponseDto findById(Long id) {
+        return mapper.toResponseDto(spellRepository.findById(id).orElse(null));
     }
 
     public Page<SpellSummaryDto> findSpells(
