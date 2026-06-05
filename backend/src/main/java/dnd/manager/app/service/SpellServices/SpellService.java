@@ -1,5 +1,6 @@
 package dnd.manager.app.service.SpellServices;
 
+import dnd.manager.app.dto.SpellDto.SpellDamageTypeDto;
 import dnd.manager.app.dto.SpellDto.SpellResponseDto;
 import dnd.manager.app.dto.SpellDto.SpellSummaryDto;
 import dnd.manager.app.mapper.SpellMapper;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import static dnd.manager.app.repository.SpellRepositories.spec.SpellSpecifications.*;
+
+import java.util.List;
 
 @Service
 public class SpellService {
@@ -34,11 +37,11 @@ public class SpellService {
         Integer level,
         Integer schoolId,
         String components,
-        Integer concentration,
-        Integer ritual,
+        Boolean concentration,
+        Boolean ritual,
         String savingThrowStat,
         Boolean attackRoll,
-        String damageType,
+        List<String> damageTypes,
         int page,
         int size
     ){
@@ -47,11 +50,11 @@ public class SpellService {
         .and(hasLevel(level))
         .and(hasSchool(schoolId))
         .and(hasComponent(components))
-        .and(isConcentration(concentration == null ? null : concentration == 1))
-        .and(isRitual(ritual == null ? null : ritual == 1))
+        .and(isConcentration(concentration))
+        .and(isRitual(ritual))
         .and(hasSavingThrowStat(savingThrowStat))
         .and(isAttackRoll(attackRoll))
-        .and(hasDamage(damageType));
+        .and(hasDamage(damageTypes));
         
         
         Page<Spell> spells = spellRepository.findAll(

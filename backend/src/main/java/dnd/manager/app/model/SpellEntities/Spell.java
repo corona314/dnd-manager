@@ -77,12 +77,11 @@ public class Spell {
     
     @Column(name = "damage_roll", length = 20)
     private String damageRoll;
-    
-    @ManyToOne
-    @JoinColumn(name = "damage_type_id")    
-    private DamageType damageType;
 
     @OneToMany(mappedBy = "spell", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterSpell> characterSpells;
+
+    @OneToMany(mappedBy = "spell", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SpellDamageType> damageTypes;
 
 }

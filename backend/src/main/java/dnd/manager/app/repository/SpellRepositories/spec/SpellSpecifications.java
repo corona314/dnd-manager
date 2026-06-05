@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 
 import dnd.manager.app.model.SpellEntities.Spell;
+import dnd.manager.app.model.SpellEntities.SpellDamageType;
 import jakarta.persistence.criteria.Predicate;
 
 public class SpellSpecifications {
@@ -69,9 +72,13 @@ public class SpellSpecifications {
             attackRoll == null ? null : cb.equal(root.get("attackRoll"), attackRoll);
     }    
     
-    public static Specification<Spell> hasDamage(String damageType){
-        return (root, query, cb) ->
-            damageType == null ? null : cb.equal(root.get("damageType").get("name"), damageType);
-    }
+    public static Specification<Spell> hasDamage(List<String> damageTypes) {
+        return (root, query, cb) -> {
+            if (damageTypes == null || damageTypes.isEmpty()) return null;
+
+            Join<Spell, SpellDamageType> join = root.join("damageTypes", JoinType.INNER);
+            return join.get("damageType").get("name").in(damageTypes);
+        };
+    }   
 
 }

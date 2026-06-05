@@ -1,5 +1,6 @@
 package dnd.manager.app.dto.SpellDto;
 
+import java.util.List;
 
 public record SpellResponseDto(
     String name,
@@ -16,5 +17,5 @@ public record SpellResponseDto(
     String savingThrowStat,
     Boolean attackRoll,
     String damageRoll,
-    String damageType
+    List<SpellDamageTypeDto> damageTypes
 ) {}

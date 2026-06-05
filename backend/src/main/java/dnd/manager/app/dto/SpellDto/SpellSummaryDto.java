@@ -1,5 +1,7 @@
 package dnd.manager.app.dto.SpellDto;
 
+import java.util.List;
+
 public record SpellSummaryDto(
     String name,
     Integer level,
@@ -9,5 +11,5 @@ public record SpellSummaryDto(
     Boolean ritual,
     String savingThrowStat,
     Boolean attackRoll,
-    String damageType
+    List<SpellDamageTypeDto> damageTypes
 ) {}
