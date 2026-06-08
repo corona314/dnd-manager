@@ -29,14 +29,7 @@ import lombok.Setter;
 public class Weapon {
 
     @Id
-    private Long itemId;
-
-    @Column(name = "damage_dice", nullable = false)
-    private String damageDice;
-
-    @ManyToOne
-    @JoinColumn(name = "damage_type_id", nullable = false)
-    private DamageType damageType;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "mastery_id", nullable = false)
@@ -58,7 +51,7 @@ public class Weapon {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "id")
     private Item item;
 
     @ManyToMany

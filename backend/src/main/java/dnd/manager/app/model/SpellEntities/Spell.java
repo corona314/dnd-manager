@@ -2,7 +2,6 @@ package dnd.manager.app.model.SpellEntities;
 
 import java.util.List;
 
-import dnd.manager.app.model.DamageType;
 import dnd.manager.app.model.Stat;
 import dnd.manager.app.model.CharacterEntities.CharacterSpell;
 import jakarta.persistence.CascadeType;

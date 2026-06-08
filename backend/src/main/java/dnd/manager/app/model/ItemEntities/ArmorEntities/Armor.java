@@ -21,7 +21,7 @@ import lombok.Setter;
 public class Armor {
 
     @Id
-    private Long itemId;
+    private Long id;
     @Column(name = "ac_base", nullable = false)
     private Integer acBase;
     @Column(name = "ac_max")
@@ -37,7 +37,7 @@ public class Armor {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "id")
     private Item item;
 
     public Item getItem() {

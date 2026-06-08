@@ -1,6 +1,5 @@
 package dnd.manager.app.service.SpellServices;
 
-import dnd.manager.app.dto.SpellDto.SpellDamageTypeDto;
 import dnd.manager.app.dto.SpellDto.SpellResponseDto;
 import dnd.manager.app.dto.SpellDto.SpellSummaryDto;
 import dnd.manager.app.mapper.SpellMapper;
