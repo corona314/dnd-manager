@@ -22,12 +22,16 @@ public class Armor {
 
     @Id
     private Long id;
+    
     @Column(name = "ac_base", nullable = false)
     private Integer acBase;
+    
     @Column(name = "ac_max")
     private Integer acMax;
+    
     @Column(name = "str_min")
     private Integer strMin;
+    
     @Column(name = "stealth_dis", nullable = false)
     private Boolean stealthDis;
     
@@ -39,20 +43,4 @@ public class Armor {
     @MapsId
     @JoinColumn(name = "id")
     private Item item;
-
-    public Item getItem() {
-        return item;
-    }
-
-    public void setItem(Item item) {
-        this.item = item;
-    }
-
-    public ArmorType getArmorType() {
-        return armorType;
-    }
-
-    public void setArmorType(ArmorType armorType) {
-        this.armorType = armorType;
-    }
 }

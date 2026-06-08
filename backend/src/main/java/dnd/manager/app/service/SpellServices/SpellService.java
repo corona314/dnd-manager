@@ -33,7 +33,8 @@ public class SpellService {
 
     public Page<SpellSummaryDto> findSpells(
         String name,
-        Integer level,
+        Integer levelMin,
+        Integer levelMax,
         Integer schoolId,
         String components,
         Boolean concentration,
@@ -46,7 +47,7 @@ public class SpellService {
     ){
         Specification<Spell> spec = Specification
         .where(hasName(name))
-        .and(hasLevel(level))
+        .and(hasLevelBetween(levelMin, levelMax))
         .and(hasSchool(schoolId))
         .and(hasComponent(components))
         .and(isConcentration(concentration))

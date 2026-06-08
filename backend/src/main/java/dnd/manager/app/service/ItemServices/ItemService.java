@@ -1,35 +1,62 @@
 package dnd.manager.app.service.ItemServices;
 
+import dnd.manager.app.dto.ItemDto.ItemResponseDto;
+import dnd.manager.app.dto.ItemDto.ItemSummaryDto;
+import dnd.manager.app.mapper.ItemMapper;
 import dnd.manager.app.model.ItemEntities.Item;
 import dnd.manager.app.repository.ItemRepositories.ItemRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import static dnd.manager.app.repository.ItemRepositories.spec.ItemSpecifications.*;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ItemService {
 
-    private final ItemRepository objectRepository;
+    private final ItemRepository itemRepository;
+    private final ItemMapper mapper;
 
-    public ItemService(ItemRepository objectRepository) {
-        this.objectRepository = objectRepository;
+    public ItemService(ItemRepository objectRepository, ItemMapper mapper) {
+        this.itemRepository = objectRepository;
+        this.mapper = mapper;
     }
 
-    public List<Item> findAll() {
-        return objectRepository.findAll();
+    public ItemResponseDto findById(Long id) {
+        return mapper.toResponseDto(itemRepository.findById(id).orElse(null));
     }
 
-    public Optional<Item> findById(Long id) {
-        return objectRepository.findById(id);
+    public Page<ItemSummaryDto> findItems(
+        String name,
+        Float weightMin,
+        Float weightMax,
+        Integer priceMin,
+        Integer priceMax,
+        String itemType,
+        Boolean magic,
+        Boolean attunement,
+        String rarity,
+        int page,
+        int size
+    ){
+        Specification<Item> spec = Specification
+        .where(hasName(name))
+        .and(hasWeightBetween(weightMin, weightMax))
+        .and(hasPriceBetween(priceMin, priceMax))
+        .and(hasItemType(itemType))
+        .and(isMagic(magic))
+        .and(hasAttunement(attunement))
+        .and(hasRarity(rarity));
+        
+        Page<Item> spells = itemRepository.findAll(
+                    spec,
+                    PageRequest.of(page, size)
+            );
+        return spells.map(mapper::toSummaryDto);
     }
 
-    public Item save(Item item) {
-        return objectRepository.save(item);
-    }
 
-    public void deleteById(Long id) {
-        objectRepository.deleteById(id);
-    }
+
 }

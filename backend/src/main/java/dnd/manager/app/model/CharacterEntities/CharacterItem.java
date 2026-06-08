@@ -1,6 +1,6 @@
 package dnd.manager.app.model.CharacterEntities;
 
-import dnd.manager.app.model.Skill;
+import dnd.manager.app.model.ItemEntities.Item;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,7 +30,7 @@ public class CharacterItem {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
-    private Skill item;    
+    private Item item;    
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;

@@ -3,6 +3,7 @@ package dnd.manager.app.model.ItemEntities;
 import java.util.List;
 
 import dnd.manager.app.model.ItemEntities.ArmorEntities.Armor;
+import dnd.manager.app.model.ItemEntities.ShieldEntities.Shield;
 import dnd.manager.app.model.ItemEntities.WeaponEntities.Weapon;
 import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
@@ -32,7 +33,7 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true, length = 120)
     private String name;
         
     @Column(name = "weight")
@@ -43,15 +44,26 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name = "item_type_id")
-    private ItemType objectType;
+    private ItemType itemType;
 
+    @Column(name = "magic")
     private Boolean magic;
+
+    @Column(name = "attunement")
+    private Boolean attunement;
+
+    @Column(name = "rarity", length = 20)
+    private String rarity;
 
     @OneToOne(mappedBy = "item")
     private Armor armor;
 
     @OneToOne(mappedBy = "item")
     private Weapon weapon;
+
+    @OneToOne(mappedBy = "item")
+    private Shield shield;
+
 
     @ManyToMany
     @JoinTable(

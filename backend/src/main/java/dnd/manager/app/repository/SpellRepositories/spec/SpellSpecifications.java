@@ -18,9 +18,20 @@ public class SpellSpecifications {
             name == null ? null : cb.like(cb.lower(root.get("name")), "%"+name.toLowerCase()+"%");
     }
 
-    public static Specification<Spell> hasLevel(Integer level){
-        return (root, query, cb) ->
-            level == null ? null : cb.equal(root.get("level"), level);
+    public static Specification<Spell> hasLevelBetween(Integer levelMin, Integer levelMax) {
+        return (root, query, cb) -> {
+            if (levelMin == null && levelMax == null) return null;
+            
+            if (levelMin != null && levelMax != null) {
+                return cb.between(root.get("level"), levelMin, levelMax);
+            }
+
+            if (levelMin != null) {
+                return cb.greaterThanOrEqualTo(root.get("level"), levelMin);
+            }
+
+            return cb.lessThanOrEqualTo(root.get("level"), levelMax);
+        };
     }
 
     public static Specification<Spell> hasSchool(Integer schoolId){

@@ -2,18 +2,20 @@ package dnd.manager.app.model.ItemEntities.WeaponEntities;
 
 import java.util.List;
 
-import dnd.manager.app.model.DamageType;
 import dnd.manager.app.model.ItemEntities.Item;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -61,4 +63,7 @@ public class Weapon {
         inverseJoinColumns = @JoinColumn(name = "property_id")
     )
     private List<WeaponProperty> properties;
+
+    @OneToMany(mappedBy = "weapon", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WeaponDamage> weaponDamages;
 }

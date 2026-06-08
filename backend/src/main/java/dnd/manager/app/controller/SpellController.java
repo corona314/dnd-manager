@@ -27,7 +27,8 @@ public class SpellController {
     @GetMapping
     public ResponseEntity<Page<SpellSummaryDto>> spells(
         @RequestParam(required = false) String name,
-        @RequestParam(required = false) Integer level,
+        @RequestParam(required = false) Integer levelMin,
+        @RequestParam(required = false) Integer levelMax,
         @RequestParam(required = false) Integer schoolId,
         @RequestParam(required = false) String components,
         @RequestParam(required = false) Boolean concentration,
@@ -38,7 +39,7 @@ public class SpellController {
         @RequestParam(defaultValue = "0")  int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(service.findSpells(name, level, schoolId, components, concentration, ritual, savingThrowStat, attackRoll, damageTypes, page, size));
+        return ResponseEntity.ok(service.findSpells(name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowStat, attackRoll, damageTypes, page, size));
     }
 
     @GetMapping("/{id}")
