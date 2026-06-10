@@ -23,7 +23,7 @@ public class Shield {
     private Long id;
 
     @Column(name = "ac_bonus", nullable = false)
-    private String acBonus;
+    private Integer acBonus;
 
     @OneToOne
     @MapsId

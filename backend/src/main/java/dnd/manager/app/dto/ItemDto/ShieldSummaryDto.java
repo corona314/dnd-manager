@@ -1,6 +1,6 @@
 package dnd.manager.app.dto.ItemDto;
 
-public record ItemSummaryDto(
+public record ShieldSummaryDto(
     Long id,
     String name,
     Float weight,
@@ -8,5 +8,6 @@ public record ItemSummaryDto(
     String itemType,
     Boolean magic,
     Boolean attunement,
-    String rarity
+    String rarity,
+    Integer acBonus
 ) {}

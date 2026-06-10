@@ -3,6 +3,7 @@ package dnd.manager.app.dto.SpellDto;
 import java.util.List;
 
 public record SpellSummaryDto(
+    Long id,
     String name,
     Integer level,
     String school,

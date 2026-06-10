@@ -1,21 +1,11 @@
 """
 seed_items.py
 -------------
-Pobla las siguientes tablas a partir de /v2/items/ (SRD 2024):
+Pobla item, weapon, weapon_damage, weapon_weapon_property,
+armor, shield, item_feature, bonus_feature_item
+desde /v2/items/ y /v2/magicitems/ (SRD 2024).
 
-    item                   → fila base (nombre, peso, precio, tipo, magia, rareza)
-    weapon                 → stats del arma  (si item.weapon != null)
-    weapon_property        → catalogo de propiedades (Finesse, Versatile, …)
-    mastery                → catalogo de masteries   (Topple, Vex, …)
-    weapon_weapon_property → relacion arma-propiedad
-    armor                  → stats de armadura (si item.armor != null)
-    armor_type             → catalogo light / medium / heavy
-
-La API de /v2/items/ devuelve precio, peso y descripcion para TODOS los items,
-y embebe el objeto `weapon` o `armor` cuando aplica, por lo que un solo recorrido
-es suficiente para poblar las tres tablas principales.
-
-Ajusta DB_CONFIG con tus credenciales.
+Ejecutar: python seed_items.py
 """
 
 import re
@@ -30,24 +20,40 @@ DB_CONFIG = {
     "password": "dev",
 }
 
-# Fuente unificada: items con weapon/armor embebidos
-ITEMS_URL = "https://api.open5e.com/v2/items/?document__key__in=srd-2024&limit=100"
+ITEMS_URL       = "https://api.open5e.com/v2/items/?document__key__in=srd-2024&limit=100"
+MAGIC_ITEMS_URL = "https://api.open5e.com/v2/magicitems/?document__key__in=srd-2024&limit=100"
 
-# Mapa de categorias de item de la API → item_type.name en la DB
+FEATURE_TYPE_ITEM_ID = 6  # feature_type.id donde name = 'item'
+
 CATEGORY_MAP = {
-    "weapon":        "Weapon",
-    "armor":         "Armor",
-    "wondrous-item": "Item",
-    "tools":         "Item",
-    "adventuring-gear": "Item",
-    "trade-goods":   "Item",
-    "mounts-and-vehicles": "Item",
-    "treasure":      "Item",
-    # fallback: cualquier clave no listada → "Item"
+    "weapon":             "Weapon",
+    "armor":              "Armor",
+    "shield":             "Shield",
+    "potion":             "Potion",
+    "tools":              "Tool",
+    "ammunition":         "Ammunition",
+    "spellcasting-focus": "Wondrous",
+    "wondrous-item":      "Wondrous",
+    "ring":               "Wondrous",
+    "staff":              "Wondrous",
+    "wand":               "Wondrous",
+    "mount":              "Vehicle",
+    "waterborne-vehicle": "Vehicle",
+    "land-vehicle":       "Vehicle",
+    "rod":                "Gear",
+    "adventuring-gear":   "Gear",
+    "equipment-pack":     "Gear",
+    "trade-goods":        "Gear",
+    "treasure":           "Gear",
+    # fallback -> "Gear"
 }
 
+BONUS_WEAPON_RE = re.compile(r'\+(\d)\s+bonus to attack rolls and damage rolls', re.IGNORECASE)
+BONUS_ARMOR_RE  = re.compile(r'\+(\d)\s+bonus to Armor Class', re.IGNORECASE)
+BONUS_NAME_RE   = re.compile(r'\(\+(\d)\)\s*$')
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+
+# ── Fetch ──────────────────────────────────────────────────────────────────────
 def fetch_all(url: str) -> list:
     results = []
     while url:
@@ -59,260 +65,155 @@ def fetch_all(url: str) -> list:
     return results
 
 
-def column_exists(cursor, table: str, column: str) -> bool:
-    cursor.execute(
-        "SELECT COUNT(*) FROM information_schema.COLUMNS "
-        "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s AND COLUMN_NAME = %s",
-        (table, column),
-    )
-    return cursor.fetchone()[0] > 0
+# ── Migraciones ────────────────────────────────────────────────────────────────
+def migrate(cursor):
+    print("\n── Migraciones ──────────────────────────────────────")
+
+    for t in ("Weapon", "Armor", "Shield", "Potion", "Tool",
+              "Ammunition", "Wondrous", "Vehicle", "Gear"):
+        cursor.execute("INSERT IGNORE INTO item_type (name) VALUES (%s)", (t,))
+
+    for t in ("light", "medium", "heavy"):
+        cursor.execute("INSERT IGNORE INTO armor_type (name) VALUES (%s)", (t,))
+
+    print("   . item_type y armor_type seeded")
 
 
-def table_exists(cursor, table: str) -> bool:
+# ── Cache helpers ──────────────────────────────────────────────────────────────
+def load_cache(cursor, table: str, key_col: str,
+               lower_key: bool = False) -> dict:
+    cursor.execute(f"SELECT id, `{key_col}` FROM `{table}`")
+    if lower_key:
+        return {row[1].lower(): row[0] for row in cursor.fetchall()}
+    return {row[1]: row[0] for row in cursor.fetchall()}
+
+
+def ensure(cursor, table: str, key_col: str, key_val: str,
+           extra_cols: dict | None = None, cache: dict | None = None,
+           lower_key: bool = False) -> int | None:
+    """Inserta si no existe y devuelve el id."""
+    cache_key = key_val.lower() if lower_key else key_val
+    if cache is not None and cache_key in cache:
+        return cache[cache_key]
+
+    cols    = [key_col] + list(extra_cols.keys() if extra_cols else [])
+    vals    = [key_val] + list(extra_cols.values() if extra_cols else [])
+    ph      = ", ".join(["%s"] * len(vals))
+    col_str = ", ".join(f"`{c}`" for c in cols)
+
     cursor.execute(
-        "SELECT COUNT(*) FROM information_schema.TABLES "
-        "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s",
-        (table,),
+        f"INSERT IGNORE INTO `{table}` ({col_str}) VALUES ({ph})", vals
     )
-    return cursor.fetchone()[0] > 0
+    cursor.execute(f"SELECT id FROM `{table}` WHERE `{key_col}` = %s", (key_val,))
+    row = cursor.fetchone()
+    if row and cache is not None:
+        cache[cache_key] = row[0]
+    return row[0] if row else None
 
 
 def cost_to_int(cost_str) -> int:
-    """
-    Convierte el campo 'cost' de la API (string decimal en GP) a entero de cobres.
-    La API devuelve GP como float string, p.ej. "0.10" = 1 sp = 10 cp → guardamos
-    centavos de GP*100 para evitar float. Si prefieres guardar GP redondeados,
-    cambia el return por int(round(float(cost_str))).
-    '25.00' → 2500 cp  |  '0.10' → 10 cp  |  '40000.00' → 4000000 cp
-    """
+    """GP x 100 -> entero. '25.00' -> 2500, '0.10' -> 10."""
     try:
         return int(round(float(cost_str) * 100))
     except (TypeError, ValueError):
         return 0
 
 
-def parse_ac_display(ac_display: str):
-    """
-    Ejemplos:
-      '14 + Dex modifier (max 2)' -> (14, 16)
-      '16'                        -> (16, 16)
-      '12 + Dex modifier'         -> (12, None)
-    """
-
-    ac_display = ac_display or ""
-
-    # AC base
-    m = re.match(r"(\d+)", ac_display)
-    ac_base = int(m.group(1)) if m else 0
-    # ¿Tiene Dex modifier?
-    has_dex = "dex" in ac_display.lower()
-    # ¿Tiene cap?
-    cap = re.search(r"max\s+(\d+)", ac_display.lower())
-    if cap:
-        ac_max = ac_base + int(cap.group(1))
-    elif has_dex:
-        ac_max = None
-    else:
-        ac_max = ac_base
-    return ac_base, ac_max
-
-# ── Migraciones ────────────────────────────────────────────────────────────────
-def migrate(cursor):
-    print("\n── Migraciones ──────────────────────────────────────")
-
-    # item: columnas nuevas
-    item_cols = [
-        ("attunement", "ALTER TABLE `item` ADD COLUMN `attunement` tinyint(1) NOT NULL DEFAULT 0"),
-        ("rarity",     "ALTER TABLE `item` ADD COLUMN `rarity` varchar(20) DEFAULT NULL"),
-    ]
-    for col, sql in item_cols:
-        if not column_exists(cursor, "item", col):
-            cursor.execute(sql)
-            print(f"   -> item.{col} añadida")
-        else:
-            print(f"   . item.{col} ya existe")
-
-    # weapon: columnas nuevas
-    weapon_cols = [
-        ("weapon_category",
-         "ALTER TABLE `weapon` ADD COLUMN `weapon_category` enum('Simple','Martial') NOT NULL DEFAULT 'Simple'"),
-        ("weapon_type",
-         "ALTER TABLE `weapon` ADD COLUMN `weapon_type` enum('Melee','Ranged') NOT NULL DEFAULT 'Melee'"),
-    ]
-    for col, sql in weapon_cols:
-        if not column_exists(cursor, "weapon", col):
-            cursor.execute(sql)
-            print(f"   -> weapon.{col} añadida")
-        else:
-            print(f"   . weapon.{col} ya existe")
-
-    # armor_type: asegurar filas light/medium/heavy
-    for atype in ("light", "medium", "heavy"):
-        cursor.execute(
-            "INSERT IGNORE INTO armor_type (name) VALUES (%s)", (atype,)
-        )
-
-    print("   . armor_type seeded (light/medium/heavy)")
+def detect_bonus(name: str, desc: str, is_armor: bool) -> int | None:
+    m = BONUS_NAME_RE.search(name)
+    if m:
+        return int(m.group(1))
+    pattern = BONUS_ARMOR_RE if is_armor else BONUS_WEAPON_RE
+    m = pattern.search(desc or "")
+    return int(m.group(1)) if m else None
 
 
-# ── Loaders / ensure helpers ───────────────────────────────────────────────────
-def load_item_types(cursor) -> dict:
-    cursor.execute("SELECT id, name FROM item_type")
-    return {row[1]: row[0] for row in cursor.fetchall()}
+# ── Procesadores ───────────────────────────────────────────────────────────────
+def process_weapon(cursor, item_id: int, weapon_data: dict, caches: dict) -> bool:
+    """Inserta en weapon + weapon_damage + weapon_weapon_property."""
 
+    damage_dice   = (weapon_data.get("damage_dice") or "").strip()
+    dmg_type_name = (weapon_data.get("damage_type") or {}).get("name", "").strip()
 
-def ensure_item_type(cursor, name: str, cache: dict) -> int:
-    if name in cache:
-        return cache[name]
-    cursor.execute("INSERT IGNORE INTO item_type (name) VALUES (%s)", (name,))
-    cursor.execute("SELECT id FROM item_type WHERE name = %s", (name,))
-    row = cursor.fetchone()
-    cache[name] = row[0]
-    return row[0]
+    if not dmg_type_name:
+        print(f"     ! sin damage_type, item_id={item_id} saltado")
+        return False
 
+    damage_type_id = ensure(cursor, "damage_type", "name", dmg_type_name,
+                            cache=caches["damage"], lower_key=True)
 
-def load_damage_types(cursor) -> dict:
-    cursor.execute("SELECT id, name FROM damage_type")
-    return {row[1].lower(): row[0] for row in cursor.fetchall()}
+    weapon_category = "Simple" if weapon_data.get("is_simple") else "Martial"
 
-
-def ensure_damage_type(cursor, name: str, cache: dict) -> int:
-    key = name.lower()
-    if key in cache:
-        return cache[key]
-    cursor.execute("INSERT IGNORE INTO damage_type (name) VALUES (%s)", (name,))
-    cursor.execute("SELECT id FROM damage_type WHERE name = %s", (name,))
-    cache[key] = cursor.fetchone()[0]
-    return cache[key]
-
-
-def load_weapon_properties(cursor) -> dict:
-    cursor.execute("SELECT id, name FROM weapon_property")
-    return {row[1].lower(): row[0] for row in cursor.fetchall()}
-
-
-def ensure_weapon_property(cursor, name: str, desc: str, cache: dict) -> int:
-    key = name.lower()
-    if key in cache:
-        return cache[key]
-    cursor.execute(
-        "INSERT IGNORE INTO weapon_property (name, description) VALUES (%s, %s)",
-        (name, desc),
-    )
-    cursor.execute("SELECT id FROM weapon_property WHERE name = %s", (name,))
-    cache[key] = cursor.fetchone()[0]
-    return cache[key]
-
-
-def load_masteries(cursor) -> dict:
-    cursor.execute("SELECT id, name FROM mastery")
-    return {row[1].lower(): row[0] for row in cursor.fetchall()}
-
-
-def ensure_mastery(cursor, name: str, desc: str, cache: dict) -> int | None:
-    key = name.lower()
-    if key in cache:
-        return cache[key]
-    cursor.execute(
-        "INSERT IGNORE INTO mastery (name, description) VALUES (%s, %s)",
-        (name, desc),
-    )
-    cursor.execute("SELECT id FROM mastery WHERE name = %s", (name,))
-    row = cursor.fetchone()
-    if row:
-        cache[key] = row[0]
-        return row[0]
-    return None
-
-
-def load_armor_types(cursor) -> dict:
-    cursor.execute("SELECT id, name FROM armor_type")
-    return {row[1].lower(): row[0] for row in cursor.fetchall()}
-
-
-# ── Procesadores por tipo ──────────────────────────────────────────────────────
-def process_weapon(cursor, item_id: int, weapon_data: dict,
-                   damage_cache: dict, property_cache: dict, mastery_cache: dict):
-    """Inserta/actualiza fila en `weapon` y sus propiedades."""
-
-    damage_dice = (weapon_data.get("damage_dice") or "").strip()
-
-    dmg_type_obj  = weapon_data.get("damage_type") or {}
-    dmg_type_name = (dmg_type_obj.get("name") or "").strip()
-    damage_type_id = (
-        ensure_damage_type(cursor, dmg_type_name, damage_cache)
-        if dmg_type_name else None
-    )
-
-    is_simple  = weapon_data.get("is_simple", False)
-    # range > 0 en el objeto weapon embebido no siempre está; derivamos de propiedades
-    # o de la presencia de "Ammunition" / "Thrown". Fallback: range=0 → Melee.
-    weapon_category = "Simple" if is_simple else "Martial"
-
-    # Separar mastery de propiedades normales
     mastery_id = None
     properties = []
+    prop_names = set()
+
     for p in weapon_data.get("properties") or []:
-        prop  = p.get("property") or {}
-        pname = (prop.get("name") or "").strip()
-        pdesc = (prop.get("desc") or "").strip()
-        ptype = prop.get("type")
+        prop   = p.get("property") or {}
+        pname  = (prop.get("name") or "").strip()
+        pdesc  = (prop.get("desc") or "").strip()
+        ptype  = prop.get("type")
         detail = p.get("detail")
+        prop_names.add(pname.lower())
 
         if ptype == "Mastery":
-            mastery_id = ensure_mastery(cursor, pname, pdesc, mastery_cache)
-        else:
-            if pname:
-                prop_id = ensure_weapon_property(cursor, pname, pdesc, property_cache)
-                properties.append((prop_id, detail))
-
-    # Inferir weapon_type desde propiedades (Ammunition o Thrown → Ranged)
-    ranged_props = {"ammunition", "thrown"}
-    prop_names   = {p.get("property", {}).get("name", "").lower()
-                    for p in weapon_data.get("properties") or []}
-    weapon_type  = "Ranged" if prop_names & ranged_props else "Melee"
-
-    if damage_type_id is None:
-        print(f"     ! sin damage_type, weapon item_id={item_id} saltado")
-        return False
+            mastery_id = ensure(cursor, "mastery", "name", pname,
+                                extra_cols={"description": pdesc},
+                                cache=caches["mastery"], lower_key=True)
+        elif pname:
+            prop_id = ensure(cursor, "weapon_property", "name", pname,
+                             extra_cols={"description": pdesc},
+                             cache=caches["property"], lower_key=True)
+            properties.append((prop_id, detail))
 
     if mastery_id is None:
-        print(f"     ! sin mastery, weapon item_id={item_id} saltado")
+        print(f"     ! sin mastery, item_id={item_id} saltado")
         return False
 
+    weapon_type = "Ranged" if {"ammunition", "thrown"} & prop_names else "Melee"
+
+    # weapon
     cursor.execute(
         """
         INSERT INTO `weapon`
-            (item_id, damage_dice, damage_type_id, mastery_id,
-             range_normal, range_long, weapon_category, weapon_type)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            (id, mastery_id, range_normal, range_long, weapon_category, weapon_type)
+        VALUES (%s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
-            damage_dice     = VALUES(damage_dice),
-            damage_type_id  = VALUES(damage_type_id),
             mastery_id      = VALUES(mastery_id),
             range_normal    = VALUES(range_normal),
             range_long      = VALUES(range_long),
             weapon_category = VALUES(weapon_category),
             weapon_type     = VALUES(weapon_type)
         """,
-        (item_id, damage_dice, damage_type_id, mastery_id,
-         0, 0, weapon_category, weapon_type),
+        (item_id, mastery_id, 0, 0, weapon_category, weapon_type),
+    )
+
+    # weapon_damage — PK compuesta (weapon_id, damage_type_id)
+    # ON DUPLICATE KEY solo actualiza damage_roll (el tipo no cambia)
+    cursor.execute(
+        """
+        INSERT INTO `weapon_damage`
+            (weapon_id, damage_roll, damage_type_id, always)
+        VALUES (%s, %s, %s, 1)
+        ON DUPLICATE KEY UPDATE
+            damage_roll = VALUES(damage_roll)
+        """,
+        (item_id, damage_dice or None, damage_type_id),
     )
 
     for prop_id, detail in properties:
         cursor.execute(
-            "INSERT IGNORE INTO weapon_weapon_property (weapon_id, property_id, value) "
-            "VALUES (%s, %s, %s)",
+            "INSERT IGNORE INTO weapon_weapon_property "
+            "(weapon_id, property_id, value) VALUES (%s, %s, %s)",
             (item_id, prop_id, detail),
         )
 
     return True
 
 
-def process_armor(cursor, item_id: int, armor_data: dict, armor_type_cache: dict):
-
-    category = (armor_data.get("category") or "").lower()
-    armor_type_id = armor_type_cache.get(category)
+def process_armor(cursor, item_id: int, armor_data: dict, caches: dict) -> bool:
+    category      = (armor_data.get("category") or "").lower()
+    armor_type_id = caches["armor_type"].get(category)
 
     if not armor_type_id:
         print(f"     ! armor_type '{category}' no reconocido, item_id={item_id} saltado")
@@ -321,22 +222,15 @@ def process_armor(cursor, item_id: int, armor_data: dict, armor_type_cache: dict
     ac_base = armor_data.get("ac_base") or 0
     dex_cap = armor_data.get("ac_cap_dexmod")
 
-    # Regla de almacenamiento que quieres:
-    # light  -> ac_base, ac_max = NULL
-    # medium -> ac_base, ac_base + cap (si existe)
-    # heavy  -> ac_base, ac_base
-
+    # light  -> ac_max NULL  (sin techo, el back suma DEX libremente)
+    # medium -> ac_base + cap  (ej. 14 + 2 = 16)
+    # heavy  -> ac_max = ac_base  (sin DEX)
     if category == "light":
         ac_max = None
-
     elif category == "medium":
-        ac_max = ac_base + dex_cap if dex_cap is not None else None
-
-    elif category == "heavy":
-        ac_max = ac_base
-
+        ac_max = (ac_base + dex_cap) if dex_cap is not None else None
     else:
-        ac_max = None
+        ac_max = ac_base
 
     str_min = armor_data.get("strength_score_required") or 0
     stealth = 1 if armor_data.get("grants_stealth_disadvantage") else 0
@@ -344,7 +238,7 @@ def process_armor(cursor, item_id: int, armor_data: dict, armor_type_cache: dict
     cursor.execute(
         """
         INSERT INTO `armor`
-            (item_id, ac_base, ac_max, str_min, stealth_dis, armor_type_id)
+            (id, ac_base, ac_max, str_min, stealth_dis, armor_type_id)
         VALUES (%s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
             ac_base       = VALUES(ac_base),
@@ -355,100 +249,226 @@ def process_armor(cursor, item_id: int, armor_data: dict, armor_type_cache: dict
         """,
         (item_id, ac_base, ac_max, str_min, stealth, armor_type_id),
     )
-
     return True
 
-# ── Seeder principal ───────────────────────────────────────────────────────────
-def seed_items(cursor, items: list,
-               item_type_cache: dict, armor_type_cache: dict,
-               damage_cache: dict, property_cache: dict, mastery_cache: dict):
 
+def process_shield(cursor, item_id: int, ac_bonus: int = 2):
+    cursor.execute(
+        """
+        INSERT INTO `shield` (id, ac_bonus)
+        VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE ac_bonus = VALUES(ac_bonus)
+        """,
+        (item_id, ac_bonus),
+    )
+
+
+def process_bonus_feature(cursor, item_id: int, name: str, desc: str,
+                           is_armor: bool, caches: dict):
+    """Detecta +N en nombre/desc y graba feature -> item_feature -> bonus_feature_item."""
+    bonus = detect_bonus(name, desc, is_armor)
+    if bonus is None:
+        return
+
+    label   = f"{'Armor' if is_armor else 'Weapon'} +{bonus}"
+    feat_id = ensure(cursor, "feature", "name", label,
+                     extra_cols={"type": FEATURE_TYPE_ITEM_ID},
+                     cache=caches["bonus_feat"])
+
+    cursor.execute(
+        "INSERT IGNORE INTO `item_feature` (item_id, feature_id) VALUES (%s, %s)",
+        (item_id, feat_id),
+    )
+    cursor.execute(
+        """
+        INSERT INTO `bonus_feature_item` (feature_id, item_id, value)
+        VALUES (%s, %s, %s)
+        ON DUPLICATE KEY UPDATE value = VALUES(value)
+        """,
+        (feat_id, item_id, bonus),
+    )
+
+
+# ── Upsert item base ───────────────────────────────────────────────────────────
+def upsert_item(cursor, name, weight, price, item_type_id,
+                magic, attunement, rarity, description=None):
+    cursor.execute(
+        """
+        INSERT INTO `item`
+            (name, weight, price, item_type_id, magic, attunement, rarity, description)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+            weight       = VALUES(weight),
+            price        = VALUES(price),
+            item_type_id = VALUES(item_type_id),
+            magic        = VALUES(magic),
+            attunement   = VALUES(attunement),
+            rarity       = VALUES(rarity),
+            description  = VALUES(description)
+        """,
+        (name, weight, price, item_type_id, magic, attunement, rarity, description),
+    )
+    cursor.execute("SELECT id FROM `item` WHERE name = %s", (name,))
+    row = cursor.fetchone()
+    return row[0] if row else None
+
+# ── Seeder items normales ──────────────────────────────────────────────────────
+def seed_items(cursor, items: list, caches: dict):
     print("\n── Items ────────────────────────────────────────────")
-
-    counts = {"item": 0, "weapon": 0, "armor": 0, "generic": 0, "skipped": 0}
+    counts = {"item": 0, "weapon": 0, "armor": 0, "shield": 0,
+              "generic": 0, "skipped": 0}
 
     for raw in items:
         name = (raw.get("name") or "").strip()
         if not name:
             continue
 
-        # Determinar item_type
-        cat_key  = (raw.get("category") or {}).get("key", "")
-        type_str = CATEGORY_MAP.get(cat_key, "Item")
-
-        # Si tiene sub-objeto weapon/armor, forzar el tipo correcto
+        cat_key    = (raw.get("category") or {}).get("key", "")
         has_weapon = raw.get("weapon") is not None
         has_armor  = raw.get("armor")  is not None
+        is_shield  = cat_key == "shield"
+
         if has_weapon:
             type_str = "Weapon"
         elif has_armor:
             type_str = "Armor"
+        elif is_shield:
+            type_str = "Shield"
+        else:
+            type_str = CATEGORY_MAP.get(cat_key, "Gear")
 
-        item_type_id = ensure_item_type(cursor, type_str, item_type_cache)
-        weight       = float(raw.get("weight") or 0)
-        price        = cost_to_int(raw.get("cost"))
-
-        # Insertar fila base en `item`
-        cursor.execute(
-            """
-            INSERT INTO `item`
-                (name, weight, price, item_type_id, magic, attunement, rarity)
-            VALUES (%s, %s, %s, %s, 0, 0, NULL)
-            ON DUPLICATE KEY UPDATE
-                weight       = VALUES(weight),
-                price        = VALUES(price),
-                item_type_id = VALUES(item_type_id)
-            """,
-            (name, weight, price, item_type_id),
-        )
-        cursor.execute("SELECT id FROM `item` WHERE name = %s", (name,))
-        row = cursor.fetchone()
-        if not row:
+        item_type_id = ensure(cursor, "item_type", "name", type_str,
+                              cache=caches["item_type"])
+        weight = float(raw.get("weight") or 0)
+        price  = cost_to_int(raw.get("cost"))
+        rarity = raw.get("rarity") or "Common"
+        desc = (raw.get("desc") or "").strip() or None
+        item_id = upsert_item(cursor, name, weight, price,
+                              item_type_id, 0, 0, rarity, desc)
+        if not item_id:
             counts["skipped"] += 1
             continue
-        item_id = row[0]
         counts["item"] += 1
 
-        # Sub-proceso weapon
         if has_weapon:
-            ok = process_weapon(
-                cursor, item_id, raw["weapon"],
-                damage_cache, property_cache, mastery_cache,
-            )
+            ok = process_weapon(cursor, item_id, raw["weapon"], caches)
             if ok:
                 counts["weapon"] += 1
                 print(f"   ⚔  {name}")
             else:
                 counts["skipped"] += 1
 
-        # Sub-proceso armor
         elif has_armor:
-            ok = process_armor(cursor, item_id, raw["armor"], armor_type_cache)
+            ok = process_armor(cursor, item_id, raw["armor"], caches)
             if ok:
                 counts["armor"] += 1
                 print(f"   🛡  {name}")
             else:
                 counts["skipped"] += 1
 
+        elif is_shield:
+            process_shield(cursor, item_id)
+            counts["shield"] += 1
+            print(f"   🛡  {name} [Shield]")
+
         else:
             counts["generic"] += 1
             print(f"   📦  {name}")
 
     print(
-        f"\n   -> {counts['item']} items base  |  "
-        f"{counts['weapon']} weapons  |  "
-        f"{counts['armor']} armors  |  "
-        f"{counts['generic']} genericos  |  "
-        f"{counts['skipped']} saltados"
+        f"\n   -> {counts['item']} items  |  {counts['weapon']} weapons  |  "
+        f"{counts['armor']} armors  |  {counts['shield']} shields  |  "
+        f"{counts['generic']} genericos  |  {counts['skipped']} saltados"
     )
+
+
+# ── Seeder magic items ─────────────────────────────────────────────────────────
+def seed_magic_items(cursor, items: list, caches: dict):
+    print("\n── Magic Items ──────────────────────────────────────")
+    inserted = 0
+    skipped  = 0
+
+    for mi in items:
+        name    = (mi.get("name") or "").strip()
+        desc    = (mi.get("desc") or "").strip()
+        cat_key = (mi.get("category") or {}).get("key", "")
+        w_data  = mi.get("weapon")
+        a_data  = mi.get("armor")
+
+        if not name:
+            continue
+
+        # rarity: magic items devuelven {"name": "Rare"} en vez de string plano
+        rarity_raw = mi.get("rarity")
+        rarity = (rarity_raw.get("name") if isinstance(rarity_raw, dict)
+                  else rarity_raw) or "Common"
+
+        attune    = 1 if mi.get("requires_attunement") else 0
+        weight    = float(mi.get("weight") or 0)
+        price     = cost_to_int(mi.get("cost"))
+        is_shield = cat_key == "shield"
+
+        if a_data:
+            type_str = "Armor"
+        elif w_data:
+            type_str = "Weapon"
+        elif is_shield:
+            type_str = "Shield"
+        else:
+            type_str = CATEGORY_MAP.get(cat_key, "Gear")
+
+        item_type_id = ensure(cursor, "item_type", "name", type_str,
+                              cache=caches["item_type"])
+
+        item_id = upsert_item(cursor, name, weight, price,
+                              item_type_id, 1, attune, rarity, desc)
+        if not item_id:
+            skipped += 1
+            continue
+
+        if is_shield:
+            process_shield(cursor, item_id)
+
+        if a_data:
+            process_armor(cursor, item_id, a_data, caches)
+            process_bonus_feature(cursor, item_id, name, desc,
+                                  is_armor=True, caches=caches)
+
+        elif w_data:
+            ok = process_weapon(cursor, item_id, w_data, caches)
+            if ok:
+                process_bonus_feature(cursor, item_id, name, desc,
+                                      is_armor=False, caches=caches)
+
+        else:
+            # Generico: intentar detectar bonus por descripcion
+            if detect_bonus(name, desc, is_armor=True):
+                process_bonus_feature(cursor, item_id, name, desc,
+                                      is_armor=True, caches=caches)
+            elif detect_bonus(name, desc, is_armor=False):
+                process_bonus_feature(cursor, item_id, name, desc,
+                                      is_armor=False, caches=caches)
+
+        inserted += 1
+        print(f"   ✨  {name} [{type_str}] {rarity}")
+
+    print(f"\n   -> {inserted} insertados, {skipped} saltados de {len(items)} magic items")
+
+
+# ── Caches ─────────────────────────────────────────────────────────────────────
+def build_caches(cursor) -> dict:
+    return {
+        "item_type":  load_cache(cursor, "item_type",      "name"),
+        "armor_type": load_cache(cursor, "armor_type",     "name", lower_key=True),
+        "damage":     load_cache(cursor, "damage_type",    "name", lower_key=True),
+        "property":   load_cache(cursor, "weapon_property","name", lower_key=True),
+        "mastery":    load_cache(cursor, "mastery",        "name", lower_key=True),
+        "bonus_feat": load_cache(cursor, "feature",        "name"),
+    }
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
-    print("Fetching items from open5e API...")
-    items = fetch_all(ITEMS_URL)
-    print(f"  -> {len(items)} items recibidos")
-
     conn   = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor()
 
@@ -456,29 +476,28 @@ def main():
         migrate(cursor)
         conn.commit()
 
-        # Cargar caches
-        item_type_cache  = load_item_types(cursor)
-        armor_type_cache = load_armor_types(cursor)
-        damage_cache     = load_damage_types(cursor)
-        property_cache   = load_weapon_properties(cursor)
-        mastery_cache    = load_masteries(cursor)
-
+        caches = build_caches(cursor)
         print(
-            f"\n   -> {len(item_type_cache)} item_types  |  "
-            f"{len(armor_type_cache)} armor_types  |  "
-            f"{len(damage_cache)} damage_types  |  "
-            f"{len(property_cache)} weapon_properties  |  "
-            f"{len(mastery_cache)} masteries"
+            f"\n   caches -> item_types:{len(caches['item_type'])}  "
+            f"armor_types:{len(caches['armor_type'])}  "
+            f"damage_types:{len(caches['damage'])}  "
+            f"properties:{len(caches['property'])}  "
+            f"masteries:{len(caches['mastery'])}"
         )
 
-        seed_items(
-            cursor, items,
-            item_type_cache, armor_type_cache,
-            damage_cache, property_cache, mastery_cache,
-        )
-
+        print("\nFetching items...")
+        items = fetch_all(ITEMS_URL)
+        print(f"  -> {len(items)} items recibidos")
+        seed_items(cursor, items, caches)
         conn.commit()
-        print("\nSeed completado y commiteado.")
+
+        print("\nFetching magic items...")
+        magic = fetch_all(MAGIC_ITEMS_URL)
+        print(f"  -> {len(magic)} magic items recibidos")
+        seed_magic_items(cursor, magic, caches)
+        conn.commit()
+
+        print("\nSeed completado.")
 
     except Exception as e:
         conn.rollback()

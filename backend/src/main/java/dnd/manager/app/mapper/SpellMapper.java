@@ -15,6 +15,7 @@ public class SpellMapper {
 
     public SpellSummaryDto toSummaryDto(Spell s){
         return new SpellSummaryDto(
+            s.getId(),
             s.getName(),
             s.getLevel(),
             s.getSchool().getName(),

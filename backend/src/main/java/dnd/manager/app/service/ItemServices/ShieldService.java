@@ -1,12 +1,4 @@
-package dnd.manager.app.service.ItemServices.WeaponServices;
-
-import dnd.manager.app.dto.ItemDto.ItemResponseDto;
-import dnd.manager.app.dto.ItemDto.WeaponDto.WeaponSummaryDto;
-import dnd.manager.app.mapper.ItemMapper;
-import dnd.manager.app.model.ItemEntities.Item;
-import dnd.manager.app.repository.ItemRepositories.ItemRepository;
-
-import java.util.List;
+package dnd.manager.app.service.ItemServices;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,33 +6,39 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import dnd.manager.app.dto.ItemDto.ItemResponseDto;
+import dnd.manager.app.dto.ItemDto.ShieldSummaryDto;
+import dnd.manager.app.mapper.ItemMapper;
+import dnd.manager.app.model.ItemEntities.Item;
+import dnd.manager.app.repository.ItemRepositories.ItemRepository;
 import static dnd.manager.app.repository.ItemRepositories.spec.ItemSpecifications.*;
-import static dnd.manager.app.repository.ItemRepositories.WeaponRepositories.spec.WeaponSpecifications.*;
+import static dnd.manager.app.repository.ItemRepositories.spec.ShieldSpecifications.*;
 
 @Service
-public class WeaponService {
+public class ShieldService {
 
     private final ItemRepository itemRepository;
     private final ItemMapper mapper;
 
-    public WeaponService(ItemRepository itemRepository, ItemMapper mapper) {
+
+    public ShieldService(ItemRepository itemRepository, ItemMapper mapper) {
         this.itemRepository = itemRepository;
         this.mapper = mapper;
     }
-
+    
     public ItemResponseDto findById(Long id) {
         Item item = itemRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (!"Weapon".equals(item.getItemType().getName())) {
+        if (!"Shield".equals(item.getItemType().getName())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
         return mapper.toResponseDto(item);
     }
 
-
-    public Page<WeaponSummaryDto> findWeapons(
+    public Page<ShieldSummaryDto> findShields(
         String name,
         Float weightMin,
         Float weightMax,
@@ -49,14 +47,7 @@ public class WeaponService {
         Boolean magic,
         Boolean attunement,
         String rarity,
-        Integer rangeMin,
-        Integer rangeMax,
-        Integer rangeNormalMin,
-        Integer rangeNormalMax,
-        Integer rangeLongMin,
-        Integer rangeLongMax,
-        String mastery,
-        List<String> damageTypes,
+        Integer acBonus,
         int page,
         int size
     ){
@@ -64,21 +55,18 @@ public class WeaponService {
         .where(hasName(name))
         .and(hasWeightBetween(weightMin, weightMax))
         .and(hasPriceBetween(priceMin, priceMax))
-        .and(hasItemType("Weapon"))
+        .and(hasItemType("Shield"))
         .and(isMagic(magic))
         .and(hasAttunement(attunement))
         .and(hasRarity(rarity))
-        .and(hasRangeBetween(rangeMin, rangeMax))
-        .and(hasRangeNormalBetween(rangeNormalMin, rangeNormalMax))
-        .and(hasRangeLongBetween(rangeLongMin, rangeLongMax))
-        .and(hasMastery(mastery))
-        .and(hasDamage(damageTypes));
+        .and(hasAcBonus(acBonus));
         
-        Page<Item> weapons = itemRepository.findAll(
+        Page<Item> shields = itemRepository.findAll(
                     spec,
                     PageRequest.of(page, size)
             );
-        return weapons.map(mapper::toWeaponSummaryDto);
+        return shields.map(mapper::toShieldSummaryDto);
     }
+
 
 }

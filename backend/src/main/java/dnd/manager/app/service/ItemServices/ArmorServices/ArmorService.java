@@ -1,38 +1,78 @@
 package dnd.manager.app.service.ItemServices.ArmorServices;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import dnd.manager.app.model.ItemEntities.ArmorEntities.Armor;
-import dnd.manager.app.repository.ItemRepositories.ArmorRepositories.ArmorRepository;
+import dnd.manager.app.dto.ItemDto.ItemResponseDto;
+import dnd.manager.app.dto.ItemDto.ArmorDto.ArmorSummaryDto;
+import dnd.manager.app.mapper.ItemMapper;
+import dnd.manager.app.model.ItemEntities.Item;
+import dnd.manager.app.repository.ItemRepositories.ItemRepository;
+import static dnd.manager.app.repository.ItemRepositories.spec.ItemSpecifications.*;
+import static dnd.manager.app.repository.ItemRepositories.ArmorRepositories.spec.ArmorSpecifications.*;
 
 @Service
 public class ArmorService {
 
-    private final ArmorRepository repository;
+    private final ItemRepository itemRepository;
+    private final ItemMapper mapper;
 
-    public ArmorService(ArmorRepository repository) {
-        this.repository = repository;
+
+    public ArmorService(ItemRepository itemRepository, ItemMapper mapper) {
+        this.itemRepository = itemRepository;
+        this.mapper = mapper;
     }
 
-    public List<Armor> findAll() {
-        return repository.findAll();
+    public ItemResponseDto findById(Long id) {
+        Item item = itemRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!"Armor".equals(item.getItemType().getName())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return mapper.toResponseDto(item);
     }
 
-    public Armor findById(Long id) {
-        return repository.findById(id).orElse(null);
+    public Page<ArmorSummaryDto> findArmor(
+        String name,
+        Float weightMin,
+        Float weightMax,
+        Integer priceMin,
+        Integer priceMax,
+        Boolean magic,
+        Boolean attunement,
+        String rarity,
+        Integer acMin,
+        Integer acMax,
+        Integer str,
+        Boolean stealthDis,
+        String armorType,
+        int page,
+        int size
+    ){
+        Specification<Item> spec = Specification
+        .where(hasName(name))
+        .and(hasWeightBetween(weightMin, weightMax))
+        .and(hasPriceBetween(priceMin, priceMax))
+        .and(hasItemType("Armor"))
+        .and(isMagic(magic))
+        .and(hasAttunement(attunement))
+        .and(hasRarity(rarity))
+        .and(hasAcBetween(acMin, acMax))
+        .and(hasStrMinLessThanOrEqualTo(str))
+        .and(hasStealthDis(stealthDis))
+        .and(hasArmorType(armorType));
+        
+        Page<Item> armor = itemRepository.findAll(
+                    spec,
+                    PageRequest.of(page, size)
+            );
+        return armor.map(mapper::toArmorSummaryDto);
     }
 
-    public List<Armor> findByArmorTypeId(Long armorTypeId){
-        return repository.findByArmorTypeId(armorTypeId);
-    }
 
-    public Armor save(Armor armor) {
-        return repository.save(armor);
-    }
-
-    public void deleteById(Long id) {
-        repository.deleteById(id);
-    }
 }

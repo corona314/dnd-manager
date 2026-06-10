@@ -32,7 +32,7 @@ public class Feature {
     private String description;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type", nullable = false)
+    @JoinColumn(name = "feature_type_id", nullable = false)
     private FeatureType featureType;
 
 }
