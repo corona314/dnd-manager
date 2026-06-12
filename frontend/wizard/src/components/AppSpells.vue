@@ -8,11 +8,12 @@
     const Levels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     const Components = ['V', 'S', 'M']
     const Schools = {1: 'Abjuration', 2: 'Conjuration', 3: 'Divination', 4: 'Enchantment', 5: 'Evocation', 6: 'Illusion', 7: 'Necromancy',  8: 'Transmutation'}
-    const Damage_Colors = {acid: '#a8c94d', cold: '#7ec8e3', fire: '#e25822', force: '#c084fc', lightning: '#facc15', necrotic: '#4ade80', piercing: '#94a3b8', poison: '#86efac', psychic: '#f472b6', radiant: '#fde68a', slashing: '#f87171', thunder:'#818cf8', bludgeoning:'#a78bfa'}
+    const Damage_Colors = {Acid: '#a8c94d', Cold: '#7ec8e3', Fire: '#e25822', Force: '#c084fc', Lightning: '#facc15', Necrotic: '#4ade80', Piercing: '#94a3b8', Poison: '#86efac', Psychic: '#f472b6', Radiant: '#fde68a', Slashing: '#f87171', Thunder:'#818cf8', Bludgeoning:'#a78bfa'}
 
     //Constantes de los filtros
     const filter_name = ref('')
-    const filter_level = ref(null)
+    const filter_levelMin = ref(null)
+    const filter_levelMax = ref(null)
     const filter_school = ref(null)
     const filter_components = ref({V: null, S: null, M: null})
     const filter_ritual = ref(null)
@@ -35,8 +36,11 @@
             if (filter_name.value) {
                 params.append('name', filter_name.value)
             } 
-            if (filter_level.value !== null) {
-                params.append('level', filter_level.value)
+            if (filter_levelMin.value !== null) {
+                params.append('levelMin', filter_levelMin.value)
+            }
+            if (filter_levelMax.value !== null) {
+                params.append('levelMax', filter_levelMax.value)
             }
             if(filter_school.value !== null){
                 params.append('schoolId', filter_school.value)
@@ -89,7 +93,13 @@
         <!--Filtros de selección-->
         <div class="filters">
             <input class="name" type="text" placeholder="Buscar conjuro..." v-model="filter_name" @input="applyFilters"/>
-            <select class="level" v-model="filter_level"  @change="applyFilters">
+            <select class="levelMin" v-model="filter_levelMin"  @change="applyFilters">
+                <option :value="null">Todos los niveles</option>
+                <option v-for="lvl in Levels" :key="lvl" :value="lvl">
+                    {{ lvl === 0 ? 'Truco (0)' : `Nivel ${lvl}` }}
+                </option>
+            </select>
+            <select class="levelMax" v-model="filter_levelMax"  @change="applyFilters">
                 <option :value="null">Todos los niveles</option>
                 <option v-for="lvl in Levels" :key="lvl" :value="lvl">
                     {{ lvl === 0 ? 'Truco (0)' : `Nivel ${lvl}` }}
