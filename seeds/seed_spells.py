@@ -9,16 +9,18 @@ Pobla las siguientes tablas a partir de la API open5e v2 (SRD 2024):
     class_spell        → relacion clase-hechizo
     subclass_spell     → relacion subclase-hechizo
 
-Ajusta DB_CONFIG con tus credenciales.
+IMPORTANTE: correr DESPUÉS de seed_items.py para que damage_type ya exista.
+
+Ejecutar: python seed_spells.py
 """
 
 import requests
 import mysql.connector
 
 DB_CONFIG = {
-    "host": "127.0.0.1",
+    "host":     "127.0.0.1",
     "database": "DnDB",
-    "user": "root",
+    "user":     "root",
     "password": "dev",
 }
 
@@ -33,8 +35,16 @@ SAVING_THROW_MAP = {
     "charisma":     "CHA",
 }
 
+# Tipos de daño canónicos — se insertan si damage_type está vacía
+# (por si se corre antes de seed_items.py)
+DAMAGE_TYPE_SEED = [
+    "Acid", "Bludgeoning", "Cold", "Fire", "Force",
+    "Lightning", "Necrotic", "Piercing", "Poison",
+    "Psychic", "Radiant", "Slashing", "Thunder",
+]
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+
+# ── Fetch ──────────────────────────────────────────────────────────────────────
 def fetch_all(url: str) -> list:
     results = []
     while url:
@@ -46,6 +56,7 @@ def fetch_all(url: str) -> list:
     return results
 
 
+# ── Helpers ────────────────────────────────────────────────────────────────────
 def build_components(verbal: bool, somatic: bool, material: bool) -> str:
     parts = []
     if verbal:   parts.append("V")
@@ -100,23 +111,20 @@ def ensure_damage_type(cursor, name: str, cache: dict) -> int | None:
 def migrate(cursor):
     print("\n── Migraciones ──────────────────────────────────────")
 
-    # Quitar higher_levels si aun existe
     if column_exists(cursor, "spell", "higher_levels"):
         cursor.execute("ALTER TABLE `spell` DROP COLUMN `higher_levels`")
         print("   -> higher_levels eliminado de spell")
 
-    # Quitar damage_type_id de spell si existe (se mueve a spell_damage_type)
+    # Quitar damage_type_id directo en spell (movido a spell_damage_type)
     if column_exists(cursor, "spell", "damage_type_id"):
-        # Quitar FK primero
         try:
             cursor.execute("ALTER TABLE `spell` DROP FOREIGN KEY `spell_damage_type`")
             print("   -> FK spell_damage_type eliminada")
         except Exception:
             pass
         cursor.execute("ALTER TABLE `spell` DROP COLUMN `damage_type_id`")
-        print("   -> damage_type_id eliminado de spell (movido a spell_damage_type)")
+        print("   -> damage_type_id eliminado de spell")
 
-    # Columnas nuevas en spell
     new_columns = [
         ("attack_roll",
          "ALTER TABLE `spell` ADD COLUMN `attack_roll` tinyint(1) NOT NULL DEFAULT 0"),
@@ -132,7 +140,6 @@ def migrate(cursor):
         else:
             print(f"   . spell.{col} ya existe")
 
-    # FK saving_throw_stat_id
     try:
         cursor.execute(
             "ALTER TABLE `spell` ADD CONSTRAINT `spell_saving_throw_stat` "
@@ -142,28 +149,26 @@ def migrate(cursor):
     except mysql.connector.errors.DatabaseError:
         print("   . FK spell_saving_throw_stat ya existe")
 
-    # Tabla spell_damage_type
     if not table_exists(cursor, "spell_damage_type"):
         cursor.execute("""
             CREATE TABLE `spell_damage_type` (
-              `spell_id`       int      NOT NULL,
-              `damage_type_id` int      NOT NULL,
+              `spell_id`       int        NOT NULL,
+              `damage_type_id` int        NOT NULL,
               `always`         tinyint(1) NOT NULL DEFAULT 1,
               PRIMARY KEY (`spell_id`, `damage_type_id`),
-              CONSTRAINT `spell_damage_type_spell`  FOREIGN KEY (`spell_id`)       REFERENCES `spell` (`id`),
-              CONSTRAINT `spell_damage_type_damage` FOREIGN KEY (`damage_type_id`) REFERENCES `damage_type` (`id`)
+              CONSTRAINT `sdt_spell`  FOREIGN KEY (`spell_id`)       REFERENCES `spell` (`id`),
+              CONSTRAINT `sdt_damage` FOREIGN KEY (`damage_type_id`) REFERENCES `damage_type` (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
         """)
         print("   -> tabla spell_damage_type creada")
     else:
         print("   . spell_damage_type ya existe")
 
-    # Tabla spell_upcast
     if not table_exists(cursor, "spell_upcast"):
         cursor.execute("""
             CREATE TABLE `spell_upcast` (
-              `spell_id`    int    NOT NULL,
-              `level`       int    NOT NULL,
+              `spell_id`    int  NOT NULL,
+              `level`       int  NOT NULL,
               `type`        enum('SLOT','CANTRIP') NOT NULL DEFAULT 'SLOT',
               `damage_roll` varchar(20) DEFAULT NULL,
               `desc`        text        DEFAULT NULL,
@@ -175,7 +180,6 @@ def migrate(cursor):
     else:
         print("   . spell_upcast ya existe")
 
-    # Tabla subclass_spell
     if not table_exists(cursor, "subclass_spell"):
         cursor.execute("""
             CREATE TABLE `subclass_spell` (
@@ -197,25 +201,37 @@ def load_spell_schools(cursor) -> dict:
     cursor.execute("SELECT id, name FROM spell_school")
     return {row[1].lower(): row[0] for row in cursor.fetchall()}
 
+
 def load_classes(cursor) -> dict:
     cursor.execute("SELECT id, name FROM `class`")
     return {row[1].lower(): row[0] for row in cursor.fetchall()}
+
 
 def load_subclasses(cursor) -> dict:
     cursor.execute("SELECT id, name FROM `subclass`")
     return {row[1].lower(): row[0] for row in cursor.fetchall()}
 
+
 def load_stats(cursor) -> dict:
     cursor.execute("SELECT id, code FROM stat")
     return {row[1]: row[0] for row in cursor.fetchall()}
+
 
 def load_damage_types(cursor) -> dict:
     cursor.execute("SELECT id, name FROM damage_type")
     return {row[1].lower(): row[0] for row in cursor.fetchall()}
 
 
+def seed_damage_types(cursor, cache: dict):
+    """Garantiza que los 13 tipos canónicos existen antes de procesar spells."""
+    for name in DAMAGE_TYPE_SEED:
+        ensure_damage_type(cursor, name, cache)
+    print(f"   . {len(cache)} damage types disponibles")
+
+
 # ── Seeders ────────────────────────────────────────────────────────────────────
-def seed_spells(cursor, spells: list, school_map: dict, stat_map: dict, damage_type_map: dict) -> dict:
+def seed_spells(cursor, spells: list, school_map: dict,
+                stat_map: dict, damage_type_map: dict) -> dict:
     print("\n── Spells ───────────────────────────────────────────")
     id_map  = {}
     skipped = 0
@@ -265,7 +281,11 @@ def seed_spells(cursor, spells: list, school_map: dict, stat_map: dict, damage_t
                 (s.get("casting_time") or "")[:60],
                 (s.get("range_text") or "")[:40],
                 (s.get("duration") or "")[:60],
-                build_components(s.get("verbal", False), s.get("somatic", False), s.get("material", False)),
+                build_components(
+                    s.get("verbal", False),
+                    s.get("somatic", False),
+                    s.get("material", False),
+                ),
                 (s.get("material_specified") or "")[:255],
                 1 if s.get("concentration") else 0,
                 1 if s.get("ritual") else 0,
@@ -278,20 +298,23 @@ def seed_spells(cursor, spells: list, school_map: dict, stat_map: dict, damage_t
 
         cursor.execute("SELECT id FROM `spell` WHERE name = %s", (name,))
         row = cursor.fetchone()
-        if row:
-            id_map[name] = row[0]
+        if not row:
+            continue
+        spell_id = row[0]
+        id_map[name] = spell_id
 
-            # spell_damage_type — todos always=1 desde la API
-            for dmg_type_name in s.get("damage_types") or []:
-                dmg_type_id = ensure_damage_type(cursor, dmg_type_name, damage_type_map)
-                if dmg_type_id:
-                    cursor.execute(
-                        """
-                        INSERT IGNORE INTO `spell_damage_type` (spell_id, damage_type_id, always)
-                        VALUES (%s, %s, 1)
-                        """,
-                        (row[0], dmg_type_id),
-                    )
+        # spell_damage_type — lookup por nombre, nunca por ID hardcodeado
+        for dmg_type_name in s.get("damage_types") or []:
+            dmg_type_name = (dmg_type_name or "").strip()
+            if not dmg_type_name:
+                continue
+            dmg_type_id = ensure_damage_type(cursor, dmg_type_name, damage_type_map)
+            if dmg_type_id:
+                cursor.execute(
+                    "INSERT IGNORE INTO `spell_damage_type` "
+                    "(spell_id, damage_type_id, always) VALUES (%s, %s, 1)",
+                    (spell_id, dmg_type_id),
+                )
 
     print(f"   -> {len(id_map)} hechizos procesados, {skipped} saltados")
     return id_map
@@ -333,7 +356,8 @@ def seed_spell_upcasts(cursor, spells: list, spell_id_map: dict):
     print(f"   -> {inserted} filas de upcast insertadas")
 
 
-def seed_class_spells(cursor, spells: list, spell_id_map: dict, class_map: dict, subclass_map: dict):
+def seed_class_spells(cursor, spells: list, spell_id_map: dict,
+                      class_map: dict, subclass_map: dict):
     print("\n── Class & subclass spells ──────────────────────────")
     class_ins    = 0
     subclass_ins = 0
@@ -388,16 +412,22 @@ def main():
         subclass_map    = load_subclasses(cursor)
         stat_map        = load_stats(cursor)
         damage_type_map = load_damage_types(cursor)
-        print(f"\n   -> {len(school_map)} escuelas, {len(class_map)} clases, "
-              f"{len(subclass_map)} subclases, {len(stat_map)} stats, "
-              f"{len(damage_type_map)} damage types cargados")
+
+        # Garantizar tipos canónicos aunque seed_items no haya corrido aún
+        seed_damage_types(cursor, damage_type_map)
+        conn.commit()
+
+        print(f"\n   -> {len(school_map)} escuelas  |  {len(class_map)} clases  |  "
+              f"{len(subclass_map)} subclases  |  {len(stat_map)} stats  |  "
+              f"{len(damage_type_map)} damage types")
 
         spell_id_map = seed_spells(cursor, spells, school_map, stat_map, damage_type_map)
         seed_spell_upcasts(cursor, spells, spell_id_map)
         seed_class_spells(cursor, spells, spell_id_map, class_map, subclass_map)
 
         conn.commit()
-        print("\nSeed completado y commiteado.")
+        print("\nSeed completado.")
+
     except Exception as e:
         conn.rollback()
         print(f"\nError — rollback: {e}")
