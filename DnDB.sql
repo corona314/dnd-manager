@@ -680,7 +680,7 @@ CREATE TABLE `damage_type` (
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -689,7 +689,7 @@ CREATE TABLE `damage_type` (
 
 LOCK TABLES `damage_type` WRITE;
 /*!40000 ALTER TABLE `damage_type` DISABLE KEYS */;
-INSERT INTO `damage_type` VALUES (3,'Bludgeoning'),(2,'Piercing'),(1,'Slashing');
+INSERT INTO `damage_type` VALUES (4,'Acid'),(1,'Bludgeoning'),(11,'Cold'),(8,'Fire'),(5,'Force'),(9,'Lightning'),(6,'Necrotic'),(2,'Piercing'),(10,'Poison'),(7,'Psychic'),(12,'Radiant'),(3,'Slashing'),(13,'Thunder');
 /*!40000 ALTER TABLE `damage_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1062,7 +1062,6 @@ CREATE TABLE `spell_damage_type` (
 
 LOCK TABLES `spell_damage_type` WRITE;
 /*!40000 ALTER TABLE `spell_damage_type` DISABLE KEYS */;
-INSERT INTO `spell_damage_type` VALUES (1,4,1),(2,4,1),(17,5,1),(21,6,1),(27,7,1),(28,6,1),(29,3,1),(30,5,1),(32,6,1),(36,8,1),(37,9,1),(39,9,1),(42,6,1),(44,6,1),(47,10,1),(54,11,1),(56,1,1),(59,7,1),(61,5,1),(62,7,1),(63,6,1),(79,8,1),(85,5,1),(87,5,1),(90,7,1),(92,12,1),(93,12,1),(99,7,1),(101,3,1),(102,5,1),(106,2,1),(109,5,1),(114,5,1),(122,6,1),(123,8,1),(124,8,1),(124,11,1),(125,8,1),(126,8,1),(127,8,1),(128,8,1),(128,12,1),(129,8,1),(134,6,1),(137,11,1),(138,11,1),(139,1,1),(141,7,1),(151,12,1),(154,12,1),(158,6,1),(162,8,1),(163,8,1),(164,10,1),(166,6,1),(171,5,1),(173,2,1),(173,11,1),(174,3,1),(174,11,1),(178,8,1),(179,6,1),(180,2,1),(190,9,1),(199,5,1),(209,5,1),(212,3,1),(212,8,1),(213,7,1),(214,7,1),(221,12,1),(226,7,1),(227,7,1),(233,10,1),(236,7,1),(240,4,1),(240,8,1),(240,9,1),(240,10,1),(240,11,1),(241,4,1),(241,5,1),(241,8,1),(241,9,1),(241,10,1),(241,11,1),(243,8,1),(248,10,1),(252,11,1),(253,10,1),(263,12,1),(265,8,1),(267,8,1),(274,13,1),(277,5,1),(278,12,1),(279,9,1),(280,13,1),(292,2,1),(293,6,1),(293,12,1),(294,5,1),(295,12,1),(298,1,1),(299,13,1),(302,12,1),(303,12,1),(310,13,1),(319,12,1),(320,3,1),(322,6,1),(323,7,1),(324,4,1),(325,8,1),(327,7,1),(327,8,1),(327,11,1),(328,7,1),(329,1,1),(329,2,1),(333,8,1),(334,7,1),(335,1,1),(336,3,1),(337,6,1);
 /*!40000 ALTER TABLE `spell_damage_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1378,4 +1377,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-10 12:29:48
+-- Dump completed on 2026-06-12 11:11:08
