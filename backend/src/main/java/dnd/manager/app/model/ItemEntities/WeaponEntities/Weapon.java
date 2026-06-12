@@ -11,8 +11,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
@@ -56,13 +54,9 @@ public class Weapon {
     @JoinColumn(name = "id")
     private Item item;
 
-    @ManyToMany
-    @JoinTable(
-        name = "weapon_weapon_property",
-        joinColumns = @JoinColumn(name = "weapon_id"),
-        inverseJoinColumns = @JoinColumn(name = "property_id")
-    )
-    private List<WeaponProperty> properties;
+    @OneToMany(mappedBy = "weapon", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WeaponWeaponProperty> properties;
+
 
     @OneToMany(mappedBy = "weapon", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WeaponDamage> weaponDamages;

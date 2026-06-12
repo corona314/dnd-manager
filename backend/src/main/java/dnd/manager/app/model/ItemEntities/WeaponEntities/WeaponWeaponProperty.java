@@ -1,6 +1,5 @@
 package dnd.manager.app.model.ItemEntities.WeaponEntities;
 
-import dnd.manager.app.model.DamageType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,12 +12,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "weapon_damage")
+@Table(name = "weapon_weapon_property")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(WeaponDamageId.class)
-public class WeaponDamage {
+@IdClass(WeaponWeaponPropertyId.class)
+public class WeaponWeaponProperty {
   
     @Id
     @ManyToOne
@@ -27,13 +26,10 @@ public class WeaponDamage {
     
     @Id
     @ManyToOne
-    @JoinColumn(name = "damage_type_id", nullable = false)
-    private DamageType damageType;
+    @JoinColumn(name = "property_id", nullable = false)
+    private WeaponProperty property;
 
-    @Column(name = "damage_roll", nullable = false)
-    private String damageRoll;
-
-    @Column(name = "always", nullable = false)
-    private Boolean always;
+    @Column(name = "value", nullable = false, length = 45)
+    private String value;
 
 }

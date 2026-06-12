@@ -50,11 +50,11 @@ public class ItemService {
         .and(hasAttunement(attunement))
         .and(hasRarity(rarity));
         
-        Page<Item> spells = itemRepository.findAll(
+        Page<Item> items = itemRepository.findAll(
                     spec,
                     PageRequest.of(page, size)
             );
-        return spells.map(mapper::toSummaryDto);
+        return items.map(mapper::toSummaryDto);
     }
 
 

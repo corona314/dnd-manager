@@ -55,6 +55,9 @@ public class Item {
     @Column(name = "rarity", length = 20)
     private String rarity;
 
+    @Column(name = "description")
+    private String description;
+
     @OneToOne(mappedBy = "item")
     private Armor armor;
 
