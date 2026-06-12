@@ -15,6 +15,8 @@ import dnd.manager.app.repository.ItemRepositories.ItemRepository;
 import static dnd.manager.app.repository.ItemRepositories.spec.ItemSpecifications.*;
 import static dnd.manager.app.repository.ItemRepositories.spec.ShieldSpecifications.*;
 
+import java.util.List;
+
 @Service
 public class ShieldService {
 
@@ -46,7 +48,7 @@ public class ShieldService {
         Integer priceMax,
         Boolean magic,
         Boolean attunement,
-        String rarity,
+        List<String> rarity,
         Integer acBonus,
         int page,
         int size
@@ -55,7 +57,7 @@ public class ShieldService {
         .where(hasName(name))
         .and(hasWeightBetween(weightMin, weightMax))
         .and(hasPriceBetween(priceMin, priceMax))
-        .and(hasItemType("Shield"))
+        .and(hasItemType(List.of("Shield")))
         .and(isMagic(magic))
         .and(hasAttunement(attunement))
         .and(hasRarity(rarity))

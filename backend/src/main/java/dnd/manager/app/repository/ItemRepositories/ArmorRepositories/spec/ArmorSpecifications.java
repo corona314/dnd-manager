@@ -1,5 +1,7 @@
 package dnd.manager.app.repository.ItemRepositories.ArmorRepositories.spec;
 
+import java.util.List;
+
 import org.springframework.data.jpa.domain.Specification;
 import dnd.manager.app.model.ItemEntities.Item;
 
@@ -47,12 +49,12 @@ public class ArmorSpecifications {
         };
     }
 
-    public static Specification<Item> hasArmorType(String armorType) {
+    public static Specification<Item> hasArmorType(List<String> armorType) {
         return (root, query, cb) -> {
-            if (armorType == null) return null;
+            if (armorType == null || armorType.isEmpty()) return null;
             Join<Item, Armor> armor = root.join("armor");
             Join<Armor, ArmorType> armorTypeJoin = armor.join("armorType");
-            return cb.equal(armorTypeJoin.get("name"), armorType);
+            return cb.in(armorTypeJoin.get("name")).value(armorType);
         };
     }
 }

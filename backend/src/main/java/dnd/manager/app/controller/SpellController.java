@@ -9,7 +9,6 @@ import dnd.manager.app.service.SpellServices.SpellService;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +19,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/api/spells")
 public class SpellController {
     
-    @Autowired
-    private SpellService service;
+    private final SpellService service;
+
+
+    SpellController(SpellService service) {
+        this.service = service;
+    }
 
 
     @GetMapping
@@ -29,17 +32,17 @@ public class SpellController {
         @RequestParam(required = false) String name,
         @RequestParam(required = false) Integer levelMin,
         @RequestParam(required = false) Integer levelMax,
-        @RequestParam(required = false) Integer schoolId,
+        @RequestParam(required = false) List<Integer> schoolId,
         @RequestParam(required = false) String components,
         @RequestParam(required = false) Boolean concentration,
         @RequestParam(required = false) Boolean ritual,
         @RequestParam(required = false) String savingThrowStat,
         @RequestParam(required = false) Boolean attackRoll,
-        @RequestParam(required = false) List<String> damageTypes,
+        @RequestParam(required = false) List<String> damageType,
         @RequestParam(defaultValue = "0")  int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(service.findSpells(name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowStat, attackRoll, damageTypes, page, size));
+        return ResponseEntity.ok(service.findSpells(name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowStat, attackRoll, damageType, page, size));
     }
 
     @GetMapping("/{id}")

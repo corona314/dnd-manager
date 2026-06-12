@@ -48,7 +48,7 @@ public class WeaponService {
         Integer priceMax,
         Boolean magic,
         Boolean attunement,
-        String rarity,
+        List<String> rarity,
         Integer rangeMin,
         Integer rangeMax,
         Integer rangeNormalMin,
@@ -64,7 +64,7 @@ public class WeaponService {
         .where(hasName(name))
         .and(hasWeightBetween(weightMin, weightMax))
         .and(hasPriceBetween(priceMin, priceMax))
-        .and(hasItemType("Weapon"))
+        .and(hasItemType(List.of("Weapon")))
         .and(isMagic(magic))
         .and(hasAttunement(attunement))
         .and(hasRarity(rarity))

@@ -12,7 +12,11 @@ import dnd.manager.app.dto.ItemDto.ArmorDto.ArmorSummaryDto;
 import dnd.manager.app.mapper.ItemMapper;
 import dnd.manager.app.model.ItemEntities.Item;
 import dnd.manager.app.repository.ItemRepositories.ItemRepository;
+
 import static dnd.manager.app.repository.ItemRepositories.spec.ItemSpecifications.*;
+
+import java.util.List;
+
 import static dnd.manager.app.repository.ItemRepositories.ArmorRepositories.spec.ArmorSpecifications.*;
 
 @Service
@@ -45,12 +49,12 @@ public class ArmorService {
         Integer priceMax,
         Boolean magic,
         Boolean attunement,
-        String rarity,
+        List<String> rarity,
         Integer acMin,
         Integer acMax,
         Integer str,
         Boolean stealthDis,
-        String armorType,
+        List<String> armorType,
         int page,
         int size
     ){
@@ -58,7 +62,7 @@ public class ArmorService {
         .where(hasName(name))
         .and(hasWeightBetween(weightMin, weightMax))
         .and(hasPriceBetween(priceMin, priceMax))
-        .and(hasItemType("Armor"))
+        .and(hasItemType(List.of("Armor")))
         .and(isMagic(magic))
         .and(hasAttunement(attunement))
         .and(hasRarity(rarity))

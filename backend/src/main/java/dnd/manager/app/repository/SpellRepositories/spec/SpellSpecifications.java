@@ -34,9 +34,9 @@ public class SpellSpecifications {
         };
     }
 
-    public static Specification<Spell> hasSchool(Integer schoolId){
+    public static Specification<Spell> hasSchool(List<Integer> schoolIds){
         return (root, query, cb) ->
-            schoolId == null ? null : cb.equal(root.get("school").get("id"), schoolId);
+            schoolIds == null || schoolIds.isEmpty() ? null : cb.in(root.get("school").get("id")).value(schoolIds);
     }
 
     public static Specification<Spell> hasComponent(String components){
@@ -82,6 +82,8 @@ public class SpellSpecifications {
         return (root, query, cb) ->
             attackRoll == null ? null : cb.equal(root.get("attackRoll"), attackRoll);
     }    
+    
+    
     
     public static Specification<Spell> hasDamage(List<String> damageTypes) {
         return (root, query, cb) -> {

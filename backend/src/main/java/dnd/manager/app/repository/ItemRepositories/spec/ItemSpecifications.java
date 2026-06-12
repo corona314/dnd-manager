@@ -1,6 +1,5 @@
 package dnd.manager.app.repository.ItemRepositories.spec;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -45,9 +44,9 @@ public class ItemSpecifications {
         };
     }
 
-    public static Specification<Item> hasItemType(String itemType) {
+    public static Specification<Item> hasItemType(List<String> itemType) {
         return (root, query, cb) -> 
-            itemType == null ? null : cb.equal(root.get("itemType").get("name"), itemType);
+            itemType == null || itemType.isEmpty() ? null : cb.in(root.get("itemType").get("name")).value(itemType);
     }
 
     public static Specification<Item> isMagic(Boolean magic) {
@@ -60,14 +59,8 @@ public class ItemSpecifications {
             attunement == null ? null : cb.equal(root.get("attunement"), attunement);
     }
 
-    public static Specification<Item> hasRarity(String rarity) {
-        return (root, query, cb) -> {
-            if(rarity == null || rarity.isBlank()) return null;
-            List<String> rarities = Arrays.stream(rarity.split(","))
-                    .map(String::trim)
-                    .toList();
-
-            return root.get("rarity").in(rarities);
-        };
+    public static Specification<Item> hasRarity(List<String> rarity) {
+        return (root, query, cb) -> 
+            rarity == null || rarity.isEmpty() ? null : cb.in(root.get("rarity")).value(rarity);
     }
 }

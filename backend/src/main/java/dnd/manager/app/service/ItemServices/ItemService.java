@@ -12,6 +12,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import static dnd.manager.app.repository.ItemRepositories.spec.ItemSpecifications.*;
 
+import java.util.List;
+
 
 @Service
 public class ItemService {
@@ -34,10 +36,10 @@ public class ItemService {
         Float weightMax,
         Integer priceMin,
         Integer priceMax,
-        String itemType,
+        List<String> itemType,
         Boolean magic,
         Boolean attunement,
-        String rarity,
+        List<String> rarity,
         int page,
         int size
     ){

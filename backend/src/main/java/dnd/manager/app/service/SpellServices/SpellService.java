@@ -35,7 +35,7 @@ public class SpellService {
         String name,
         Integer levelMin,
         Integer levelMax,
-        Integer schoolId,
+        List<Integer> schoolIds,
         String components,
         Boolean concentration,
         Boolean ritual,
@@ -48,7 +48,7 @@ public class SpellService {
         Specification<Spell> spec = Specification
         .where(hasName(name))
         .and(hasLevelBetween(levelMin, levelMax))
-        .and(hasSchool(schoolId))
+        .and(hasSchool(schoolIds))
         .and(hasComponent(components))
         .and(isConcentration(concentration))
         .and(isRitual(ritual))
