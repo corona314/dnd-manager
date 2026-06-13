@@ -28,8 +28,8 @@ public class ClassController {
     ClassController(ClassService service) {
         this.service = service;
     }
-
-    /*
+/* 
+    
     @GetMapping
     public ResponseEntity<Page<ClassSummaryDto>> classes(
         @RequestParam(required = false) String name,
