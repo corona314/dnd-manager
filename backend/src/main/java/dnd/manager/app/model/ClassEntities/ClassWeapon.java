@@ -1,6 +1,7 @@
 package dnd.manager.app.model.ClassEntities;
 
-import dnd.manager.app.model.FeatureEntities.Feature;
+import dnd.manager.app.model.ItemEntities.WeaponEntities.WeaponCategory;
+import dnd.manager.app.model.ItemEntities.WeaponEntities.WeaponProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,12 +15,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "class_feature")
+@Table(name = "class_weapon")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(ClassFeatureId.class)
-public class ClassFeature {
+@IdClass(ClassWeaponId.class)
+public class ClassWeapon {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,10 +29,10 @@ public class ClassFeature {
     
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "feature_id", insertable = false, updatable = false)
-    private Feature feature;
+    @JoinColumn(name = "weapon_category_id", insertable = false, updatable = false)
+    private WeaponCategory weaponCategory;
     
-    @Column(name = "level", nullable = false)
-    private int level;
+    @Column(name = "required_weapon_property_id")
+    private WeaponProperty requiredWeaponProperty;
 
 }

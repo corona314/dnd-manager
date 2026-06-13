@@ -27,6 +27,26 @@ public class ClassEntity {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @Column(name = "hit_point_die", nullable = false)
+    private String hitPointDie;
+
+    @Column(name = "shield", nullable = false)
+    private Boolean shield;
+
+    @OneToMany(mappedBy = "classEntity")
+    private List<ClassSavingThrow> classSavingThrows;
+
     @OneToMany(mappedBy = "classEntity")
     private List<ClassFeature> classFeatures;
+
+    @OneToMany(mappedBy = "classEntity")
+    private List<ClassWeapon> classWeapons;
+
+    @OneToMany(mappedBy = "classEntity")
+    private List<ClassArmorType> classArmorTypes;
+
+    @OneToMany(mappedBy = "classEntity")
+    private List<ClassSkill> classSkills;
+
+
 }

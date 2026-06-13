@@ -1,7 +1,6 @@
 package dnd.manager.app.model.ClassEntities;
 
-import dnd.manager.app.model.FeatureEntities.Feature;
-import jakarta.persistence.Column;
+import dnd.manager.app.model.ItemEntities.ArmorEntities.ArmorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -14,24 +13,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "class_feature")
+@Table(name = "class_armor_type")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(ClassFeatureId.class)
-public class ClassFeature {
+@IdClass(ClassArmorTypeId.class)
+public class ClassArmorType {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id", insertable = false, updatable = false)
     private ClassEntity classEntity;
-    
+
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "feature_id", insertable = false, updatable = false)
-    private Feature feature;
-    
-    @Column(name = "level", nullable = false)
-    private int level;
+    @JoinColumn(name = "armor_id", insertable = false, updatable = false)
+    private ArmorType armorType;
 
 }
