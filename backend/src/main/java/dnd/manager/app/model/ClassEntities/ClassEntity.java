@@ -40,6 +40,9 @@ public class ClassEntity {
     private List<ClassFeature> features;
 
     @OneToMany(mappedBy = "classEntity")
+    private List<ClassSpell> spells;
+
+    @OneToMany(mappedBy = "classEntity")
     private List<ClassWeapon> weapons;
 
     @OneToMany(mappedBy = "classEntity")

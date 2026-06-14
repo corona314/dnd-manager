@@ -16,6 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `ability`
+--
+
+DROP TABLE IF EXISTS `ability`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ability` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `code` char(3) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ability_catalogcol_UNIQUE` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='All the abilities';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ability`
+--
+
+LOCK TABLES `ability` WRITE;
+/*!40000 ALTER TABLE `ability` DISABLE KEYS */;
+INSERT INTO `ability` VALUES (6,'CHA'),(3,'CON'),(2,'DEX'),(4,'INT'),(1,'STR'),(5,'WIS');
+/*!40000 ALTER TABLE `ability` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `armor`
 --
 
@@ -98,6 +123,33 @@ INSERT INTO `background` VALUES (1,'Acolyte',''),(2,'Criminal',''),(3,'Sage','')
 UNLOCK TABLES;
 
 --
+-- Table structure for table `background_ability`
+--
+
+DROP TABLE IF EXISTS `background_ability`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `background_ability` (
+  `background_id` int NOT NULL,
+  `ability_id` int NOT NULL,
+  PRIMARY KEY (`background_id`,`ability_id`),
+  KEY `background_ability_ability` (`ability_id`),
+  CONSTRAINT `background_ability_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`),
+  CONSTRAINT `background_ability_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `background_ability`
+--
+
+LOCK TABLES `background_ability` WRITE;
+/*!40000 ALTER TABLE `background_ability` DISABLE KEYS */;
+INSERT INTO `background_ability` VALUES (4,1),(2,2),(4,2),(2,3),(3,3),(4,3),(1,4),(2,4),(3,4),(1,5),(3,5),(1,6);
+/*!40000 ALTER TABLE `background_ability` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `background_feat`
 --
 
@@ -152,33 +204,6 @@ INSERT INTO `background_skill` VALUES (4,1),(2,3),(2,4),(3,5),(3,6),(1,9),(1,11)
 UNLOCK TABLES;
 
 --
--- Table structure for table `background_ability`
---
-
-DROP TABLE IF EXISTS `background_ability`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `background_ability` (
-  `background_id` int NOT NULL,
-  `ability_id` int NOT NULL,
-  PRIMARY KEY (`background_id`,`ability_id`),
-  KEY `background_ability_ability` (`ability_id`),
-  CONSTRAINT `background_ability_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
-  CONSTRAINT `background_ability_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `background_ability`
---
-
-LOCK TABLES `background_ability` WRITE;
-/*!40000 ALTER TABLE `background_ability` DISABLE KEYS */;
-INSERT INTO `background_ability` VALUES (4,1),(2,2),(4,2),(2,3),(3,3),(4,3),(1,4),(2,4),(3,4),(1,5),(3,5),(1,6);
-/*!40000 ALTER TABLE `background_ability` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `background_tool`
 --
 
@@ -218,8 +243,8 @@ CREATE TABLE `bonus_feat_ability` (
   `value` int NOT NULL DEFAULT '1',
   PRIMARY KEY (`feat_id`,`ability_id`),
   KEY `feat_ability_bonus_ability` (`ability_id`),
-  CONSTRAINT `feat_ability_bonus_feat` FOREIGN KEY (`feat_id`) REFERENCES `feat` (`id`),
-  CONSTRAINT `feat_ability_bonus_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
+  CONSTRAINT `feat_ability_bonus_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`),
+  CONSTRAINT `feat_ability_bonus_feat` FOREIGN KEY (`feat_id`) REFERENCES `feat` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -230,6 +255,33 @@ CREATE TABLE `bonus_feat_ability` (
 LOCK TABLES `bonus_feat_ability` WRITE;
 /*!40000 ALTER TABLE `bonus_feat_ability` DISABLE KEYS */;
 /*!40000 ALTER TABLE `bonus_feat_ability` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `bonus_feature_ability`
+--
+
+DROP TABLE IF EXISTS `bonus_feature_ability`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `bonus_feature_ability` (
+  `feature_id` int NOT NULL,
+  `ability_id` int NOT NULL,
+  `value` int NOT NULL,
+  PRIMARY KEY (`feature_id`,`ability_id`),
+  KEY `bonus_feature_ability_ability` (`ability_id`),
+  CONSTRAINT `bonus_feature_ability_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`),
+  CONSTRAINT `bonus_feature_ability_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `bonus_feature_ability`
+--
+
+LOCK TABLES `bonus_feature_ability` WRITE;
+/*!40000 ALTER TABLE `bonus_feature_ability` DISABLE KEYS */;
+/*!40000 ALTER TABLE `bonus_feature_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -258,33 +310,6 @@ LOCK TABLES `bonus_feature_item` WRITE;
 /*!40000 ALTER TABLE `bonus_feature_item` DISABLE KEYS */;
 INSERT INTO `bonus_feature_item` VALUES (264,264,1),(264,273,1),(264,274,1),(264,275,1),(264,276,1),(264,311,1),(264,320,1),(264,321,1),(264,329,1),(264,388,1),(264,419,1),(264,461,1),(264,462,1),(264,463,1),(264,464,1),(264,465,1),(264,466,1),(264,467,1),(264,468,1),(264,469,1),(264,470,1),(264,471,1),(264,472,1),(264,473,1),(264,474,1),(264,475,1),(264,476,1),(264,477,1),(264,478,1),(264,479,1),(264,480,1),(264,481,1),(264,482,1),(264,483,1),(264,484,1),(264,485,1),(264,486,1),(264,487,1),(264,488,1),(264,489,1),(264,490,1),(264,491,1),(264,492,1),(264,493,1),(264,494,1),(264,495,1),(264,496,1),(264,497,1),(264,498,1),(264,502,1),(264,509,1),(264,512,1),(264,518,1),(264,521,1),(264,528,1),(264,529,1),(264,530,1),(264,533,1),(264,539,1),(264,597,1),(264,600,1),(264,607,1),(264,610,1),(264,613,1),(264,619,1),(264,622,1),(264,623,1),(264,624,1),(264,625,1),(264,626,1),(264,627,1),(264,628,1),(264,630,1),(264,632,1),(264,641,1),(264,654,1),(264,657,1),(264,715,1),(264,720,1),(264,742,1),(264,747,1),(264,794,1),(264,801,1),(264,806,1),(264,809,1),(264,812,1),(264,817,1),(264,850,1),(264,910,1),(264,913,1),(264,955,1),(265,266,3),(265,278,3),(265,313,3),(265,323,3),(265,331,3),(265,335,3),(265,336,3),(265,337,3),(265,338,3),(265,339,3),(265,340,3),(265,341,3),(265,342,3),(265,343,3),(265,344,3),(265,345,3),(265,346,3),(265,347,3),(265,348,3),(265,349,3),(265,350,3),(265,351,3),(265,352,3),(265,353,3),(265,354,3),(265,355,3),(265,356,3),(265,357,3),(265,358,3),(265,359,3),(265,360,3),(265,361,3),(265,362,3),(265,363,3),(265,364,3),(265,365,3),(265,366,3),(265,367,3),(265,368,3),(265,369,3),(265,370,3),(265,371,3),(265,372,3),(265,394,3),(265,421,3),(265,504,3),(265,511,3),(265,514,3),(265,520,3),(265,523,3),(265,532,3),(265,535,3),(265,541,3),(265,549,3),(265,550,3),(265,551,3),(265,552,3),(265,553,3),(265,554,3),(265,555,3),(265,556,3),(265,557,3),(265,558,3),(265,559,3),(265,560,3),(265,561,3),(265,562,3),(265,563,3),(265,564,3),(265,565,3),(265,566,3),(265,567,3),(265,568,3),(265,569,3),(265,570,3),(265,571,3),(265,572,3),(265,573,3),(265,574,3),(265,575,3),(265,576,3),(265,577,3),(265,578,3),(265,579,3),(265,580,3),(265,581,3),(265,582,3),(265,583,3),(265,584,3),(265,585,3),(265,586,3),(265,587,3),(265,599,3),(265,602,3),(265,609,3),(265,612,3),(265,615,3),(265,621,3),(265,634,3),(265,643,3),(265,656,3),(265,659,3),(265,717,3),(265,722,3),(265,744,3),(265,749,3),(265,781,3),(265,796,3),(265,803,3),(265,808,3),(265,811,3),(265,814,3),(265,819,3),(265,830,3),(265,852,3),(265,892,3),(265,893,3),(265,894,3),(265,895,3),(265,912,3),(265,915,3),(265,957,3),(266,265,2),(266,277,2),(266,312,2),(266,322,2),(266,330,2),(266,420,2),(266,503,2),(266,510,2),(266,513,2),(266,519,2),(266,522,2),(266,531,2),(266,534,2),(266,540,2),(266,598,2),(266,601,2),(266,608,2),(266,611,2),(266,614,2),(266,620,2),(266,633,2),(266,642,2),(266,655,2),(266,658,2),(266,664,2),(266,665,2),(266,666,2),(266,667,2),(266,668,2),(266,669,2),(266,670,2),(266,671,2),(266,672,2),(266,673,2),(266,674,2),(266,675,2),(266,676,2),(266,677,2),(266,678,2),(266,679,2),(266,680,2),(266,681,2),(266,682,2),(266,683,2),(266,684,2),(266,685,2),(266,686,2),(266,687,2),(266,688,2),(266,689,2),(266,690,2),(266,691,2),(266,692,2),(266,693,2),(266,694,2),(266,695,2),(266,696,2),(266,697,2),(266,698,2),(266,699,2),(266,700,2),(266,701,2),(266,716,2),(266,721,2),(266,743,2),(266,748,2),(266,792,2),(266,795,2),(266,802,2),(266,807,2),(266,810,2),(266,813,2),(266,818,2),(266,832,2),(266,834,2),(266,835,2),(266,842,2),(266,851,2),(266,911,2),(266,914,2),(266,956,2),(267,228,2),(267,259,2),(267,286,2),(267,289,2),(267,298,2),(267,301,2),(267,334,2),(267,392,2),(267,393,2),(267,526,2),(267,547,2),(267,605,2),(267,708,2),(267,725,2),(267,751,2),(267,787,2),(267,799,2),(267,823,2),(267,829,2),(267,840,2),(268,226,1),(268,288,1),(268,297,1),(268,300,1),(268,308,1),(268,373,1),(268,374,1),(268,375,1),(268,376,1),(268,377,1),(268,378,1),(268,379,1),(268,380,1),(268,381,1),(268,382,1),(268,383,1),(268,384,1),(268,387,1),(268,398,1),(268,399,1),(268,505,1),(268,525,1),(268,546,1),(268,604,1),(268,707,1),(268,724,1),(268,750,1),(268,762,1),(268,780,1),(268,786,1),(268,789,1),(268,798,1),(268,822,1),(268,839,1),(269,227,3),(269,290,3),(269,299,3),(269,302,3),(269,527,3),(269,548,3),(269,606,3),(269,709,3),(269,726,3),(269,752,3),(269,788,3),(269,800,3),(269,824,3),(269,841,3);
 /*!40000 ALTER TABLE `bonus_feature_item` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `bonus_feature_ability`
---
-
-DROP TABLE IF EXISTS `bonus_feature_ability`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `bonus_feature_ability` (
-  `feature_id` int NOT NULL,
-  `ability_id` int NOT NULL,
-  `value` int NOT NULL,
-  PRIMARY KEY (`feature_id`,`ability_id`),
-  KEY `bonus_feature_ability_ability` (`ability_id`),
-  CONSTRAINT `bonus_feature_ability_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`),
-  CONSTRAINT `bonus_feature_ability_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `bonus_feature_ability`
---
-
-LOCK TABLES `bonus_feature_ability` WRITE;
-/*!40000 ALTER TABLE `bonus_feature_ability` DISABLE KEYS */;
-/*!40000 ALTER TABLE `bonus_feature_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -332,6 +357,34 @@ CREATE TABLE `character` (
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `character_ability`
+--
+
+DROP TABLE IF EXISTS `character_ability`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_ability` (
+  `character_id` int NOT NULL,
+  `ability_id` int NOT NULL,
+  `base_value` int NOT NULL,
+  PRIMARY KEY (`character_id`,`ability_id`),
+  KEY `character_id` (`character_id`),
+  KEY `ability_id` (`ability_id`),
+  CONSTRAINT `character_ability_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
+  CONSTRAINT `character_ability_ibfk_2` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_ability`
+--
+
+LOCK TABLES `character_ability` WRITE;
+/*!40000 ALTER TABLE `character_ability` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -433,8 +486,8 @@ CREATE TABLE `character_saving_throw` (
   `ability_id` int NOT NULL,
   PRIMARY KEY (`character_id`,`ability_id`),
   KEY `character_saving_throw_ability` (`ability_id`),
-  CONSTRAINT `character_saving_throw_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
-  CONSTRAINT `character_saving_throw_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
+  CONSTRAINT `character_saving_throw_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`),
+  CONSTRAINT `character_saving_throw_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -507,34 +560,6 @@ LOCK TABLES `character_spell` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `character_ability`
---
-
-DROP TABLE IF EXISTS `character_ability`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `character_ability` (
-  `character_id` int NOT NULL,
-  `ability_id` int NOT NULL,
-  `base_value` int NOT NULL,
-  PRIMARY KEY (`character_id`,`ability_id`),
-  KEY `character_id` (`character_id`),
-  KEY `ability_id` (`ability_id`),
-  CONSTRAINT `character_ability_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
-  CONSTRAINT `character_ability_ibfk_2` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `character_ability`
---
-
-LOCK TABLES `character_ability` WRITE;
-/*!40000 ALTER TABLE `character_ability` DISABLE KEYS */;
-/*!40000 ALTER TABLE `character_ability` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `character_tool`
 --
 
@@ -584,7 +609,7 @@ CREATE TABLE `class` (
 
 LOCK TABLES `class` WRITE;
 /*!40000 ALTER TABLE `class` DISABLE KEYS */;
-INSERT INTO `class` VALUES (1,'Barbarian','1d12',0),(2,'Bard','1d8',0),(3,'Cleric','1d8',0),(4,'Druid','1d8',0),(5,'Fighter','1d10',0),(6,'Monk','1d8',0),(7,'Paladin','1d10',0),(8,'Ranger','1d10',0),(9,'Rogue','1d8',0),(10,'Sorcerer','1d6',0),(11,'Warlock','1d8',0),(12,'Wizard','1d6',0);
+INSERT INTO `class` VALUES (1,'Barbarian','1d12',1),(2,'Bard','1d8',0),(3,'Cleric','1d8',1),(4,'Druid','1d8',1),(5,'Fighter','1d10',1),(6,'Monk','1d8',0),(7,'Paladin','1d10',1),(8,'Ranger','1d10',1),(9,'Rogue','1d8',0),(10,'Sorcerer','1d6',0),(11,'Warlock','1d8',0),(12,'Wizard','1d6',0);
 /*!40000 ALTER TABLE `class` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -611,6 +636,7 @@ CREATE TABLE `class_armor_type` (
 
 LOCK TABLES `class_armor_type` WRITE;
 /*!40000 ALTER TABLE `class_armor_type` DISABLE KEYS */;
+INSERT INTO `class_armor_type` VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(7,1),(8,1),(9,1),(11,1),(1,2),(3,2),(5,2),(7,2),(8,2),(5,3),(7,3);
 /*!40000 ALTER TABLE `class_armor_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -654,8 +680,8 @@ CREATE TABLE `class_saving_throw` (
   `ability_id` int NOT NULL,
   PRIMARY KEY (`class_id`,`ability_id`),
   KEY `class_saving_throw_ability` (`ability_id`),
-  CONSTRAINT `class_saving_throw_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
-  CONSTRAINT `class_saving_throw_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
+  CONSTRAINT `class_saving_throw_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`),
+  CONSTRAINT `class_saving_throw_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -692,6 +718,7 @@ CREATE TABLE `class_skill` (
 
 LOCK TABLES `class_skill` WRITE;
 /*!40000 ALTER TABLE `class_skill` DISABLE KEYS */;
+INSERT INTO `class_skill` VALUES (1,1),(2,1),(5,1),(6,1),(7,1),(8,1),(9,1),(2,2),(5,2),(6,2),(9,2),(2,3),(9,3),(2,4),(6,4),(8,4),(9,4),(2,5),(4,5),(10,5),(11,5),(12,5),(2,6),(3,6),(5,6),(6,6),(11,6),(12,6),(2,7),(8,7),(9,7),(11,7),(12,7),(1,8),(2,8),(4,8),(8,8),(11,8),(12,8),(2,9),(3,9),(4,9),(6,9),(7,9),(10,9),(11,9),(12,9),(1,10),(2,10),(4,10),(5,10),(8,10),(2,11),(3,11),(4,11),(5,11),(6,11),(7,11),(8,11),(9,11),(10,11),(12,11),(2,12),(3,12),(7,12),(12,12),(1,13),(2,13),(4,13),(5,13),(8,13),(9,13),(1,14),(2,14),(4,14),(5,14),(8,14),(2,15),(9,15),(10,15),(11,15),(1,16),(2,16),(4,16),(5,16),(7,16),(9,16),(10,16),(11,16),(2,17),(2,18),(3,18),(5,18),(7,18),(9,18),(10,18);
 /*!40000 ALTER TABLE `class_skill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1201,31 +1228,6 @@ INSERT INTO `spell_upcast` VALUES (1,3,'SLOT','5d4',NULL),(1,4,'SLOT','6d4',NULL
 UNLOCK TABLES;
 
 --
--- Table structure for table `ability`
---
-
-DROP TABLE IF EXISTS `ability`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `ability` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `code` char(3) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `ability_catalogcol_UNIQUE` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='All the abilities';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `ability`
---
-
-LOCK TABLES `ability` WRITE;
-/*!40000 ALTER TABLE `ability` DISABLE KEYS */;
-INSERT INTO `ability` VALUES (6,'CHA'),(3,'CON'),(2,'DEX'),(4,'INT'),(1,'STR'),(5,'WIS');
-/*!40000 ALTER TABLE `ability` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `subclass`
 --
 
@@ -1459,4 +1461,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-13 13:33:45
+-- Dump completed on 2026-06-14 23:48:47

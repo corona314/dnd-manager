@@ -2,7 +2,6 @@ package dnd.manager.app.mapper;
 
 import java.util.Comparator;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dnd.manager.app.dto.ClassDto.ClassArmorTypeDto;
@@ -16,14 +15,17 @@ import dnd.manager.app.model.ClassEntities.ClassEntity;
 import dnd.manager.app.model.ClassEntities.ClassFeature;
 import dnd.manager.app.model.ClassEntities.ClassSavingThrow;
 import dnd.manager.app.model.ClassEntities.ClassSkill;
+import dnd.manager.app.model.ClassEntities.ClassSpell;
 
 @Component
 public class ClassMapper {
 
     private final FeatureMapper featureMapper;
+    private final SpellMapper spellMapper;
 
-    ClassMapper(FeatureMapper featureMapper) {
+    ClassMapper(FeatureMapper featureMapper, SpellMapper spellMapper) {
         this.featureMapper = featureMapper;
+        this.spellMapper = spellMapper;
     }
 
     public ClassSummaryDto toSummaryDto(ClassEntity e) {
@@ -41,6 +43,7 @@ public class ClassMapper {
             e.getSkills().stream().map(this::toClassSkillDto).toList(),
             e.getSavingThrows().stream().map(this::toClassSavingThrowDto).toList(),
             e.getFeatures().stream().sorted(Comparator.comparingInt(ClassFeature::getLevel)).map(this::toClassFeatureDto).toList(),
+            e.getSpells().stream().sorted(Comparator.comparingInt((ClassSpell cs) -> cs.getSpell().getLevel())).map(cs -> spellMapper.toSummaryDto(cs.getSpell())).toList(),
             e.getArmorTypes().stream().map(this::toClassArmorTypeDto).toList()
         );
     }
