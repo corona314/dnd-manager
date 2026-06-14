@@ -73,9 +73,9 @@ public class SpellSpecifications {
             ritual == null ? null : cb.equal(root.get("ritual"), ritual);
     }
 
-    public static Specification<Spell> hasSavingThrowStat(String stat){
+    public static Specification<Spell> hasSavingThrowAbility(String ability){
         return (root, query, cb) ->
-            stat == null ? null : cb.equal(root.get("savingThrowStat").get("code"), stat);
+            ability == null ? null : cb.equal(root.get("savingThrowAbility").get("code"), ability);
     }
 
     public static Specification<Spell> isAttackRoll(Boolean attackRoll){

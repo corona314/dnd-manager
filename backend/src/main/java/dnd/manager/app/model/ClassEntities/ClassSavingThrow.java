@@ -1,6 +1,6 @@
 package dnd.manager.app.model.ClassEntities;
 
-import dnd.manager.app.model.Stat;
+import dnd.manager.app.model.Ability;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -28,7 +28,7 @@ public class ClassSavingThrow {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stat_id", nullable = false)
-    private Stat stat;
+    @JoinColumn(name = "ability_id", nullable = false)
+    private Ability ability;
 
 }

@@ -4,7 +4,7 @@ seed_backgrounds.py
 Pobla las siguientes tablas a partir de /v2/backgrounds/ (SRD 2024):
 
     background       → nombre y descripcion
-    background_stat  → los 3 stats disponibles
+    background_ability  → los 3 abilities disponibles
     background_skill → las 2 skill proficiencies
     background_feat  → la dote (crea en feat si no existe)
     background_tool  → la tool proficiency (crea en tool si no existe)
@@ -85,19 +85,19 @@ def parse_list(text: str) -> list[str]:
 def migrate(cursor):
     print("\n── Migraciones ──────────────────────────────────────")
 
-    if not table_exists(cursor, "background_stat"):
+    if not table_exists(cursor, "background_ability"):
         cursor.execute("""
-            CREATE TABLE `background_stat` (
+            CREATE TABLE `background_ability` (
               `background_id` int NOT NULL,
-              `stat_id`       int NOT NULL,
-              PRIMARY KEY (`background_id`, `stat_id`),
-              CONSTRAINT `background_stat_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
-              CONSTRAINT `background_stat_stat`       FOREIGN KEY (`stat_id`)       REFERENCES `stat` (`id`)
+              `ability_id`       int NOT NULL,
+              PRIMARY KEY (`background_id`, `ability_id`),
+              CONSTRAINT `background_ability_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
+              CONSTRAINT `background_ability_ability`       FOREIGN KEY (`ability_id`)       REFERENCES `ability` (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
         """)
-        print("   -> background_stat creada")
+        print("   -> background_ability creada")
     else:
-        print("   . background_stat ya existe")
+        print("   . background_ability ya existe")
 
     if not table_exists(cursor, "background_feat"):
         cursor.execute("""
@@ -158,9 +158,9 @@ def migrate(cursor):
 
 
 # ── Loaders ────────────────────────────────────────────────────────────────────
-def load_stats(cursor) -> dict:
-    """Devuelve {stat_code: stat_id} y {stat_name_lower: stat_id}"""
-    cursor.execute("SELECT id, code FROM stat")
+def load_abilities(cursor) -> dict:
+    """Devuelve {ability_code: ability_id} y {ability_name_lower: ability_id}"""
+    cursor.execute("SELECT id, code FROM ability")
     by_code = {row[1]: row[0] for row in cursor.fetchall()}
     # tambien por nombre completo
     by_name = {v.lower(): k for k, v in STAT_NAME_MAP.items()}
@@ -168,7 +168,7 @@ def load_stats(cursor) -> dict:
     for name, code in STAT_NAME_MAP.items():
         if code in by_code:
             result[name] = by_code[code]
-    return result  # {name_lower: stat_id}
+    return result  # {name_lower: ability_id}
 
 
 def load_skills(cursor) -> dict:
@@ -192,7 +192,7 @@ def ensure_tool(cursor, name: str) -> int:
 def seed_backgrounds(cursor, backgrounds: list):
     print("\n── Backgrounds ──────────────────────────────────────")
 
-    stat_map  = load_stats(cursor)
+    ability_map  = load_abilities(cursor)
     skill_map = load_skills(cursor)
 
     for b in backgrounds:
@@ -217,16 +217,16 @@ def seed_backgrounds(cursor, backgrounds: list):
 
             # ── Stats ──────────────────────────────────────────
             if btype == "ability_score":
-                for stat_name in parse_list(bdesc):
-                    stat_id = stat_map.get(stat_name.lower())
-                    if stat_id:
+                for ability_name in parse_list(bdesc):
+                    ability_id = ability_map.get(ability_name.lower())
+                    if ability_id:
                         cursor.execute(
-                            "INSERT IGNORE INTO `background_stat` (background_id, stat_id) VALUES (%s, %s)",
-                            (bg_id, stat_id),
+                            "INSERT IGNORE INTO `background_ability` (background_id, ability_id) VALUES (%s, %s)",
+                            (bg_id, ability_id),
                         )
-                        print(f"     stat: {stat_name}")
+                        print(f"     ability: {ability_name}")
                     else:
-                        print(f"     ? stat '{stat_name}' no encontrado")
+                        print(f"     ? ability '{ability_name}' no encontrado")
 
             # ── Skills ─────────────────────────────────────────
             elif btype == "skill_proficiency":

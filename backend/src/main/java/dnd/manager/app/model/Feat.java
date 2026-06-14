@@ -2,7 +2,7 @@ package dnd.manager.app.model;
 
 import java.util.List;
 
-import dnd.manager.app.model.BonusEntities.BonusFeatStat;
+import dnd.manager.app.model.BonusEntities.BonusFeatAbility;
 import dnd.manager.app.model.CharacterEntities.CharacterFeat;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -46,7 +46,7 @@ public class Feat {
     private String featCategory;
 
     @OneToMany(mappedBy = "feat", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BonusFeatStat> statBonuses;
+    private List<BonusFeatAbility> abilityBonuses;
 
     @OneToMany(mappedBy = "feat", fetch = FetchType.LAZY)
     private List<CharacterFeat> characterFeats;

@@ -36,13 +36,13 @@ public class SpellController {
         @RequestParam(required = false) String components,
         @RequestParam(required = false) Boolean concentration,
         @RequestParam(required = false) Boolean ritual,
-        @RequestParam(required = false) String savingThrowStat,
+        @RequestParam(required = false) String savingThrowAbility,
         @RequestParam(required = false) Boolean attackRoll,
         @RequestParam(required = false) List<String> damageType,
         @RequestParam(defaultValue = "0")  int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(service.findSpells(name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowStat, attackRoll, damageType, page, size));
+        return ResponseEntity.ok(service.findSpells(name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowAbility, attackRoll, damageType, page, size));
     }
 
     @GetMapping("/{id}")

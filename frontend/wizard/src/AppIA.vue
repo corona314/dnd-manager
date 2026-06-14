@@ -193,12 +193,12 @@
                 </div>
               </div>
 
-              <div v-if="selectedChar.stats && selectedChar.stats.length" class="abilities-section">
+              <div v-if="selectedChar.abilities && selectedChar.abilities.length" class="abilities-section">
                 <h3>📊 Estadísticas</h3>
                 <div class="abilities-grid">
-                  <div v-for="stat in selectedChar.stats" :key="stat.statId" class="ability-card">
-                    <span class="ability-name">{{ stat.statId }}</span>
-                    <span class="ability-score">{{ stat.baseValue }}</span>
+                  <div v-for="ability in selectedChar.abilities" :key="ability.abilityId" class="ability-card">
+                    <span class="ability-name">{{ ability.abilityId }}</span>
+                    <span class="ability-score">{{ ability.baseValue }}</span>
                   </div>
                 </div>
               </div>

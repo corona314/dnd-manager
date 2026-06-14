@@ -2,7 +2,7 @@ package dnd.manager.app.model.SpellEntities;
 
 import java.util.List;
 
-import dnd.manager.app.model.Stat;
+import dnd.manager.app.model.Ability;
 import dnd.manager.app.model.CharacterEntities.CharacterSpell;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -71,8 +71,8 @@ public class Spell {
     private Boolean attackRoll;
     
     @ManyToOne
-    @JoinColumn(name = "saving_throw_stat_id")
-    private Stat savingThrowStat;
+    @JoinColumn(name = "saving_throw_ability_id")
+    private Ability savingThrowAbility;
     
     @Column(name = "damage_roll", length = 20)
     private String damageRoll;

@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import dnd.manager.app.model.BonusEntities.BonusFeatureStat;
-import dnd.manager.app.model.BonusEntities.BonusFeatureStatId;
+import dnd.manager.app.model.BonusEntities.BonusFeatureAbilityId;
 
-public interface BonusFeatureStatRepository extends JpaRepository<BonusFeatureStat, BonusFeatureStatId> {
+public interface BonusFeatureAbilityRepository extends JpaRepository<BonusFeatureStat, BonusFeatureAbilityId> {
 
     List<BonusFeatureStat> findByFeatureId(Long featureId);
 
-    List<BonusFeatureStat> findByStatId(Long statId);
+    List<BonusFeatureStat> findByAbilityId(Long abilityId);
 
 }

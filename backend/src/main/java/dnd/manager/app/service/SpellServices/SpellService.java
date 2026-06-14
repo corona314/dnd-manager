@@ -39,7 +39,7 @@ public class SpellService {
         String components,
         Boolean concentration,
         Boolean ritual,
-        String savingThrowStat,
+        String savingThrowAbility,
         Boolean attackRoll,
         List<String> damageTypes,
         int page,
@@ -52,7 +52,7 @@ public class SpellService {
         .and(hasComponent(components))
         .and(isConcentration(concentration))
         .and(isRitual(ritual))
-        .and(hasSavingThrowStat(savingThrowStat))
+        .and(hasSavingThrowAbility(savingThrowAbility))
         .and(isAttackRoll(attackRoll))
         .and(hasDamage(damageTypes));
         

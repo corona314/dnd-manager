@@ -14,7 +14,7 @@ public record SpellResponseDto(
     Boolean concentration,
     Boolean ritual,
     String description,
-    String savingThrowStat,
+    String savingThrowAbility,
     Boolean attackRoll,
     String damageRoll,
     List<SpellDamageTypeDto> damageTypes

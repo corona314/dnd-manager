@@ -1,7 +1,7 @@
 package dnd.manager.app.dto.CharacterDto;
 
 
-public record CharacterStatDto(
-     Long statId,
+public record CharacterAbilityDto(
+     Long abilityId,
      Integer baseValue
 ) {}

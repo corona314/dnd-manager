@@ -24,8 +24,8 @@ public class SkillService {
         return skillRepository.findById(id);
     }
 
-    public List<Skill> findByStatId(Long statId) {
-        return skillRepository.findByStatId(statId);
+    public List<Skill> findByAbilityId(Long abilityId) {
+        return skillRepository.findByAbilityId(abilityId);
     }
 
     public Skill save(Skill skill) {

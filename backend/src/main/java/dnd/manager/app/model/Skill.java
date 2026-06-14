@@ -28,6 +28,6 @@ public class Skill {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "stat_id")
-    private Stat stat;
+    @JoinColumn(name = "ability_id")
+    private Ability ability;
 }

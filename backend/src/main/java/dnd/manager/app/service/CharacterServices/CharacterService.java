@@ -8,17 +8,17 @@ import org.springframework.stereotype.Service;
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
 import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
-import dnd.manager.app.dto.CharacterDto.CharacterStatDto;
+import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.mapper.CharacterMapper;
 import dnd.manager.app.model.User;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
-import dnd.manager.app.model.CharacterEntities.CharacterStat;
-import dnd.manager.app.model.CharacterEntities.CharacterStatus;
-import dnd.manager.app.repository.StatRepository;
+import dnd.manager.app.model.CharacterEntities.CharacterAbility;
+import dnd.manager.app.model.CharacterEntities.CharacterAbilityus;
+import dnd.manager.app.repository.AbilityRepository;
 import dnd.manager.app.repository.UserRepository;
 import dnd.manager.app.repository.CharacterRepositories.CharacterRepository;
-import dnd.manager.app.repository.CharacterRepositories.CharacterStatRepository;
+import dnd.manager.app.repository.CharacterRepositories.CharacterAbilityRepository;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -26,21 +26,21 @@ public class CharacterService {
 
     private final CharacterRepository repository;
     private final UserRepository userRepository;
-    private final CharacterStatRepository characterStatRepository;
-    private final StatRepository statRepository;
+    private final CharacterAbilityRepository characterAbilityRepository;
+    private final AbilityRepository abilityRepository;
     private final CharacterMapper mapper;
 
     public CharacterService(
         CharacterRepository repository,
         UserRepository userRepository,
-        CharacterStatRepository characterStatRepository,
-        StatRepository statRepository,
+        CharacterAbilityRepository characterAbilityRepository,
+        AbilityRepository abilityRepository,
         CharacterMapper mapper
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
-        this.characterStatRepository = characterStatRepository;
-        this.statRepository = statRepository;
+        this.characterAbilityRepository = characterAbilityRepository;
+        this.abilityRepository = abilityRepository;
         this.mapper = mapper;
     }
 
@@ -67,7 +67,7 @@ public class CharacterService {
         CharacterEntity entity = mapper.toEntity(dto);
         entity.setUser(user);
         entity.setLevel(0);
-        entity.setStatus(CharacterStatus.DRAFT);
+        entity.setStatus(CharacterAbilityus.DRAFT);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
         return mapper.toResponseDto(repository.save(entity));
@@ -96,20 +96,20 @@ public class CharacterService {
     }
 
     @Transactional
-    public CharacterResponseDto replaceStats(Long userId, Long id, List<CharacterStatDto> dtos) {
+    public CharacterResponseDto replaceAbilities(Long userId, Long id, List<CharacterAbilityDto> dtos) {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);
         
-        List<CharacterStat> stats = dtos.stream().map(dto -> {
-                CharacterStat stat = new CharacterStat();
-                stat.setCharacter(entity);
-                stat.setStat(statRepository.findById(dto.statId()).orElseThrow(() -> new RuntimeException("Stat not found: " + dto.statId())));
-                stat.setBaseValue(dto.baseValue());
-                return stat;
+        List<CharacterAbility> abilities = dtos.stream().map(dto -> {
+                CharacterAbility ability = new CharacterAbility();
+                ability.setCharacter(entity);
+                ability.setAbility(abilityRepository.findById(dto.abilityId()).orElseThrow(() -> new RuntimeException("Ability not found: " + dto.abilityId())));
+                ability.setBaseValue(dto.baseValue());
+                return ability;
             }
         ).toList();
-        characterStatRepository.deleteByCharacterId(id);
-        characterStatRepository.saveAll(stats);
-        entity.setStats(stats);
+        characterAbilityRepository.deleteByCharacterId(id);
+        characterAbilityRepository.saveAll(abilities);
+        entity.setAbilities(abilities);
         return mapper.toResponseDto(entity);
     }
 
@@ -122,7 +122,7 @@ public class CharacterService {
     public CharacterResponseDto finalize(Long userId, Long id) {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);
 
-        entity.setStatus(CharacterStatus.FINAL);
+        entity.setStatus(CharacterAbilityus.FINAL);
         entity.setUpdatedAt(LocalDateTime.now());
         entity.setFinalizedAt(LocalDateTime.now());
         entity.setLevel(entity.getLevel()+1);

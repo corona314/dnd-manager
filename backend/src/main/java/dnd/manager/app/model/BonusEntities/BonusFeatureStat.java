@@ -1,6 +1,6 @@
 package dnd.manager.app.model.BonusEntities;
 
-import dnd.manager.app.model.Stat;
+import dnd.manager.app.model.Ability;
 import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /*
-    Para rasgos que dan bonificadores a las stats (+1 a STR)
+    Para rasgos que dan bonificadores a las abilities (+1 a STR)
 */
 @Entity
-@Table(name = "bonus_feature_stat")
+@Table(name = "bonus_feature_ability")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(BonusFeatureStatId.class)
+@IdClass(BonusFeatureAbilityId.class)
 public class BonusFeatureStat {
 
     @Id
@@ -29,8 +29,8 @@ public class BonusFeatureStat {
     private Long featureId;
 
     @Id
-    @Column(name = "stat_id")
-    private Long statId;
+    @Column(name = "ability_id")
+    private Long abilityId;
 
     @Column(name = "value", nullable = false)
     private Integer value;
@@ -40,6 +40,6 @@ public class BonusFeatureStat {
     private Feature feature;
 
     @ManyToOne
-    @JoinColumn(name = "stat_id", insertable = false, updatable = false)
-    private Stat stat;
+    @JoinColumn(name = "ability_id", insertable = false, updatable = false)
+    private Ability ability;
 }

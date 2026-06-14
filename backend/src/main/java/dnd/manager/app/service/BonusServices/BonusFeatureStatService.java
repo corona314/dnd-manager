@@ -5,23 +5,23 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import dnd.manager.app.model.BonusEntities.BonusFeatureStat;
-import dnd.manager.app.repository.BonusRepositories.BonusFeatureStatRepository;
+import dnd.manager.app.repository.BonusRepositories.BonusFeatureAbilityRepository;
 
 @Service
 public class BonusFeatureStatService {
 
-    private final BonusFeatureStatRepository bonusFeatureStatRepository;
+    private final BonusFeatureAbilityRepository bonusFeatureAbilityRepository;
 
-    public BonusFeatureStatService(BonusFeatureStatRepository bonusFeatureStatRepository) {
-        this.bonusFeatureStatRepository = bonusFeatureStatRepository;
+    public BonusFeatureStatService(BonusFeatureAbilityRepository bonusFeatureAbilityRepository) {
+        this.bonusFeatureAbilityRepository = bonusFeatureAbilityRepository;
     }
 
     public List<BonusFeatureStat> findByFeatureId(Long featureId) {
-        return bonusFeatureStatRepository.findByFeatureId(featureId);
+        return bonusFeatureAbilityRepository.findByFeatureId(featureId);
     }
 
-    public List<BonusFeatureStat> findByStatId(Long statId) {
-        return bonusFeatureStatRepository.findByStatId(statId);
+    public List<BonusFeatureStat> findByAbilityId(Long abilityId) {
+        return bonusFeatureAbilityRepository.findByAbilityId(abilityId);
     }
 
 }

@@ -1,6 +1,6 @@
 package dnd.manager.app.model.BackgroundEntities;
 
-import dnd.manager.app.model.Stat;
+import dnd.manager.app.model.Ability;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "background_stat")
+@Table(name = "background_ability")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(BackgroundStatId.class)
+@IdClass(BackgroundAbilityId.class)
 public class BackgroundStat {
 
     @Id
@@ -27,7 +27,7 @@ public class BackgroundStat {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stat_id", nullable = false)
-    private Stat stat;
+    @JoinColumn(name = "ability_id", nullable = false)
+    private Ability ability;
 
 }

@@ -10,7 +10,7 @@ public record SpellSummaryDto(
     String components,
     Boolean concentration,
     Boolean ritual,
-    String savingThrowStat,
+    String savingThrowAbility,
     Boolean attackRoll,
     List<SpellDamageTypeDto> damageTypes
 ) {}

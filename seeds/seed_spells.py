@@ -128,8 +128,8 @@ def migrate(cursor):
     new_columns = [
         ("attack_roll",
          "ALTER TABLE `spell` ADD COLUMN `attack_roll` tinyint(1) NOT NULL DEFAULT 0"),
-        ("saving_throw_stat_id",
-         "ALTER TABLE `spell` ADD COLUMN `saving_throw_stat_id` int DEFAULT NULL"),
+        ("saving_throw_ability_id",
+         "ALTER TABLE `spell` ADD COLUMN `saving_throw_ability_id` int DEFAULT NULL"),
         ("damage_roll",
          "ALTER TABLE `spell` ADD COLUMN `damage_roll` varchar(20) DEFAULT NULL"),
     ]
@@ -142,12 +142,12 @@ def migrate(cursor):
 
     try:
         cursor.execute(
-            "ALTER TABLE `spell` ADD CONSTRAINT `spell_saving_throw_stat` "
-            "FOREIGN KEY (`saving_throw_stat_id`) REFERENCES `stat` (`id`)"
+            "ALTER TABLE `spell` ADD CONSTRAINT `spell_saving_throw_ability` "
+            "FOREIGN KEY (`saving_throw_ability_id`) REFERENCES `ability` (`id`)"
         )
-        print("   -> FK spell_saving_throw_stat añadida")
+        print("   -> FK spell_saving_throw_ability añadida")
     except mysql.connector.errors.DatabaseError:
-        print("   . FK spell_saving_throw_stat ya existe")
+        print("   . FK spell_saving_throw_ability ya existe")
 
     if not table_exists(cursor, "spell_damage_type"):
         cursor.execute("""
@@ -212,8 +212,8 @@ def load_subclasses(cursor) -> dict:
     return {row[1].lower(): row[0] for row in cursor.fetchall()}
 
 
-def load_stats(cursor) -> dict:
-    cursor.execute("SELECT id, code FROM stat")
+def load_abilities(cursor) -> dict:
+    cursor.execute("SELECT id, code FROM ability")
     return {row[1]: row[0] for row in cursor.fetchall()}
 
 
@@ -231,7 +231,7 @@ def seed_damage_types(cursor, cache: dict):
 
 # ── Seeders ────────────────────────────────────────────────────────────────────
 def seed_spells(cursor, spells: list, school_map: dict,
-                stat_map: dict, damage_type_map: dict) -> dict:
+                ability_map: dict, damage_type_map: dict) -> dict:
     print("\n── Spells ───────────────────────────────────────────")
     id_map  = {}
     skipped = 0
@@ -250,14 +250,14 @@ def seed_spells(cursor, spells: list, school_map: dict,
 
         st_raw               = (s.get("saving_throw_ability") or "").lower()
         st_code              = SAVING_THROW_MAP.get(st_raw)
-        saving_throw_stat_id = stat_map.get(st_code) if st_code else None
+        saving_throw_ability_id = ability_map.get(st_code) if st_code else None
 
         cursor.execute(
             """
             INSERT INTO `spell`
                 (name, level, school_id, casting_time, `range`, duration,
                  components, material, concentration, ritual, description,
-                 attack_roll, saving_throw_stat_id, damage_roll)
+                 attack_roll, saving_throw_ability_id, damage_roll)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE
                 level                = VALUES(level),
@@ -271,7 +271,7 @@ def seed_spells(cursor, spells: list, school_map: dict,
                 ritual               = VALUES(ritual),
                 description          = VALUES(description),
                 attack_roll          = VALUES(attack_roll),
-                saving_throw_stat_id = VALUES(saving_throw_stat_id),
+                saving_throw_ability_id = VALUES(saving_throw_ability_id),
                 damage_roll          = VALUES(damage_roll)
             """,
             (
@@ -291,7 +291,7 @@ def seed_spells(cursor, spells: list, school_map: dict,
                 1 if s.get("ritual") else 0,
                 s.get("desc") or "",
                 1 if s.get("attack_roll") else 0,
-                saving_throw_stat_id,
+                saving_throw_ability_id,
                 s.get("damage_roll") or None,
             ),
         )
@@ -410,7 +410,7 @@ def main():
         school_map      = load_spell_schools(cursor)
         class_map       = load_classes(cursor)
         subclass_map    = load_subclasses(cursor)
-        stat_map        = load_stats(cursor)
+        ability_map        = load_abilities(cursor)
         damage_type_map = load_damage_types(cursor)
 
         # Garantizar tipos canónicos aunque seed_items no haya corrido aún
@@ -418,10 +418,10 @@ def main():
         conn.commit()
 
         print(f"\n   -> {len(school_map)} escuelas  |  {len(class_map)} clases  |  "
-              f"{len(subclass_map)} subclases  |  {len(stat_map)} stats  |  "
+              f"{len(subclass_map)} subclases  |  {len(ability_map)} abilities  |  "
               f"{len(damage_type_map)} damage types")
 
-        spell_id_map = seed_spells(cursor, spells, school_map, stat_map, damage_type_map)
+        spell_id_map = seed_spells(cursor, spells, school_map, ability_map, damage_type_map)
         seed_spell_upcasts(cursor, spells, spell_id_map)
         seed_class_spells(cursor, spells, spell_id_map, class_map, subclass_map)
 

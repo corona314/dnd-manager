@@ -1,6 +1,6 @@
 package dnd.manager.app.model.CharacterEntities;
 
-public enum CharacterStatus {
+public enum CharacterAbilityus {
     DRAFT, FINAL
 
 }

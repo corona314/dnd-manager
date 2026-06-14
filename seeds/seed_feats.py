@@ -5,7 +5,7 @@ Pobla la tabla `feat` a partir de /v2/feats/ (SRD 2024).
 
     feat → name, description, prerequisite, repeatable, feat_category
 
-Los benefits se concatenan en description. bonus_feat_stat queda
+Los benefits se concatenan en description. bonus_feat_ability queda
 para poblar manualmente (los benefits son texto libre en la API).
 
 Ajusta DB_CONFIG con tus credenciales.

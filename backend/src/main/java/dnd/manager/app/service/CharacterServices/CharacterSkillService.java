@@ -23,8 +23,8 @@ public class CharacterSkillService {
         return repository.findByCharacterId(characterId);
     }
 
-    public CharacterSkill save(CharacterSkill characterStat) {
-        return repository.save(characterStat);
+    public CharacterSkill save(CharacterSkill characterAbility) {
+        return repository.save(characterAbility);
     }
 
 }

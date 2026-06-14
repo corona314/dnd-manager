@@ -1,6 +1,6 @@
 package dnd.manager.app.model.CharacterEntities;
 
-import dnd.manager.app.model.Stat;
+import dnd.manager.app.model.Ability;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "character_stat")
+@Table(name = "character_ability")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(CharacterStatId.class)
+@IdClass(CharacterAbilityId.class)
 
-public class CharacterStat {
+public class CharacterAbility {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,8 +29,8 @@ public class CharacterStat {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stat_id", nullable = false)
-    private Stat stat;    
+    @JoinColumn(name = "ability_id", nullable = false)
+    private Ability ability;    
 
     @Column(name = "base_value", nullable = false)
     private Integer baseValue;

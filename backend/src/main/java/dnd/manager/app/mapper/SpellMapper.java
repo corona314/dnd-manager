@@ -22,7 +22,7 @@ public class SpellMapper {
             s.getComponents(),
             s.getConcentration(),
             s.getRitual(),
-            s.getSavingThrowStat() != null ? s.getSavingThrowStat().getCode() : null,
+            s.getSavingThrowAbility() != null ? s.getSavingThrowAbility().getCode() : null,
             s.getAttackRoll(),
             toSpellDamageTypeDto(s)
         );
@@ -41,7 +41,7 @@ public class SpellMapper {
             s.getConcentration(),
             s.getRitual(),
             s.getDescription(),
-            s.getSavingThrowStat() != null ? s.getSavingThrowStat().getCode() : null,
+            s.getSavingThrowAbility() != null ? s.getSavingThrowAbility().getCode() : null,
             s.getAttackRoll(),
             s.getDamageRoll(),
             toSpellDamageTypeDto(s)

@@ -199,8 +199,8 @@ def seed_subclass_features(cursor, entries: list, subclass_id_map: dict):
 def seed_class_saving_throws(cursor, entries: list, class_id_map: dict):
     """Inserta saving throws solo para clases (no subclases)."""
     print("\n── Class saving throws ──────────────────────────────")
-    cursor.execute("SELECT id, code FROM stat")
-    stat_map = {row[1]: row[0] for row in cursor.fetchall()}
+    cursor.execute("SELECT id, code FROM ability")
+    ability_map = {row[1]: row[0] for row in cursor.fetchall()}
 
     for e in entries:
         if e.get("subclass_of") is not None:
@@ -210,18 +210,18 @@ def seed_class_saving_throws(cursor, entries: list, class_id_map: dict):
         if not class_id:
             continue
         for st in e.get("saving_throws", []):
-            stat_name = st.get("name", "")
-            stat_code = SAVING_THROW_MAP.get(stat_name)
-            stat_id = stat_map.get(stat_code) if stat_code else None
-            if not stat_id:
-                print(f"   ⚠ stat '{stat_name}' no encontrado")
+            ability_name = st.get("name", "")
+            ability_code = SAVING_THROW_MAP.get(ability_name)
+            ability_id = ability_map.get(ability_code) if ability_code else None
+            if not ability_id:
+                print(f"   ⚠ ability '{ability_name}' no encontrado")
                 continue
             cursor.execute(
-                "INSERT IGNORE INTO `class_saving_throw` (class_id, stat_id) VALUES (%s, %s)",
-                (class_id, stat_id),
+                "INSERT IGNORE INTO `class_saving_throw` (class_id, ability_id) VALUES (%s, %s)",
+                (class_id, ability_id),
             )
             action = "✓" if cursor.rowcount else "·"
-            print(f"   {action} [{class_name}] {stat_name} ({stat_code})")
+            print(f"   {action} [{class_name}] {ability_name} ({ability_code})")
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────

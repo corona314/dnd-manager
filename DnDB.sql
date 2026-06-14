@@ -152,30 +152,30 @@ INSERT INTO `background_skill` VALUES (4,1),(2,3),(2,4),(3,5),(3,6),(1,9),(1,11)
 UNLOCK TABLES;
 
 --
--- Table structure for table `background_stat`
+-- Table structure for table `background_ability`
 --
 
-DROP TABLE IF EXISTS `background_stat`;
+DROP TABLE IF EXISTS `background_ability`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `background_stat` (
+CREATE TABLE `background_ability` (
   `background_id` int NOT NULL,
-  `stat_id` int NOT NULL,
-  PRIMARY KEY (`background_id`,`stat_id`),
-  KEY `background_stat_stat` (`stat_id`),
-  CONSTRAINT `background_stat_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
-  CONSTRAINT `background_stat_stat` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`)
+  `ability_id` int NOT NULL,
+  PRIMARY KEY (`background_id`,`ability_id`),
+  KEY `background_ability_ability` (`ability_id`),
+  CONSTRAINT `background_ability_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
+  CONSTRAINT `background_ability_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `background_stat`
+-- Dumping data for table `background_ability`
 --
 
-LOCK TABLES `background_stat` WRITE;
-/*!40000 ALTER TABLE `background_stat` DISABLE KEYS */;
-INSERT INTO `background_stat` VALUES (4,1),(2,2),(4,2),(2,3),(3,3),(4,3),(1,4),(2,4),(3,4),(1,5),(3,5),(1,6);
-/*!40000 ALTER TABLE `background_stat` ENABLE KEYS */;
+LOCK TABLES `background_ability` WRITE;
+/*!40000 ALTER TABLE `background_ability` DISABLE KEYS */;
+INSERT INTO `background_ability` VALUES (4,1),(2,2),(4,2),(2,3),(3,3),(4,3),(1,4),(2,4),(3,4),(1,5),(3,5),(1,6);
+/*!40000 ALTER TABLE `background_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -206,30 +206,30 @@ INSERT INTO `background_tool` VALUES (1,26),(3,26),(4,66),(4,67),(4,68),(4,69),(
 UNLOCK TABLES;
 
 --
--- Table structure for table `bonus_feat_stat`
+-- Table structure for table `bonus_feat_ability`
 --
 
-DROP TABLE IF EXISTS `bonus_feat_stat`;
+DROP TABLE IF EXISTS `bonus_feat_ability`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `bonus_feat_stat` (
+CREATE TABLE `bonus_feat_ability` (
   `feat_id` int NOT NULL,
-  `stat_id` int NOT NULL,
+  `ability_id` int NOT NULL,
   `value` int NOT NULL DEFAULT '1',
-  PRIMARY KEY (`feat_id`,`stat_id`),
-  KEY `feat_stat_bonus_stat` (`stat_id`),
-  CONSTRAINT `feat_stat_bonus_feat` FOREIGN KEY (`feat_id`) REFERENCES `feat` (`id`),
-  CONSTRAINT `feat_stat_bonus_stat` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`)
+  PRIMARY KEY (`feat_id`,`ability_id`),
+  KEY `feat_ability_bonus_ability` (`ability_id`),
+  CONSTRAINT `feat_ability_bonus_feat` FOREIGN KEY (`feat_id`) REFERENCES `feat` (`id`),
+  CONSTRAINT `feat_ability_bonus_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `bonus_feat_stat`
+-- Dumping data for table `bonus_feat_ability`
 --
 
-LOCK TABLES `bonus_feat_stat` WRITE;
-/*!40000 ALTER TABLE `bonus_feat_stat` DISABLE KEYS */;
-/*!40000 ALTER TABLE `bonus_feat_stat` ENABLE KEYS */;
+LOCK TABLES `bonus_feat_ability` WRITE;
+/*!40000 ALTER TABLE `bonus_feat_ability` DISABLE KEYS */;
+/*!40000 ALTER TABLE `bonus_feat_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -261,30 +261,30 @@ INSERT INTO `bonus_feature_item` VALUES (264,264,1),(264,273,1),(264,274,1),(264
 UNLOCK TABLES;
 
 --
--- Table structure for table `bonus_feature_stat`
+-- Table structure for table `bonus_feature_ability`
 --
 
-DROP TABLE IF EXISTS `bonus_feature_stat`;
+DROP TABLE IF EXISTS `bonus_feature_ability`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `bonus_feature_stat` (
+CREATE TABLE `bonus_feature_ability` (
   `feature_id` int NOT NULL,
-  `stat_id` int NOT NULL,
+  `ability_id` int NOT NULL,
   `value` int NOT NULL,
-  PRIMARY KEY (`feature_id`,`stat_id`),
-  KEY `bonus_feature_stat_stat` (`stat_id`),
-  CONSTRAINT `bonus_feature_stat_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`),
-  CONSTRAINT `bonus_feature_stat_stat` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`)
+  PRIMARY KEY (`feature_id`,`ability_id`),
+  KEY `bonus_feature_ability_ability` (`ability_id`),
+  CONSTRAINT `bonus_feature_ability_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`),
+  CONSTRAINT `bonus_feature_ability_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `bonus_feature_stat`
+-- Dumping data for table `bonus_feature_ability`
 --
 
-LOCK TABLES `bonus_feature_stat` WRITE;
-/*!40000 ALTER TABLE `bonus_feature_stat` DISABLE KEYS */;
-/*!40000 ALTER TABLE `bonus_feature_stat` ENABLE KEYS */;
+LOCK TABLES `bonus_feature_ability` WRITE;
+/*!40000 ALTER TABLE `bonus_feature_ability` DISABLE KEYS */;
+/*!40000 ALTER TABLE `bonus_feature_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -430,11 +430,11 @@ DROP TABLE IF EXISTS `character_saving_throw`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `character_saving_throw` (
   `character_id` int NOT NULL,
-  `stat_id` int NOT NULL,
-  PRIMARY KEY (`character_id`,`stat_id`),
-  KEY `character_saving_throw_stat` (`stat_id`),
+  `ability_id` int NOT NULL,
+  PRIMARY KEY (`character_id`,`ability_id`),
+  KEY `character_saving_throw_ability` (`ability_id`),
   CONSTRAINT `character_saving_throw_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
-  CONSTRAINT `character_saving_throw_stat` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`)
+  CONSTRAINT `character_saving_throw_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -507,31 +507,31 @@ LOCK TABLES `character_spell` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `character_stat`
+-- Table structure for table `character_ability`
 --
 
-DROP TABLE IF EXISTS `character_stat`;
+DROP TABLE IF EXISTS `character_ability`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `character_stat` (
+CREATE TABLE `character_ability` (
   `character_id` int NOT NULL,
-  `stat_id` int NOT NULL,
+  `ability_id` int NOT NULL,
   `base_value` int NOT NULL,
-  PRIMARY KEY (`character_id`,`stat_id`),
+  PRIMARY KEY (`character_id`,`ability_id`),
   KEY `character_id` (`character_id`),
-  KEY `stat_id` (`stat_id`),
-  CONSTRAINT `character_stat_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
-  CONSTRAINT `character_stat_ibfk_2` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`)
+  KEY `ability_id` (`ability_id`),
+  CONSTRAINT `character_ability_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
+  CONSTRAINT `character_ability_ibfk_2` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `character_stat`
+-- Dumping data for table `character_ability`
 --
 
-LOCK TABLES `character_stat` WRITE;
-/*!40000 ALTER TABLE `character_stat` DISABLE KEYS */;
-/*!40000 ALTER TABLE `character_stat` ENABLE KEYS */;
+LOCK TABLES `character_ability` WRITE;
+/*!40000 ALTER TABLE `character_ability` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -651,11 +651,11 @@ DROP TABLE IF EXISTS `class_saving_throw`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `class_saving_throw` (
   `class_id` int NOT NULL,
-  `stat_id` int NOT NULL,
-  PRIMARY KEY (`class_id`,`stat_id`),
-  KEY `class_saving_throw_stat` (`stat_id`),
+  `ability_id` int NOT NULL,
+  PRIMARY KEY (`class_id`,`ability_id`),
+  KEY `class_saving_throw_ability` (`ability_id`),
   CONSTRAINT `class_saving_throw_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
-  CONSTRAINT `class_saving_throw_stat` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`)
+  CONSTRAINT `class_saving_throw_ability` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1003,11 +1003,11 @@ DROP TABLE IF EXISTS `skill`;
 CREATE TABLE `skill` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `stat_id` int NOT NULL,
+  `ability_id` int NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`),
-  KEY `stat_id` (`stat_id`),
-  CONSTRAINT `skill_ibfk_1` FOREIGN KEY (`stat_id`) REFERENCES `stat` (`id`)
+  KEY `ability_id` (`ability_id`),
+  CONSTRAINT `skill_ibfk_1` FOREIGN KEY (`ability_id`) REFERENCES `ability` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1098,13 +1098,13 @@ CREATE TABLE `spell` (
   `ritual` tinyint(1) NOT NULL DEFAULT '0',
   `description` text,
   `attack_roll` tinyint(1) NOT NULL DEFAULT '0',
-  `saving_throw_stat_id` int DEFAULT NULL,
+  `saving_throw_ability_id` int DEFAULT NULL,
   `damage_roll` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `spell_name_UNIQUE` (`name`),
   KEY `spell_school` (`school_id`),
-  KEY `spell_saving_throw_stat` (`saving_throw_stat_id`),
-  CONSTRAINT `spell_saving_throw_stat` FOREIGN KEY (`saving_throw_stat_id`) REFERENCES `stat` (`id`),
+  KEY `spell_saving_throw_ability` (`saving_throw_ability_id`),
+  CONSTRAINT `spell_saving_throw_ability` FOREIGN KEY (`saving_throw_ability_id`) REFERENCES `ability` (`id`),
   CONSTRAINT `spell_school` FOREIGN KEY (`school_id`) REFERENCES `spell_school` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1357 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1201,28 +1201,28 @@ INSERT INTO `spell_upcast` VALUES (1,3,'SLOT','5d4',NULL),(1,4,'SLOT','6d4',NULL
 UNLOCK TABLES;
 
 --
--- Table structure for table `stat`
+-- Table structure for table `ability`
 --
 
-DROP TABLE IF EXISTS `stat`;
+DROP TABLE IF EXISTS `ability`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `stat` (
+CREATE TABLE `ability` (
   `id` int NOT NULL AUTO_INCREMENT,
   `code` char(3) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `stat_catalogcol_UNIQUE` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='All the stats';
+  UNIQUE KEY `ability_catalogcol_UNIQUE` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='All the abilities';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `stat`
+-- Dumping data for table `ability`
 --
 
-LOCK TABLES `stat` WRITE;
-/*!40000 ALTER TABLE `stat` DISABLE KEYS */;
-INSERT INTO `stat` VALUES (6,'CHA'),(3,'CON'),(2,'DEX'),(4,'INT'),(1,'STR'),(5,'WIS');
-/*!40000 ALTER TABLE `stat` ENABLE KEYS */;
+LOCK TABLES `ability` WRITE;
+/*!40000 ALTER TABLE `ability` DISABLE KEYS */;
+INSERT INTO `ability` VALUES (6,'CHA'),(3,'CON'),(2,'DEX'),(4,'INT'),(1,'STR'),(5,'WIS');
+/*!40000 ALTER TABLE `ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

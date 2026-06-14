@@ -80,13 +80,13 @@ public class CharacterEntity {
     
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private CharacterStatus status = CharacterStatus.DRAFT;
+    private CharacterAbilityus status = CharacterAbilityus.DRAFT;
 
     @OneToMany(mappedBy = "character")
     private List<CharacterSkill> skills;
 
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
-    private List<CharacterStat> stats;
+    private List<CharacterAbility> abilities;
 
     @OneToMany(mappedBy = "character")
     private List<CharacterResource> resources;

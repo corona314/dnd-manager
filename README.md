@@ -154,7 +154,7 @@ Query params opcionales:
 - `components`
 - `concentration`
 - `ritual`
-- `savingThrowStat`
+- `savingThrowAbility`
 - `attackRoll`
 - `damageTypes` (lista de strings)
 - `page`, `size`
@@ -208,15 +208,15 @@ Ejemplo de body:
 }
 ```
 
-### `PATCH /api/characters/{id}/stats`
+### `PATCH /api/characters/{id}/abilities`
 
-Reemplaza la lista de stats del personaje.
+Reemplaza la lista de abilities del personaje.
 
 Request body:
 ```json
 [
-  { "statId": 1, "baseValue": 15 },
-  { "statId": 2, "baseValue": 14 }
+  { "abilityId": 1, "baseValue": 15 },
+  { "abilityId": 2, "baseValue": 14 }
 ]
 ```
 
@@ -259,7 +259,7 @@ Elimina un personaje.
 - `components`
 - `concentration`
 - `ritual`
-- `savingThrowStat`
+- `savingThrowAbility`
 - `attackRoll`
 - `damageTypes`
 
@@ -275,7 +275,7 @@ Elimina un personaje.
 - `concentration`
 - `ritual`
 - `description`
-- `savingThrowStat`
+- `savingThrowAbility`
 - `attackRoll`
 - `damageRoll`
 - `damageTypes`
@@ -303,7 +303,7 @@ Elimina un personaje.
 - `createdAt`
 - `updatedAt`
 - `finalizedAt`
-- `stats`
+- `abilities`
 - `skills`
 - `items`
 

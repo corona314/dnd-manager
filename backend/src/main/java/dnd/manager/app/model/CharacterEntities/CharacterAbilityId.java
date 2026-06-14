@@ -3,11 +3,11 @@ package dnd.manager.app.model.CharacterEntities;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class CharacterSavingThrowId implements Serializable {
+public class CharacterAbilityId implements Serializable {
         private Long character;
         private Long ability;
 
-        public CharacterSavingThrowId() {}
+        public CharacterAbilityId() {}
 
         public Long getCharacter() { return character; }
         public void setCharacter(Long character) { this.character = character; }
@@ -18,8 +18,8 @@ public class CharacterSavingThrowId implements Serializable {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof CharacterSavingThrowId)) return false;
-            CharacterSavingThrowId that = (CharacterSavingThrowId) o;
+            if (!(o instanceof CharacterAbilityId)) return false;
+            CharacterAbilityId that = (CharacterAbilityId) o;
             return Objects.equals(character, that.character) && Objects.equals(ability, that.ability);
         }
 

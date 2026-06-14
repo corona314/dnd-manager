@@ -3,7 +3,7 @@ package dnd.manager.app.dto.CharacterDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import dnd.manager.app.model.CharacterEntities.CharacterStatus;
+import dnd.manager.app.model.CharacterEntities.CharacterAbilityus;
 
 /*
     Clase con toda la información del personaje
@@ -21,11 +21,11 @@ public record CharacterResponseDto(
     Long classId,
     Long subclassId,
     Long backgroundId,
-    CharacterStatus status,
+    CharacterAbilityus status,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
     LocalDateTime finalizedAt,
-    List<CharacterStatDto> stats,
+    List<CharacterAbilityDto> abilities,
     List<CharacterSkillDto> skills,
     List<CharacterItemDto> items
 

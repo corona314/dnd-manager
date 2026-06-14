@@ -8,13 +8,13 @@ import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
 import dnd.manager.app.dto.CharacterDto.CharacterItemDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
-import dnd.manager.app.dto.CharacterDto.CharacterStatDto;
+import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterItem;
 import dnd.manager.app.model.CharacterEntities.CharacterSkill;
-import dnd.manager.app.model.CharacterEntities.CharacterStat;
-import dnd.manager.app.model.CharacterEntities.CharacterStatus;
+import dnd.manager.app.model.CharacterEntities.CharacterAbility;
+import dnd.manager.app.model.CharacterEntities.CharacterAbilityus;
 
 @Component
 public class CharacterMapper {
@@ -46,7 +46,7 @@ public class CharacterMapper {
             e.getCreatedAt(),
             e.getUpdatedAt(),
             e.getFinalizedAt(),
-            e.getStats() != null ? e.getStats().stream().map(this::toStatDto).toList() : List.of(),
+            e.getAbilities() != null ? e.getAbilities().stream().map(this::toStatDto).toList() : List.of(),
             e.getSkills() != null ? e.getSkills().stream().map(this::toSkillDto).toList() : List.of(),
             e.getItems() != null ? e.getItems().stream().map(this::toItemDto).toList() : List.of()
         );
@@ -55,15 +55,15 @@ public class CharacterMapper {
     public CharacterEntity toEntity(CharacterCreateDto dto) {
     CharacterEntity entity = new CharacterEntity();
     entity.setName(dto.name());
-    entity.setStatus(CharacterStatus.DRAFT);
+    entity.setStatus(CharacterAbilityus.DRAFT);
     return entity;
 
     }
 
-    private CharacterStatDto toStatDto(CharacterStat stat) {
-        return new CharacterStatDto(
-            stat.getStat().getId(),
-            stat.getBaseValue()
+    private CharacterAbilityDto toStatDto(CharacterAbility ability) {
+        return new CharacterAbilityDto(
+            ability.getAbility().getId(),
+            ability.getBaseValue()
         );
     }
 
