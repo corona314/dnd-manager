@@ -34,18 +34,18 @@ public class ClassEntity {
     private Boolean shield;
 
     @OneToMany(mappedBy = "classEntity")
-    private List<ClassSavingThrow> classSavingThrows;
+    private List<ClassSavingThrow> savingThrows;
 
     @OneToMany(mappedBy = "classEntity")
-    private List<ClassFeature> classFeatures;
+    private List<ClassFeature> features;
 
     @OneToMany(mappedBy = "classEntity")
-    private List<ClassWeapon> classWeapons;
+    private List<ClassWeapon> weapons;
 
     @OneToMany(mappedBy = "classEntity")
-    private List<ClassArmorType> classArmorTypes;
+    private List<ClassArmorType> armorTypes;
 
     @OneToMany(mappedBy = "classEntity")
-    private List<ClassSkill> classSkills;
+    private List<ClassSkill> skills;
 
 }

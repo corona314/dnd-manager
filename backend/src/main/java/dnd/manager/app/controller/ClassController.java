@@ -4,9 +4,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import dnd.manager.app.dto.ClassDto.ClassResponseDto;
 import dnd.manager.app.dto.ClassDto.ClassSummaryDto;
 import dnd.manager.app.dto.SpellDto.SpellResponseDto;
-import dnd.manager.app.dto.SpellDto.SpellSummaryDto;
 import dnd.manager.app.service.ClassServices.ClassService;
 import dnd.manager.app.service.SpellServices.SpellService;
 
@@ -28,20 +28,22 @@ public class ClassController {
     ClassController(ClassService service) {
         this.service = service;
     }
-/* 
+
     @GetMapping
     public ResponseEntity<Page<ClassSummaryDto>> classes(
         @RequestParam(required = false) String name,
+        @RequestParam(required = false) List<String> hitPointDie,
         @RequestParam(defaultValue = "0")  int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(service.findClasses(name, page, size));
+        return ResponseEntity.ok(service.findClasses(name, hitPointDie, page, size));
     }
 
     
     @GetMapping("/{id}")
-    public ResponseEntity<ClassResponseDto> class(@PathVariable Long id){
+    public ResponseEntity<ClassResponseDto> classEntity(@PathVariable Long id){
         return ResponseEntity.ok(service.findById(id));
     }
-*/
+
+
 }

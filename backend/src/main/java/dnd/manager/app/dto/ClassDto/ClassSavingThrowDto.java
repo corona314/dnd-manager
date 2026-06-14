@@ -1,6 +1,6 @@
 package dnd.manager.app.dto.ClassDto;
 
 
-public record ClassSavingThrow (
+public record ClassSavingThrowDto (
     String ability
 ){}

@@ -4,5 +4,5 @@ import dnd.manager.app.dto.FeatureDto;
 
 public record ClassFeatureDto (
     FeatureDto feature,
-    String level
+    Integer level
 ){}
