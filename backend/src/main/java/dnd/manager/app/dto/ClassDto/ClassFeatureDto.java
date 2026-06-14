@@ -1,11 +1,8 @@
 package dnd.manager.app.dto.ClassDto;
 
-/*
-    Clase necesaria para poder ver la información de tus personajes
-    Tarjeta rápida para consultar
-*/
+import dnd.manager.app.dto.FeatureDto;
 
 public record ClassFeatureDto (
-    Long featureId,
+    FeatureDto feature,
     String level
 ){}

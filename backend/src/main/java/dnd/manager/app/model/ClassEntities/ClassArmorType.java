@@ -27,7 +27,7 @@ public class ClassArmorType {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "armor_id", insertable = false, updatable = false)
+    @JoinColumn(name = "armor_type_id", insertable = false, updatable = false)
     private ArmorType armorType;
 
 }

@@ -48,5 +48,4 @@ public class ClassEntity {
     @OneToMany(mappedBy = "classEntity")
     private List<ClassSkill> classSkills;
 
-
 }

@@ -28,8 +28,7 @@ public class ClassController {
     ClassController(ClassService service) {
         this.service = service;
     }
-/* 
-    
+
     @GetMapping
     public ResponseEntity<Page<ClassSummaryDto>> classes(
         @RequestParam(required = false) String name,
@@ -44,5 +43,5 @@ public class ClassController {
     public ResponseEntity<ClassResponseDto> class(@PathVariable Long id){
         return ResponseEntity.ok(service.findById(id));
     }
-    */
+    
 }

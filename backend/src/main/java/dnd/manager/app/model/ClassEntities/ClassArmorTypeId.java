@@ -4,27 +4,27 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class ClassArmorTypeId implements Serializable {
-        private Long classId;
-        private Long armorTypeId;
+        private Long classEntity;
+        private Long armorType;
 
         public ClassArmorTypeId() {}
 
-        public Long getClassId() { return classId; }
-        public void setClassId(Long classId) { this.classId = classId; }
+        public Long getClassEntity() { return classEntity; }
+        public void setClassEntity(Long classId) { this.classEntity = classId; }
 
-        public Long getArmorTypeId() { return armorTypeId; }
-        public void setArmorTypeId(Long armorTypeId) { this.armorTypeId = armorTypeId; }
+        public Long getArmorType() { return armorType; }
+        public void setArmorType(Long armorTypeId) { this.armorType = armorTypeId; }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof ClassArmorTypeId)) return false;
             ClassArmorTypeId that = (ClassArmorTypeId) o;
-            return Objects.equals(classId, that.classId) && Objects.equals(armorTypeId, that.armorTypeId);
+            return Objects.equals(classEntity, that.classEntity) && Objects.equals(armorType, that.armorType);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(classId, armorTypeId);
+            return Objects.hash(classEntity, armorType);
         }
     }

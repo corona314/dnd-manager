@@ -4,6 +4,8 @@ import dnd.manager.app.model.ItemEntities.WeaponEntities.WeaponCategory;
 import dnd.manager.app.model.ItemEntities.WeaponEntities.WeaponProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -28,11 +30,12 @@ public class ClassWeapon {
     private ClassEntity classEntity;
     
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "weapon_category_id", insertable = false, updatable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "weapon_category", insertable = false, updatable = false)
     private WeaponCategory weaponCategory;
     
-    @Column(name = "required_weapon_property_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "required_weapon_property_id")
     private WeaponProperty requiredWeaponProperty;
 
 }

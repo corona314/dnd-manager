@@ -3,28 +3,30 @@ package dnd.manager.app.model.ClassEntities;
 import java.io.Serializable;
 import java.util.Objects;
 
+import dnd.manager.app.model.ItemEntities.WeaponEntities.WeaponCategory;
+
 public class ClassWeaponId implements Serializable {
-        private Long classId;
-        private Long weaponCategoryId;
+        private Long classEntity;
+        private WeaponCategory weaponCategory;
 
         public ClassWeaponId() {}
 
-        public Long getClassId() { return classId; }
-        public void setClassId(Long classId) { this.classId = classId; }
+        public Long getClassEntity() { return classEntity; }
+        public void setClassEntity(Long classId) { this.classEntity = classId; }
 
-        public Long getWeaponCategoryId() { return weaponCategoryId; }
-        public void setWeaponCategoryId(Long weaponCategoryId) { this.weaponCategoryId = weaponCategoryId; }
+        public WeaponCategory getWeaponCategory() { return weaponCategory; }
+        public void setWeaponCategory(WeaponCategory weaponCategoryId) { this.weaponCategory = weaponCategoryId; }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof ClassWeaponId)) return false;
             ClassWeaponId that = (ClassWeaponId) o;
-            return Objects.equals(classId, that.classId) && Objects.equals(weaponCategoryId, that.weaponCategoryId);
+            return Objects.equals(classEntity, that.classEntity) && Objects.equals(weaponCategory, that.weaponCategory);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(classId, weaponCategoryId);
+            return Objects.hash(classEntity, weaponCategory);
         }
     }
