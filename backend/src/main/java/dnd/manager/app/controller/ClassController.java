@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import dnd.manager.app.dto.ClassDto.ClassResponseDto;
 import dnd.manager.app.dto.ClassDto.ClassSummaryDto;
-import dnd.manager.app.dto.SpellDto.SpellResponseDto;
 import dnd.manager.app.service.ClassServices.ClassService;
-import dnd.manager.app.service.SpellServices.SpellService;
 
 import java.util.List;
 
