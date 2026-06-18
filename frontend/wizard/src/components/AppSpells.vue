@@ -14,10 +14,11 @@
     //Constantes de los filtros
     const filter_name = ref('')
     const filter_level = ref([0,9])
-    const filter_school = ref(null)
+    const filter_school = ref([])
     const filter_components = ref({V: null, S: null, M: null})
     const filter_ritual = ref(null)
     const filter_concentration = ref(null)
+    const school_open = ref(false)
     
 
     //Constantes de la lista de conjuros
@@ -45,8 +46,8 @@
             if (filter_level.value[1] !== null) {
                 params.append('levelMax', filter_level.value[1])
             }
-            if(filter_school.value !== null){
-                params.append('schoolId', filter_school.value)
+            for (const schoolId of filter_school.value) {
+                params.append('schoolId', schoolId)
             }
             for (const component in filter_components.value) {
                 const val = filter_components.value[component]
@@ -130,6 +131,13 @@
             console.log('holi')
         }
     }
+
+    function toggleSchool(id) {
+        const i = filter_school.value.indexOf(id)
+        if (i === -1) filter_school.value.push(id)
+        else filter_school.value.splice(i, 1)
+        applyFilters()
+    }
 </script>
 
 <template>
@@ -145,14 +153,21 @@
                 </span>
                 <Slider class="level_slider" v-model="filter_level" :min="0" :max="9" :step="1" range @slideend="applyFilters"/>
             </div>
-            <select class="school" v-model="filter_school" @change="applyFilters">
-                <option :value="null">Todos las escuelas</option>
-                <option v-for="(name, id) in Schools" :key="id" :value="id">
-                    {{ name }}
-                </option>
-            </select>
+            <div class="school_filter">
+                <div class="school_dropdown_btn" @click="school_open = !school_open"> Escuelas <i>-</i> </div>
+                <div v-if="school_open" class="school_dropdown_menu">
+                    <div v-for="(name, id) in Schools" :key="id" class="school_option" :class="{ selected: filter_school.includes(+id) }" @click="toggleSchool(+id)">
+                        {{ name }}
+                    </div>
+                </div>
+                <div class="school_chips">
+                    <span v-for="id in filter_school" :key="id" class="school_chip">
+                    {{ Schools[id] }}
+                    <span @click="toggleSchool(id)">x</span>
+                    </span>
+                </div>
+            </div>
             <div class="components" v-for="comp in Components" :key="comp">
-                <!--<p>{{ comp }}</p>-->
                 <span class="tristate" @click="cycleComponent(comp)" :class="{'tristate--active': filter_components[comp] === true, 'tristate--inactive': filter_components[comp] === false}">
                     <span v-if="filter_components[comp] === null">{{ comp }}</span>
                     <span v-else-if="filter_components[comp] === true">{{ comp }}</span>
@@ -160,7 +175,6 @@
                 </span>
             </div>
             <div class="ritual" >
-                <!--<p>Ritual</p>-->
                 <span class="tristate" @click="cycleRitual" :class="{'tristate--active': filter_ritual === true, 'tristate--inactive': filter_ritual === false}">
                     <span v-if="filter_ritual === null">R</span>
                     <span v-else-if="filter_ritual === true">R</span>
@@ -168,7 +182,6 @@
                 </span>
             </div>
             <div class="concentration" >
-                <!--<p>Concentracion</p>-->
                 <span class="tristate" @click="cycleConcentration" :class="{'tristate--active': filter_concentration === true, 'tristate--inactive': filter_concentration === false}">
                     <span v-if="filter_concentration === null">C</span>
                     <span v-else-if="filter_concentration === true">C</span>
@@ -183,6 +196,8 @@
             <div v-for="spell in spells" :key="spell.name" class="spell_card" :style="{ backgroundColor: Damage_Colors[spell.damageTypes[0]?.damageType] || '#ffffff'}" :class="{ 'spell_card--expanded': expanded_id === spell.id }" @click="expandSpell(spell)">
                 <div class="spell_card_base">
                     <span class="spell_name"> {{ spell.name }} </span>
+                    <span class="spell_attackroll">{{spell.attackRoll === true ? '⚔️' : ''}}</span>
+                    <span class="spell_savingthrow">{{spell.savingThrowAbility === null ? ' ' : '🛡️'}}</span>
 
                     <span class="spell_component_v">{{ spell.components.includes('V') ? 'V' : '📀' }}</span>
                     <span class="spell_component_s">{{ spell.components.includes('S') ? 'S' : '📉' }}</span>
@@ -201,13 +216,13 @@
                 <div v-if="expanded_id === spell.id" class="spell_card_expanded" @click.stop>
                     <div v-if="expanded_loading">Cargando...</div>
                     <div v-else class="spell_card_expanded_content">
-                        <p class="spell_desc">{{ expanded_spell.description }}</p>
                         <div class="spell_details">
-                            <span>⏱ {{ expanded_spell.castingTime }}</span>
-                            <span>📏 {{ expanded_spell.range }}</span>
-                            <span>⌛ {{ expanded_spell.duration }}</span>
-                            <span v-if="expanded_spell.material">🧪 {{ expanded_spell.material }}</span>
+                            <span>🕛: {{ expanded_spell.castingTime }}</span>
+                            <span>🔛: {{ expanded_spell.range }}</span>
+                            <span>⏳: {{ expanded_spell.duration }}</span>
+                            <span v-if="expanded_spell.material">📦: {{ expanded_spell.material }}</span>
                         </div>
+                        <p class="spell_desc">{{ expanded_spell.description }}</p>
                     </div>
                 </div>
             </div>
@@ -265,6 +280,37 @@
     }
     .p-slider-range {
         --p-slider-range-background: #b45309; /* marrón temático D&D */
+    }
+
+    .school_filter {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        position: relative;        
+    }
+
+    .school_dropdown_menu {
+        position: absolute;
+        top: 100%;
+        z-index: 10;
+        background: white;
+        border: 1px solid #666;
+        padding: 5px;
+    }
+
+    .school_chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .school_chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: 1px solid #666;
+        padding: 2px 6px;
+        border-radius: 999px;
     }
 
     .tristate {
@@ -333,15 +379,13 @@
         border-top: 1px solid rgba(0,0,0,0.2);
     }
     .spell_desc {
-        font-size: 0.85rem;
         line-height: 1.5;
         margin-bottom: 8px;
+        font-size: 15px;
     }
     .spell_details {
         display: flex;
         gap: 16px;
-        flex-wrap: wrap;
-        font-size: 0.8rem;
         font-weight: bold;
     }
 
@@ -351,6 +395,11 @@
         top: 0;
         left: 0;
         font-weight: bold;
+    }
+    .spell_attackroll{
+        position: absolute;
+        top: 0;
+        left: 200px;
     }
    /* TOP RIGHT */
     .spell_component_v {
@@ -386,7 +435,11 @@
         left: 60px;          /* separado del nivel */
         font-size: 0.8rem;
     }
-
+    .spell_savingthrow{
+        position: absolute;
+        bottom: 0;
+        left: 200px;
+    }
     /* BOTTOM RIGHT */
     .spell_ritual {
         position: absolute;
