@@ -759,11 +759,8 @@ DROP TABLE IF EXISTS `class_weapon`;
 CREATE TABLE `class_weapon` (
   `class_id` int NOT NULL,
   `weapon_category` enum('Simple','Martial') NOT NULL,
-  `required_weapon_property_id` int DEFAULT NULL,
   PRIMARY KEY (`class_id`,`weapon_category`),
-  KEY `class_weapon_weapon_property` (`required_weapon_property_id`),
-  CONSTRAINT `class_weapon_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
-  CONSTRAINT `class_weapon_weapon_property` FOREIGN KEY (`required_weapon_property_id`) REFERENCES `weapon_property` (`id`)
+  CONSTRAINT `class_weapon_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -773,7 +770,36 @@ CREATE TABLE `class_weapon` (
 
 LOCK TABLES `class_weapon` WRITE;
 /*!40000 ALTER TABLE `class_weapon` DISABLE KEYS */;
+INSERT INTO `class_weapon` VALUES (1,'Simple'),(1,'Martial'),(2,'Simple'),(3,'Simple'),(4,'Simple'),(5,'Simple'),(5,'Martial'),(6,'Simple'),(6,'Martial'),(7,'Simple'),(7,'Martial'),(8,'Simple'),(8,'Martial'),(9,'Simple'),(9,'Martial'),(10,'Simple'),(11,'Simple'),(12,'Simple');
 /*!40000 ALTER TABLE `class_weapon` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `class_weapon_required_property`
+--
+
+DROP TABLE IF EXISTS `class_weapon_required_property`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `class_weapon_required_property` (
+  `class_id` int NOT NULL,
+  `weapon_category` enum('Simple','Martial') NOT NULL,
+  `weapon_property_id` int NOT NULL,
+  PRIMARY KEY (`class_id`,`weapon_category`,`weapon_property_id`),
+  KEY `cwrp_property` (`weapon_property_id`),
+  CONSTRAINT `cwrp_class_weapon` FOREIGN KEY (`class_id`, `weapon_category`) REFERENCES `class_weapon` (`class_id`, `weapon_category`),
+  CONSTRAINT `cwrp_property` FOREIGN KEY (`weapon_property_id`) REFERENCES `weapon_property` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `class_weapon_required_property`
+--
+
+LOCK TABLES `class_weapon_required_property` WRITE;
+/*!40000 ALTER TABLE `class_weapon_required_property` DISABLE KEYS */;
+INSERT INTO `class_weapon_required_property` VALUES (6,'Martial',4),(9,'Martial',4),(9,'Martial',5);
+/*!40000 ALTER TABLE `class_weapon_required_property` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1461,4 +1487,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-14 23:48:47
+-- Dump completed on 2026-06-17  1:30:39
