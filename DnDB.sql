@@ -1237,8 +1237,8 @@ CREATE TABLE `spell_upcast` (
   `level` int NOT NULL,
   `type` enum('SLOT','CANTRIP') NOT NULL DEFAULT 'SLOT',
   `damage_roll` varchar(20) DEFAULT NULL,
-  `desc` text,
-  PRIMARY KEY (`spell_id`,`level`,`type`),
+  `description` text,
+  PRIMARY KEY (`spell_id`,`level`),
   CONSTRAINT `spell_upcast_spell` FOREIGN KEY (`spell_id`) REFERENCES `spell` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1487,4 +1487,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-17  1:30:39
+-- Dump completed on 2026-06-19 16:07:30
