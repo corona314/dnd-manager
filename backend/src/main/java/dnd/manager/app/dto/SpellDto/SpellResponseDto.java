@@ -17,5 +17,7 @@ public record SpellResponseDto(
     String savingThrowAbility,
     Boolean attackRoll,
     String damageRoll,
-    List<SpellDamageTypeDto> damageTypes
+    List<SpellDamageTypeDto> damageTypes,
+    List<SpellUpcastDto> upcasts
+
 ) {}

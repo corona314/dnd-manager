@@ -46,5 +46,4 @@ public class ClassService {
         return classes.map(mapper::toSummaryDto);
     }
 
-
 }

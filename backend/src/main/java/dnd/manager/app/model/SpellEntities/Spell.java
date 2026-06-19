@@ -83,4 +83,7 @@ public class Spell {
     @OneToMany(mappedBy = "spell", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SpellDamageType> damageTypes;
 
+    @OneToMany(mappedBy = "spell")
+    private List<SpellUpcast> upcasts;
+
 }

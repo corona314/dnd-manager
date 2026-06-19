@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import dnd.manager.app.dto.SpellDto.SpellDamageTypeDto;
 import dnd.manager.app.dto.SpellDto.SpellResponseDto;
 import dnd.manager.app.dto.SpellDto.SpellSummaryDto;
+import dnd.manager.app.dto.SpellDto.SpellUpcastDto;
 import dnd.manager.app.model.SpellEntities.Spell;
 
 @Component
@@ -44,7 +45,8 @@ public class SpellMapper {
             s.getSavingThrowAbility() != null ? s.getSavingThrowAbility().getCode() : null,
             s.getAttackRoll(),
             s.getDamageRoll(),
-            toSpellDamageTypeDto(s)
+            toSpellDamageTypeDto(s),
+            toSpellUpcastDto(s)
         );
         
     }
@@ -55,4 +57,12 @@ public class SpellMapper {
             .map(dt -> new SpellDamageTypeDto(dt.getDamageType().getName(), dt.getAlways()))
             .toList();
     }
+
+        private List<SpellUpcastDto> toSpellUpcastDto(Spell s) {
+        if (s.getUpcasts() == null) return List.of();
+        return s.getUpcasts().stream()
+            .map(u -> new SpellUpcastDto(u.getLevel(), u.getType().toString(), u.getDamageRoll(), u.getDescription()))
+            .toList();
+    }
+
 }
