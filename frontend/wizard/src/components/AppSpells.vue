@@ -1,7 +1,8 @@
 <script setup>
     //Constantes de datos && cosas de que funcione y tal
     import Slider from 'primevue/slider';
-    import { ref, onMounted } from 'vue'
+    import { ref, onMounted, computed } from 'vue'
+    import { marked } from 'marked';
     const props = defineProps({ token: String })
     const API_BASE = 'http://localhost:8080/api'
     defineEmits(['back'])
@@ -27,6 +28,7 @@
     const expanded_spell = ref(null)
     const expanded_loading = ref(false)
     const expanded_id = ref(null)
+    const selected_upcast_level = ref(null)
 
     //Constantes de la paginación
     const current_page = ref(0)
@@ -124,11 +126,11 @@
             console.log('errores no')
             expanded_spell.value = await res.json()
             expanded_id.value = spell.id
+            selected_upcast_level.value = expanded_spell.value.level + 1
         } catch (e) {
             console.error(e)
         } finally {
             expanded_loading.value = false
-            console.log('holi')
         }
     }
 
@@ -138,20 +140,43 @@
         else filter_school.value.splice(i, 1)
         applyFilters()
     }
+
+    function sliderOrder(value){
+        let [min, max] = value
+        if (min > max) {
+            max = min
+        }
+        filter_level.value = [min, max]
+    }
+
+    function selectUpcastLevel(level) {
+        selected_upcast_level.value = level
+    }
+
+    function getUpcastText(spell, level) {
+        if (level === spell.level) {
+            return spell.damageRoll ? `${spell.damageRoll} ${spell.damageTypes[0]?.damageType ?? ''}` : null
+        }
+        const upcast = spell.upcasts.find(u => u.level === level)
+        if (!upcast) return null
+        if (upcast.description) return upcast.description
+        if (upcast.damageRoll) return `${upcast.damageRoll} ${spell.damageTypes[0]?.damageType + ' damage' ?? ''}`
+        return null
+    }
 </script>
 
 <template>
     <div class="spell_page">
         <!--Filtros de selección-->
         <div class="filters">
-            <input class="name" type="text" placeholder="Buscar conjuro..." v-model="filter_name" @input="applyFilters"/>
+            <input class="name" type="text" placeholder="Buscar conjuro..." v-model="filter_name" @keyup.enter="applyFilters"/>
             <div class="level">
                 <span class="level_label">
                     {{ filter_level[0] === 0 ? 'Truco (0)' : `${filter_level[0]}` }}
                     --
                     {{ filter_level[1] === 0 ? 'Truco (0)' : `${filter_level[1]}` }}
                 </span>
-                <Slider class="level_slider" v-model="filter_level" :min="0" :max="9" :step="1" range @slideend="applyFilters"/>
+                <Slider class="level_slider" v-model="filter_level" :min="0" :max="9" :step="1" range @slideend="applyFilters" @update:modelValue="sliderOrder"/>
             </div>
             <div class="school_filter">
                 <div class="school_dropdown_btn" @click="school_open = !school_open"> Escuelas <i>-</i> </div>
@@ -222,7 +247,33 @@
                             <span>⏳: {{ expanded_spell.duration }}</span>
                             <span v-if="expanded_spell.material">📦: {{ expanded_spell.material }}</span>
                         </div>
-                        <p class="spell_desc">{{ expanded_spell.description }}</p>
+                        <p class="spell_desc" v-html="marked(expanded_spell.description)"></p>
+
+                        <div v-if="expanded_spell.upcasts.length && expanded_spell.upcasts[0].upcastType === 'SLOT'" class="upcast_section">
+                            <div class="upcast_levels">
+                                <span
+                                    v-for="lvl in expanded_spell.upcasts.map(u => u.level)"
+                                    :key="lvl"
+                                    class="upcast_button"
+                                    :class="{ 'upcast_button--active': selected_upcast_level === lvl }"
+                                    @click="selectUpcastLevel(lvl)"
+                                >{{ lvl }}</span>
+                            </div>
+                            <div class="upcast_result">
+                                {{ getUpcastText(expanded_spell, selected_upcast_level) }}
+                            </div>
+                        </div>
+
+                        <div v-else-if="expanded_spell.upcasts.length && expanded_spell.upcasts[0].upcastType === 'CANTRIP'" class="upcast_section">
+                            <div class="upcast_cantrip_row">
+                                <span class="upcast_cantrip_step">
+                                    Char. Lvl {{ Levels[1] ?? 1 }}: {{ expanded_spell.damageRoll }}
+                                </span>
+                                <span v-for="u in expanded_spell.upcasts" :key="u.level" class="upcast_cantrip_step">
+                                   - -> Char. Lvl {{ u.level }}: {{ u.damageRoll ?? u.description }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -251,6 +302,7 @@
         align-items: center;
         justify-content: center;
         flex-direction: column;
+        position: relative;
         background-color: rgb(255, 230, 186);
     }
     /*Cabecera-Filtrado*/ 
@@ -260,6 +312,8 @@
         justify-content: space-between;
         align-items: center;
         margin: 30px 0px 30px 0px;
+        position: absolute;
+        top: 30px;
     }
     .level{
         display: flex;
@@ -346,6 +400,7 @@
         align-items: space-between;
         justify-content: space-between;
         width: 75%;
+        margin-top: 130px;
     }
     .spell_card{
         display: flex;
@@ -455,6 +510,48 @@
         font-size: 0.8rem;
     }
 
+    /*Upcast*/
+    .upcast_section {
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(0,0,0,0.15);
+    }
+    .upcast_levels {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+    }
+    .upcast_button {
+        width: 26px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #666;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: bold;
+        background: white;
+    }
+    .upcast_button--active {
+        background-color: grey;
+        border-color: black;
+        color: white;
+    }
+    .upcast_result {
+        font-size: 14px;
+        background: rgba(0,0,0,0.05);
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .upcast_cantrip_row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 13px;
+    }
     /*Selector de pagina*/
 
 
