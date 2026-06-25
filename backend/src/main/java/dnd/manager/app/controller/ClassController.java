@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import dnd.manager.app.dto.ClassDto.ClassResponseDto;
 import dnd.manager.app.dto.ClassDto.ClassSummaryDto;
+import dnd.manager.app.dto.ClassDto.SubclassResponseDto;
+import dnd.manager.app.dto.ClassDto.SubclassSummaryDto;
 import dnd.manager.app.service.ClassServices.ClassService;
 
 import java.util.List;
@@ -43,5 +45,14 @@ public class ClassController {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @GetMapping("/{classId}/subclasses")
+    public ResponseEntity<List<SubclassSummaryDto>> subclassesByClass(@PathVariable Long classId) {
+        return ResponseEntity.ok(service.findSubclassesByClass(classId));
+    }
+
+    @GetMapping("/subclasses/{subclassId}")
+    public ResponseEntity<SubclassResponseDto> subclass(@PathVariable Long subclassId) {
+        return ResponseEntity.ok(service.findSubclassById(subclassId));
+    }
 
 }

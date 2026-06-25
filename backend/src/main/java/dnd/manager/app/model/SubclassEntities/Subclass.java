@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,4 +45,10 @@ public class Subclass {
         inverseJoinColumns = @JoinColumn(name = "feature_id")
     )
     private List<Feature> features;
+
+    @OneToMany(mappedBy = "subclass")
+    private List<SubclassFeature> subclassFeatures;
+
+    @OneToMany(mappedBy = "subclass")
+    private List<SubclassSpell> spells;
 }
