@@ -1,9 +1,11 @@
 package dnd.manager.app.repository.ItemRepositories.spec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 import dnd.manager.app.model.ItemEntities.Item;
+import jakarta.persistence.criteria.Predicate;
 
 public class ItemSpecifications {
 
@@ -32,23 +34,31 @@ public class ItemSpecifications {
         return (root, query, cb) -> {
             if (priceMin == null && priceMax == null) return null;
             
+            List<Predicate> predicates = new ArrayList<>();
+
             if (priceMin != null && priceMax != null) {
-                return cb.between(root.get("weight"), priceMin, priceMax);
+                predicates.add(cb.between(root.get("price"), priceMin, priceMax));
+            } else if (priceMin != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("price"), priceMin));
+            } else if (priceMax != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("price"), priceMax));
             }
 
-            if (priceMin != null) {
-                return cb.greaterThanOrEqualTo(root.get("weight"), priceMin);
-            }
-
-            return cb.lessThanOrEqualTo(root.get("weight"), priceMax);
+            return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
-
+    
     public static Specification<Item> hasItemType(List<String> itemType) {
         return (root, query, cb) -> 
             itemType == null || itemType.isEmpty() ? null : cb.in(root.get("itemType").get("name")).value(itemType);
     }
 
+    public static Specification<Item> hasNotItemType(List<String> itemType) {
+        return (root, query, cb) -> 
+            itemType == null || itemType.isEmpty() ? null : cb.not(cb.in(root.get("itemType").get("name")).value(itemType));
+    }
+
+    
     public static Specification<Item> isMagic(Boolean magic) {
         return (root, query, cb) -> 
             magic == null ? null : cb.equal(root.get("magic"), magic);  

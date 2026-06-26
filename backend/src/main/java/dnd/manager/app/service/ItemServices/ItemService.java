@@ -36,6 +36,7 @@ public class ItemService {
         Float weightMax,
         Integer priceMin,
         Integer priceMax,
+        List<String> itemType,
         Boolean magic,
         Boolean attunement,
         List<String> rarity,
@@ -46,7 +47,8 @@ public class ItemService {
         .where(hasName(name))
         .and(hasWeightBetween(weightMin, weightMax))
         .and(hasPriceBetween(priceMin, priceMax))
-        .and(hasItemType(List.of("Item","Wondrous","Gear","Vehicle","Tool","Potion","Ammunition")))
+        .and(hasItemType(itemType))
+        .and(hasNotItemType(List.of("Weapon","Armor","Shield")))
         .and(isMagic(magic))
         .and(hasAttunement(attunement))
         .and(hasRarity(rarity));

@@ -45,13 +45,14 @@ public class ItemController {
         @RequestParam(required = false) Float weightMax,
         @RequestParam(required = false) Integer priceMin,
         @RequestParam(required = false) Integer priceMax,
+        @RequestParam(required = false) List<String> itemType,
         @RequestParam(required = false) Boolean magic,
         @RequestParam(required = false) Boolean attunement,
         @RequestParam(required = false) List<String> rarity,
         @RequestParam(defaultValue = "0")  int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(itemService.findItems(name, weightMin, weightMax, priceMin, priceMax, magic, attunement, rarity, page, size));
+        return ResponseEntity.ok(itemService.findItems(name, weightMin, weightMax, priceMin, priceMax, itemType, magic, attunement, rarity, page, size));
     }
 
     @GetMapping("/{id}")
