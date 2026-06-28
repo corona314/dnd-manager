@@ -109,13 +109,14 @@ public class ItemController {
         @RequestParam(required = false) Integer rangeLongMin,
         @RequestParam(required = false) Integer rangeLongMax,
         @RequestParam(required = false) String mastery,
+        @RequestParam(required = false) String category,
         @RequestParam(required = false) List<String> damageTypes,
         @RequestParam(defaultValue = "0")  int page,
         @RequestParam(defaultValue = "20") int size
 
     ) {
         return ResponseEntity.ok(
-            weaponService.findWeapons(name, weightMin, weightMax, priceMin, priceMax, magic, attunement, rarity, rangeMin, rangeMax, rangeNormalMin, rangeNormalMax, rangeLongMin, rangeLongMax, mastery, damageTypes, page, size)
+            weaponService.findWeapons(name, weightMin, weightMax, priceMin, priceMax, magic, attunement, rarity, rangeMin, rangeMax, rangeNormalMin, rangeNormalMax, rangeLongMin, rangeLongMax, mastery, category, damageTypes, page, size)
         );
     }
 

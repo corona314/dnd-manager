@@ -4,6 +4,7 @@ import dnd.manager.app.dto.ItemDto.ItemResponseDto;
 import dnd.manager.app.dto.ItemDto.WeaponDto.WeaponSummaryDto;
 import dnd.manager.app.mapper.ItemMapper;
 import dnd.manager.app.model.ItemEntities.Item;
+import dnd.manager.app.model.ItemEntities.WeaponEntities.WeaponCategory;
 import dnd.manager.app.repository.ItemRepositories.ItemRepository;
 
 import java.util.List;
@@ -56,6 +57,7 @@ public class WeaponService {
         Integer rangeLongMin,
         Integer rangeLongMax,
         String mastery,
+        String category,
         List<String> damageTypes,
         int page,
         int size
@@ -72,6 +74,7 @@ public class WeaponService {
         .and(hasRangeNormalBetween(rangeNormalMin, rangeNormalMax))
         .and(hasRangeLongBetween(rangeLongMin, rangeLongMax))
         .and(hasMastery(mastery))
+        .and(hasCategory(category))
         .and(hasDamage(damageTypes));
         
         Page<Item> weapons = itemRepository.findAll(

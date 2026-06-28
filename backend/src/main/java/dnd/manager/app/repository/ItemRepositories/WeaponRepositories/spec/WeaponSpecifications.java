@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 import dnd.manager.app.model.ItemEntities.Item;
 import dnd.manager.app.model.ItemEntities.WeaponEntities.Weapon;
+import dnd.manager.app.model.ItemEntities.WeaponEntities.WeaponCategory;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 
@@ -74,6 +75,17 @@ public class WeaponSpecifications {
             Join<Item, Weapon> weapon = root.join("weapon");
 
             return cb.equal(weapon.get("mastery").get("name"), mastery);
+        };
+    }
+
+    public static Specification<Item> hasCategory(String category) {
+        return (root, query, cb) -> {
+            
+            if (category == null) return null;
+            Join<Item, Weapon> weapon = root.join("weapon");
+            WeaponCategory weaponCategory = WeaponCategory.valueOf(category.substring(0, 1).toUpperCase() + category.substring(1).toLowerCase());
+
+            return cb.equal(weapon.get("weaponCategory"), weaponCategory);
         };
     }
 
