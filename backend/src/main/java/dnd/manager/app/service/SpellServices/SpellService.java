@@ -7,7 +7,7 @@ import dnd.manager.app.model.SpellEntities.Spell;
 import dnd.manager.app.repository.SpellRepositories.SpellRepository;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import static dnd.manager.app.repository.SpellRepositories.spec.SpellSpecifications.*;
@@ -42,8 +42,7 @@ public class SpellService {
         String savingThrowAbility,
         Boolean attackRoll,
         List<String> damageTypes,
-        int page,
-        int size
+        Pageable pageable
     ){
         Specification<Spell> spec = Specification
         .where(hasName(name))
@@ -56,11 +55,8 @@ public class SpellService {
         .and(isAttackRoll(attackRoll))
         .and(hasDamage(damageTypes));
         
+        Page<Spell> spells = spellRepository.findAll(spec, pageable);
         
-        Page<Spell> spells = spellRepository.findAll(
-                    spec,
-                    PageRequest.of(page, size)
-            );
         return spells.map(mapper::toSummaryDto);
     }
 

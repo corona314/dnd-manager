@@ -6,11 +6,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import dnd.manager.app.dto.ClassDto.ClassResponseDto;
 import dnd.manager.app.dto.ClassDto.ClassSummaryDto;
+import dnd.manager.app.dto.ClassDto.SubclassResponseDto;
+import dnd.manager.app.dto.ClassDto.SubclassSummaryDto;
 import dnd.manager.app.service.ClassServices.ClassService;
 
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,10 +35,9 @@ public class ClassController {
     public ResponseEntity<Page<ClassSummaryDto>> classes(
         @RequestParam(required = false) String name,
         @RequestParam(required = false) List<String> hitPointDie,
-        @RequestParam(defaultValue = "0")  int page,
-        @RequestParam(defaultValue = "20") int size
+        @PageableDefault(size = 20, page = 0) Pageable pageable
     ) {
-        return ResponseEntity.ok(service.findClasses(name, hitPointDie, page, size));
+        return ResponseEntity.ok(service.findClasses(name, hitPointDie, pageable));
     }
 
     
@@ -43,5 +46,14 @@ public class ClassController {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @GetMapping("/{classId}/subclasses")
+    public ResponseEntity<List<SubclassSummaryDto>> subclassesByClass(@PathVariable Long classId) {
+        return ResponseEntity.ok(service.findSubclassesByClass(classId));
+    }
+
+    @GetMapping("/subclasses/{subclassId}")
+    public ResponseEntity<SubclassResponseDto> subclass(@PathVariable Long subclassId) {
+        return ResponseEntity.ok(service.findSubclassById(subclassId));
+    }
 
 }

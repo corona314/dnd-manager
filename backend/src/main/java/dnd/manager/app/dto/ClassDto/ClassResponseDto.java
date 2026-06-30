@@ -11,5 +11,6 @@ public record ClassResponseDto (
     List<ClassSavingThrowDto> savingThrows,
     List<ClassFeatureDto> features,
     List<SpellSummaryDto> spells,
-    List<ClassArmorTypeDto> armorTypes
+    List<ClassArmorTypeDto> armorTypes,
+    List<SubclassSummaryDto> subclasses
 ){}

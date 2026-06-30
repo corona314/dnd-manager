@@ -143,6 +143,7 @@ public class ItemMapper {
             i.getWeapon() == null ? null : i.getWeapon().getRangeNormal(),
             i.getWeapon() == null ? null : i.getWeapon().getRangeLong(),
             i.getWeapon() == null ? null : i.getWeapon().getMastery() == null ? null : i.getWeapon().getMastery().getName(),
+            i.getWeapon() == null ? null : i.getWeapon().getWeaponCategory() == null ? null : i.getWeapon().getWeaponCategory().name(),
             i.getWeapon() == null ? null : i.getWeapon().getWeaponDamages() == null ? null : i.getWeapon().getWeaponDamages().stream().map(wd -> wd.getDamageType().getName()).toList()
         );
     }

@@ -14,5 +14,6 @@ public record WeaponSummaryDto(
     Integer rangeNormal,
     Integer rangeLong,
     String mastery,
+    String weaponCategory,
     List<String> damageTypes
 ) {}

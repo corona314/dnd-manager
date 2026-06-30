@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -56,9 +57,9 @@ public class WeaponService {
         Integer rangeLongMin,
         Integer rangeLongMax,
         String mastery,
+        String category,
         List<String> damageTypes,
-        int page,
-        int size
+        Pageable pageable
     ){
         Specification<Item> spec = Specification
         .where(hasName(name))
@@ -72,12 +73,11 @@ public class WeaponService {
         .and(hasRangeNormalBetween(rangeNormalMin, rangeNormalMax))
         .and(hasRangeLongBetween(rangeLongMin, rangeLongMax))
         .and(hasMastery(mastery))
+        .and(hasCategory(category))
         .and(hasDamage(damageTypes));
         
-        Page<Item> weapons = itemRepository.findAll(
-                    spec,
-                    PageRequest.of(page, size)
-            );
+        Page<Item> weapons = itemRepository.findAll(spec, pageable);
+        
         return weapons.map(mapper::toWeaponSummaryDto);
     }
 
