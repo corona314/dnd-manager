@@ -17,6 +17,8 @@ import dnd.manager.app.service.ItemServices.WeaponServices.WeaponService;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,10 +51,9 @@ public class ItemController {
         @RequestParam(required = false) Boolean magic,
         @RequestParam(required = false) Boolean attunement,
         @RequestParam(required = false) List<String> rarity,
-        @RequestParam(defaultValue = "0")  int page,
-        @RequestParam(defaultValue = "20") int size
+        @PageableDefault(size = 20, page = 0) Pageable pageable
     ) {
-        return ResponseEntity.ok(itemService.findItems(name, weightMin, weightMax, priceMin, priceMax, itemType, magic, attunement, rarity, page, size));
+        return ResponseEntity.ok(itemService.findItems(name, weightMin, weightMax, priceMin, priceMax, itemType, magic, attunement, rarity, pageable));
     }
 
     @GetMapping("/{id}")
@@ -111,12 +112,11 @@ public class ItemController {
         @RequestParam(required = false) String mastery,
         @RequestParam(required = false) String category,
         @RequestParam(required = false) List<String> damageTypes,
-        @RequestParam(defaultValue = "0")  int page,
-        @RequestParam(defaultValue = "20") int size
+        @PageableDefault(size = 20, page = 0) Pageable pageable
 
     ) {
         return ResponseEntity.ok(
-            weaponService.findWeapons(name, weightMin, weightMax, priceMin, priceMax, magic, attunement, rarity, rangeMin, rangeMax, rangeNormalMin, rangeNormalMax, rangeLongMin, rangeLongMax, mastery, category, damageTypes, page, size)
+            weaponService.findWeapons(name, weightMin, weightMax, priceMin, priceMax, magic, attunement, rarity, rangeMin, rangeMax, rangeNormalMin, rangeNormalMax, rangeLongMin, rangeLongMax, mastery, category, damageTypes, pageable)
         );
     }
 

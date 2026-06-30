@@ -4,13 +4,13 @@ import dnd.manager.app.dto.ItemDto.ItemResponseDto;
 import dnd.manager.app.dto.ItemDto.WeaponDto.WeaponSummaryDto;
 import dnd.manager.app.mapper.ItemMapper;
 import dnd.manager.app.model.ItemEntities.Item;
-import dnd.manager.app.model.ItemEntities.WeaponEntities.WeaponCategory;
 import dnd.manager.app.repository.ItemRepositories.ItemRepository;
 
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -59,8 +59,7 @@ public class WeaponService {
         String mastery,
         String category,
         List<String> damageTypes,
-        int page,
-        int size
+        Pageable pageable
     ){
         Specification<Item> spec = Specification
         .where(hasName(name))
@@ -77,10 +76,8 @@ public class WeaponService {
         .and(hasCategory(category))
         .and(hasDamage(damageTypes));
         
-        Page<Item> weapons = itemRepository.findAll(
-                    spec,
-                    PageRequest.of(page, size)
-            );
+        Page<Item> weapons = itemRepository.findAll(spec, pageable);
+        
         return weapons.map(mapper::toWeaponSummaryDto);
     }
 

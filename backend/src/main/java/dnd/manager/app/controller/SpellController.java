@@ -10,6 +10,8 @@ import dnd.manager.app.service.SpellServices.SpellService;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,10 +41,9 @@ public class SpellController {
         @RequestParam(required = false) String savingThrowAbility,
         @RequestParam(required = false) Boolean attackRoll,
         @RequestParam(required = false) List<String> damageType,
-        @RequestParam(defaultValue = "0")  int page,
-        @RequestParam(defaultValue = "20") int size
+        @PageableDefault(size = 20, page = 0) Pageable pageable
     ) {
-        return ResponseEntity.ok(service.findSpells(name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowAbility, attackRoll, damageType, page, size));
+        return ResponseEntity.ok(service.findSpells(name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowAbility, attackRoll, damageType, pageable));
     }
 
     @GetMapping("/{id}")

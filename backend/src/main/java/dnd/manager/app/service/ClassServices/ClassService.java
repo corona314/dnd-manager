@@ -1,7 +1,7 @@
 package dnd.manager.app.service.ClassServices;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -37,17 +37,14 @@ public class ClassService {
     public Page<ClassSummaryDto> findClasses(
         String name,
         List<String> hitPointDie,
-        int page,
-        int size
+        Pageable pageable
     ){
         Specification<ClassEntity> spec = Specification
         .where(hasName(name))
         .and(hasHitPointDie(hitPointDie));        
         
-        Page<ClassEntity> classes = classRepository.findAll(
-                    spec,
-                    PageRequest.of(page, size)
-            );
+        Page<ClassEntity> classes = classRepository.findAll(spec, pageable);
+        
         return classes.map(mapper::toSummaryDto);
     }
 

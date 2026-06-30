@@ -8,6 +8,7 @@ import dnd.manager.app.repository.ItemRepositories.ItemRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import static dnd.manager.app.repository.ItemRepositories.spec.ItemSpecifications.*;
@@ -40,8 +41,7 @@ public class ItemService {
         Boolean magic,
         Boolean attunement,
         List<String> rarity,
-        int page,
-        int size
+        Pageable pageable
     ){
         Specification<Item> spec = Specification
         .where(hasName(name))
@@ -53,10 +53,8 @@ public class ItemService {
         .and(hasAttunement(attunement))
         .and(hasRarity(rarity));
         
-        Page<Item> items = itemRepository.findAll(
-                    spec,
-                    PageRequest.of(page, size)
-            );
+        Page<Item> items = itemRepository.findAll(spec, pageable);
+        
         return items.map(mapper::toSummaryDto);
     }
 }
