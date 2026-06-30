@@ -11,6 +11,7 @@
         <h1 class="title">¡Welcome!</h1>
         <button @click = "$emit('navigate', 'spells')">Conjuros</button>
         <button @click = "$emit('navigate', 'items')">Objetos</button>
+        <button @click = "$emit('navigate', 'classes')">Clases</button>
         <button @click="$emit('logout')">Cerrar sesión</button>
     </div>
 </template>

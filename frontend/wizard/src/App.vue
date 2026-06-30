@@ -1,5 +1,6 @@
 <script setup>
   //Componentes
+  import AppClasses from './components/AppClasses.vue';
   import AppItems from './components/AppItems.vue';
   import AppLogin from './components/AppLogin.vue';
   import AppMain from './components/AppMain.vue';
@@ -39,6 +40,7 @@
       <AppMain v-if="currentPage === 'main'" @navigate="currentPage = $event" @logout="logout"/>
       <AppSpells v-if="currentPage === 'spells'" @back="currentPage = 'main'"/>
       <AppItems v-if="currentPage === 'items'" @back="currentPage = 'main'"/>
+      <AppClasses v-if="currentPage === 'classes'" @back="currentPage = 'main'"/>
     </div>
   </transition>
 

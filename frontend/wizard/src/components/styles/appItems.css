@@ -1,0 +1,250 @@
+/*Main-General*/ 
+    .items_page{
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background-color: rgb(255, 230, 186);
+    }
+
+/*Pestañas*/
+    .tabs{
+        display: flex;
+        width: 50%;
+        justify-content: space-between;
+        align-items: center;
+        margin: 30px 0px 30px 0px;
+    }
+    .tabs button{
+        padding: 8px;
+        background-color: rgb(220, 220, 220);
+    }
+
+/*Filtros*/
+    .name, .name_input, .search_button{
+        display: flex;
+        border-radius: 0;
+        border-width: 1px;
+    }
+    .name_input{
+        height: 26px;   
+    }
+    .search_button{
+        margin-left: -1px;
+        padding: 3px 6px 3px 6px;
+    }
+    
+/*Filtros generales*/
+    .tristate {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border: 2px solid #666;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        user-select: none;
+        background-color: white;
+    }
+    .tristate--active {
+        background-color: #4ade80;
+        border-color: #16a34a;
+    }
+    .tristate--inactive {
+        background-color: #f87171;
+        border-color: #dc2626;
+    }
+    .tristate:hover {
+        border-color: #333;
+    }
+
+    .general_filters {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        width: 55%;
+        margin-bottom: 16px;
+    }
+
+    .rarity_filter {
+        position: relative;
+        z-index: 20;
+    }
+    .rarity_dropdown_btn {
+        padding: 4px 10px;
+        border: 1px solid #666;
+        cursor: pointer;
+        background: white;
+        border-radius: 4px;
+    }
+    .rarity_dropdown_menu {
+        position: absolute;
+        top: 100%;
+        background: white;
+        border: 1px solid #666;
+        padding: 4px;
+        border-radius: 4px;
+        min-width: 120px;
+    }
+    .rarity_option {
+        padding: 4px 8px;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+    .rarity_option:hover { background: #fde68a; }
+    .rarity_option.selected { background: #b45309; color: white; }
+
+    .rarity_chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 4px;
+    }
+    .rarity_chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: 1px solid #b45309;
+        padding: 2px 6px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        background: #fde68a;
+        cursor: pointer;
+    }
+
+/*Filtros especificos*/
+    .specific_filters {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        width: 75%;
+        margin-bottom: 16px;
+    }
+    .specific_filters select {
+        padding: 4px 8px;
+        border: 1px solid #666;
+        border-radius: 4px;
+        background: white;
+        cursor: pointer;
+    }
+/*Tarjetas de items*/
+    .item_list{
+        display: flex;
+        flex-direction: column;
+        align-items: stretch; 
+        justify-content: space-between;
+        width: 75%;
+    }
+    .item_card{
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        border: solid;
+        border-width: 2px;
+        margin: 10px;
+        justify-content: space-between;
+        position: relative; 
+        height: 70px; 
+        background-color: white;
+        cursor: pointer;
+    }
+    .item_card_base{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        position: relative;
+        height: 50px;
+        flex-shrink: 0;
+    }
+    .item_name{
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .item_rarity{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+    .item_price{
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+    .item_weight{
+        position: absolute;
+        top: 0;
+        right: 65px;
+    }
+    .item_attunement{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+    .item_magic{
+        position: absolute;
+        bottom: 0;
+        right: 40px;
+    }
+    /*Item extendido*/
+    .item_card {
+        max-height: 80px;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        height: auto;         
+    }
+    .item_card--expanded {
+        max-height: 2000px;
+    }
+    .item_card_expanded {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(0,0,0,0.2);
+    }
+    .item_card_expanded_content {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        gap: 8px;
+    }
+    .item_details {
+        display: flex;
+        gap: 16px;
+        font-weight: bold;
+        flex-wrap: wrap;
+    }
+    .item_desc {
+        line-height: 1.5;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+    .item_properties {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .item_property_chip {
+        border: 1px solid gray;
+        padding: 2px 8px;
+        border-radius: 20px;
+        background: lightgray;
+        cursor: help;
+    }
+    .item_mastery {
+        font-size: 13px;
+        background: rgba(0,0,0,0.05);
+        padding: 6px 10px;
+        border-radius: 4px;
+        line-height: 1.4;
+    }
+/*Paginación*/
+    .item_pages{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }

@@ -1,5 +1,6 @@
 <script setup>
     //Constantes de datos && cosas de que funcione y tal
+    import './styles/appSpells.css'
     import Slider from 'primevue/slider';
     import { ref, onMounted, computed } from 'vue'
     import { marked } from 'marked';
@@ -123,8 +124,8 @@
             const res = await fetch(`${API_BASE}/spells/${spell.id}`, {
                 headers: { Authorization: `Bearer ${props.token}` }
             })
-            console.log('errores no')
             expanded_spell.value = await res.json()
+            console.log(JSON.stringify(expanded_spell.value.description))
             expanded_id.value = spell.id
             selected_upcast_level.value = expanded_spell.value.level + 1
         } catch (e) {
@@ -163,13 +164,24 @@
         if (upcast.damageRoll) return `${upcast.damageRoll} ${spell.damageTypes[0]?.damageType + ' damage' ?? ''}`
         return null
     }
+
+    function renderDescription(text) {
+        if (!text) return ''
+        const fixed = text
+            .replace(/\|\s*\|/g, '|\n|')           
+            .replace(/(Table:[^\n|]+)\|/, '$1\n|')   
+        return marked(fixed)
+    }
 </script>
 
 <template>
     <div class="spell_page">
         <!--Filtros de selección-->
         <div class="filters">
-            <input class="name" type="text" placeholder="Buscar conjuro..." v-model="filter_name" @keyup.enter="applyFilters"/>
+            <div class="name">
+                <input class="name_input" type="text" placeholder="Buscar conjuro..." v-model="filter_name" @keyup.enter="applyFilters"/>
+                <button class="search_button" @click="applyFilters">🔍</button>
+            </div>
             <div class="level">
                 <span class="level_label">
                     {{ filter_level[0] === 0 ? 'Truco (0)' : `${filter_level[0]}` }}
@@ -247,7 +259,7 @@
                             <span>⏳: {{ expanded_spell.duration }}</span>
                             <span v-if="expanded_spell.material">📦: {{ expanded_spell.material }}</span>
                         </div>
-                        <p class="spell_desc" v-html="marked(expanded_spell.description)"></p>
+                        <p class="spell_desc" v-html="renderDescription(expanded_spell.description)"></p>
 
                         <div v-if="expanded_spell.upcasts.length && expanded_spell.upcasts[0].upcastType === 'SLOT'" class="upcast_section">
                             <div class="upcast_levels">
@@ -295,264 +307,5 @@
 </template>
 
 <style>
-    /*Main-General*/ 
-    .spell_page{
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        position: relative;
-        background-color: rgb(255, 230, 186);
-    }
-    /*Cabecera-Filtrado*/ 
-    .filters{
-        display: flex;
-        width: 75%;
-        justify-content: space-between;
-        align-items: center;
-        margin: 30px 0px 30px 0px;
-        position: absolute;
-        top: 30px;
-    }
-    .level{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        width: 120px;
-    }
-    .level_lalbel{
-        font-size: 0.75rem;
-        font-weight: bold;
-        white-space: nowrap;
-    }
-    .p-slider {
-        height: 6px;
-        width: 100%;
-        --p-slider-track-background: #be9a7f;
-    }
-    .p-slider-range {
-        --p-slider-range-background: #b45309; /* marrón temático D&D */
-    }
-
-    .school_filter {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        position: relative;        
-    }
-
-    .school_dropdown_menu {
-        position: absolute;
-        top: 100%;
-        z-index: 10;
-        background: white;
-        border: 1px solid #666;
-        padding: 5px;
-    }
-
-    .school_chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
-
-    .school_chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        border: 1px solid #666;
-        padding: 2px 6px;
-        border-radius: 999px;
-    }
-
-    .tristate {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        border: 2px solid #666;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        user-select: none;
-        background-color: white;
-    }
-    .tristate--active {
-        background-color: #4ade80;
-        border-color: #16a34a;
-    }
-    .tristate--inactive {
-        background-color: #f87171;
-        border-color: #dc2626;
-    }
-    .tristate:hover {
-        border-color: #333;
-    }
-
-
-    /*Muestra de Spells*/ 
-    .spell_list{
-        display: flex;
-        flex-direction: column;
-        align-items: space-between;
-        justify-content: space-between;
-        width: 75%;
-        margin-top: 130px;
-    }
-    .spell_card{
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-        border: solid;
-        border-width: 2px;
-        margin: 10px;
-        justify-content: space-between;
-        position: relative; 
-        height: 60px; 
-        cursor: pointer;
-        transition: height 0.2s;
-    }
-    .spell_card_base{
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 100%;
-        position: relative;
-        height: 40px;
-        flex-shrink: 0;    
-    }
-
-    .spell_card--expanded {
-        height: auto;
-    }
-    .spell_card_expanded {
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid rgba(0,0,0,0.2);
-    }
-    .spell_desc {
-        line-height: 1.5;
-        margin-bottom: 8px;
-        font-size: 15px;
-    }
-    .spell_details {
-        display: flex;
-        gap: 16px;
-        font-weight: bold;
-    }
-
-    /*TOP LEFT*/ 
-    .spell_name {
-        position: absolute;
-        top: 0;
-        left: 0;
-        font-weight: bold;
-    }
-    .spell_attackroll{
-        position: absolute;
-        top: 0;
-        left: 200px;
-    }
-   /* TOP RIGHT */
-    .spell_component_v {
-        position: absolute;
-        top: 0;
-        right: 45px;
-        font-size: 0.85rem;
-    } 
-    .spell_component_s {
-        position: absolute;
-        top: 0;
-        right: 25px;
-        font-size: 0.85rem;
-    }
-    .spell_component_m {
-        position: absolute;
-        top: 0;
-        right: 2px;
-        font-size: 0.85rem;
-    }
-
-    /* BOTTOM LEFT */
-    .spell_level {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        font-size: 0.8rem;
-    }
-
-    .spell_school {
-        position: absolute;
-        bottom: 0;
-        left: 60px;          /* separado del nivel */
-        font-size: 0.8rem;
-    }
-    .spell_savingthrow{
-        position: absolute;
-        bottom: 0;
-        left: 200px;
-    }
-    /* BOTTOM RIGHT */
-    .spell_ritual {
-        position: absolute;
-        bottom: 0;
-        right: 40px;
-        font-size: 0.8rem;
-    }
-
-    .spell_concentration {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        font-size: 0.8rem;
-    }
-
-    /*Upcast*/
-    .upcast_section {
-        margin-top: 10px;
-        padding-top: 8px;
-        border-top: 1px solid rgba(0,0,0,0.15);
-    }
-    .upcast_levels {
-        display: flex;
-        gap: 4px;
-        margin-bottom: 6px;
-        flex-wrap: wrap;
-    }
-    .upcast_button {
-        width: 26px;
-        height: 26px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid #666;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: bold;
-        background: white;
-    }
-    .upcast_button--active {
-        background-color: grey;
-        border-color: black;
-        color: white;
-    }
-    .upcast_result {
-        font-size: 14px;
-        background: rgba(0,0,0,0.05);
-        padding: 6px 10px;
-        border-radius: 4px;
-    }
-    .upcast_cantrip_row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        font-size: 13px;
-    }
-    /*Selector de pagina*/
-
 
 </style>
