@@ -19,8 +19,8 @@
     const Rarities = ['common', 'uncommon', 'rare', 'very rare',  'legendary']
 
     const SpecificFilters = {
-        armor:   [{ key: 'armorType',   label: 'All',    options: ['light', 'medium', 'heavy'] }],
-        weapons: [{ key: 'weaponRange', label: 'Alcance', options: ['Melee', 'Ranged'] },  { key: 'weaponType',  label: 'Tipo',    options: ['Simple', 'Martial'] }],
+        armor:   [{ key: 'armorType',   label: 'All Types',    options: ['Light', 'Medium', 'Heavy'] }],
+        weapons: [{ key: 'weaponType',     label: 'All Ranges', options: ['Melee', 'Ranged'] }, { key: 'weaponCategory', label: 'Tipo',        options: ['Simple', 'Martial'] }],
         shields: [],
         items:   [{ key: 'itemType',    label: 'All',    options: ['Item','Wondrous','Gear','Vehicle','Tool','Potion','Ammunition'] }],
     }
@@ -33,7 +33,7 @@
 
     //Filtros generales
     const filter_name = ref('')
-    const filter_price = ref([0,500000])
+    const filter_price = ref([0,40000])
     const filter_rarity = ref([])
     const filter_magic = ref(null)
     const filter_attunement = ref(null)
@@ -66,10 +66,10 @@
             }
 
             if (filter_price.value[0] !== null) {
-                params.append('priceMin', filter_price.value[0])
+                params.append('priceMin', filter_price.value[0]*100)
             }
             if (filter_price.value[1] !== null) {
-                params.append('priceMax', filter_price.value[1])
+                params.append('priceMax', filter_price.value[1]*100)
             }
 
             for (const r of filter_rarity.value) {
@@ -139,17 +139,44 @@
         fetchItems(0)
     }
     function switchTab(key) {
-        activeTab.value    = key
+        activeTab.value = key
         current_page.value = 0
         Object.keys(filter_specific).forEach(k => delete filter_specific[k])
+        SpecificFilters[key]?.forEach(f => { filter_specific[f.key] = '' })
         fetchItems(0)
     }
  
-    onMounted(() => {fetchItems()})
+    onMounted(() => {
+        SpecificFilters[activeTab.value]?.forEach(f => { filter_specific[f.key] = '' })
+        fetchItems()})
 
     function goToPage(page){
         if (page < 0 || page >= total_pages.value) return
         fetchItems(page)
+    }
+
+    function renderDescription(text) {
+        if (!text) return ''
+        const fixed = text
+            .replace(/\|\s*\|/g, '|\n|')           
+            .replace(/(Table:[^\n|]+)\|/, '$1\n|')   
+        return marked(fixed)
+    }
+
+    function onPriceInputChange() {
+        if (filter_price.value[0] > filter_price.value[1]) {
+            filter_price.value[1] = filter_price.value[0]
+        }
+        fetchItems(0)
+    }
+
+    function onPriceSlide(value) {}
+
+    function formatPrice(cp) {
+        if (cp === 0) return '0 cp'
+        if (cp < 10) return `${cp} cp`
+        if (cp < 100) return `${cp / 10} sp`
+        return `${cp / 100} gp`
     }
 </script>
 
@@ -164,7 +191,7 @@
             </button>
         </div>
         <!--Filtros-->
-        
+        <div class="all_filters">
             <div class="general_filters">
                 <div class="name">
                     <input class="name" type="text" placeholder="Buscar objeto..." v-model="filter_name" @keyup.enter="fetchItems(0)"/>
@@ -187,12 +214,12 @@
                     </div>
                 </div>
                 <div class="price">
-                    <span class="price_label">
-                        {{ filter_price[0] + 'GP'}}
-                        --
-                        {{ filter_price[1] + 'GP'}}
-                    </span>
-                    <Slider class="price_slider" v-model="filter_price" :min="0" :max="500000" :step="100" range @slideend="fetchItems"/>
+                    <div class="price_inputs">
+                        <input type="number" v-model.number="filter_price[0]" @change="onPriceInputChange" min="0" :max="filter_price[1]"/>
+                        <span>—</span>
+                        <input type="number" v-model.number="filter_price[1]" @change="onPriceInputChange" :min="filter_price[0]" max="40000"/>
+                    </div>
+                    <Slider class="price_slider" v-model="filter_price" :min="0" :max="40000" :step="50" range @slideend="fetchItems" @update:modelValue="onPriceSlide"/>
                 </div>
                 <div class="magic" >
                     <span class="tristate" @click="cycleMagic" :class="{'tristate--active': filter_magic === true, 'tristate--inactive': filter_magic === false}">
@@ -217,7 +244,7 @@
                     </select>
                 </template>
             </div>
-        
+        </div>
         <!-- Lista -->
         <div v-if="loading">Cargando...</div>
         <div v-else class="item_list">
@@ -225,7 +252,7 @@
                 <div class="item_card_base">
                     <strong class="item_name">{{ item.name }}</strong>
                     <span class="item_rarity">{{ item.rarity }}</span>
-                    <span class="item_price">{{ item.price/100}} gp</span>
+                    <span class="item_price">{{ formatPrice(item.price) }} </span>
                     <span class="item_weight">{{ item.weight }} lb</span>
                     <span class="item_magic" v-if="item.magic">✦ Magic</span>
                     <span class="item_attunement">{{ item.attunement === true ? '🧙' : '🙅' }}</span>
@@ -269,7 +296,7 @@
                             </div>
                         </div>
                         
-                        <p class="item_desc" v-html="marked(expanded_item.description)"></p>
+                        <p class="item_desc" v-html="renderDescription(expanded_item.description)"></p>
 
                         <!-- Mastery -->
                         <div v-if="expanded_item.weaponDto?.mastery" class="item_mastery">

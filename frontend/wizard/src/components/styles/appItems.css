@@ -1,3 +1,9 @@
+/*Colores*/
+:root{
+    --background: rgb(255, 230, 186);
+    --buttons: rgb(220, 220, 220);
+}
+
 /*Main-General*/ 
     .items_page{
         min-height: 100vh;
@@ -5,7 +11,7 @@
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        background-color: rgb(255, 230, 186);
+        background-color: var(--background);
     }
 
 /*Pestañas*/
@@ -18,10 +24,22 @@
     }
     .tabs button{
         padding: 8px;
-        background-color: rgb(220, 220, 220);
+        background-color: var(--buttons);
     }
 
 /*Filtros*/
+    .all_filters {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        width: 85%;
+        margin-bottom: 16px;
+    }
+    
+    
+/*Filtros generales*/
     .name, .name_input, .search_button{
         display: flex;
         border-radius: 0;
@@ -34,8 +52,7 @@
         margin-left: -1px;
         padding: 3px 6px 3px 6px;
     }
-    
-/*Filtros generales*/
+
     .tristate {
         display: inline-flex;
         align-items: center;
@@ -66,7 +83,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        width: 55%;
+        width: auto;
         margin-bottom: 16px;
     }
 
@@ -116,12 +133,25 @@
         cursor: pointer;
     }
 
+    .price_inputs {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+    }
+    .price_inputs input {
+        width: 70px;
+        padding: 4px 6px;
+        border: 1px solid #666;
+        border-radius: 4px;
+    }
+
 /*Filtros especificos*/
     .specific_filters {
         display: flex;
         justify-content: center;
         gap: 12px;
-        width: 75%;
+        width: auto;
         margin-bottom: 16px;
     }
     .specific_filters select {
@@ -223,6 +253,27 @@
         margin-bottom: 8px;
         font-size: 15px;
     }
+    .item_desc table {
+        border-collapse: collapse;
+        margin: 8px 0;
+        font-size: 14px;
+        width: 100%;
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+    .item_desc th,
+    .item_desc td {
+        border: 1px solid rgba(0,0,0,0.2);
+        padding: 4px 10px;
+        text-align: left;
+        vertical-align: top;
+    }
+    .item_desc th {
+        background: rgba(0,0,0,0.08);
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
     .item_properties {
         display: flex;
         gap: 6px;

@@ -11,7 +11,7 @@
     const Levels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     const Components = ['V', 'S', 'M']
     const Schools = {1: 'Abjuration', 2: 'Conjuration', 3: 'Divination', 4: 'Enchantment', 5: 'Evocation', 6: 'Illusion', 7: 'Necromancy',  8: 'Transmutation'}
-    const Damage_Colors = {Acid: '#a8c94d', Cold: '#7ec8e3', Fire: '#e25822', Force: '#c084fc', Lightning: '#facc15', Necrotic: '#4ade80', Piercing: '#94a3b8', Poison: '#86efac', Psychic: '#f472b6', Radiant: '#fde68a', Slashing: '#f87171', Thunder:'#818cf8', Bludgeoning:'#a78bfa'}
+    const Damage_Colors = {Acid: '--damage-acid', Cold: '--damage-cold', Fire: '--damage-fire', Force: '--damage-force', Lightning: '--damage-lightning', Necrotic: '--damage-necrotic', Piercing: '--damage-piercing', Poison: '--damage-poison', Psychic: '--damage-psychic', Radiant: '--damage-radiant', Slashing: '--damage-slashing', Thunder: '--damage-thunder', Bludgeoning: '--damage-bludgeoning'}
 
     //Constantes de los filtros
     const filter_name = ref('')
@@ -21,7 +21,14 @@
     const filter_ritual = ref(null)
     const filter_concentration = ref(null)
     const school_open = ref(false)
-    
+    //Constantes de ordenacion
+    const SortOptions = [
+        { key: 'name',  label: 'Nombre' },
+        { key: 'level', label: 'Nivel' },
+        { key: 'school', label: 'Escuela' },
+    ]
+    const filter_sort_field = ref('name')
+    const filter_sort_dir = ref('asc')
 
     //Constantes de la lista de conjuros
     const spells = ref([])
@@ -40,6 +47,9 @@
         loading.value = true
         try{
             const params = new URLSearchParams({ page, size: 20 })
+            if (filter_sort_field.value) {
+                params.append('sort', `${filter_sort_field.value},${filter_sort_dir.value}`)
+            }
             if (filter_name.value) {
                 params.append('name', filter_name.value)
             } 
@@ -141,6 +151,14 @@
         else filter_school.value.splice(i, 1)
         applyFilters()
     }
+    function selectSortField(key) {
+        filter_sort_field.value = key
+        applyFilters()
+    }
+    function toggleSortDir() {
+        filter_sort_dir.value = filter_sort_dir.value === 'asc' ? 'desc' : 'asc'
+        applyFilters()
+    }
 
     function sliderOrder(value){
         let [min, max] = value
@@ -204,6 +222,16 @@
                     </span>
                 </div>
             </div>
+            <div class="sort_filter">
+                <select v-model="filter_sort_field" @change="applyFilters">
+                    <option v-for="opt in SortOptions" :key="opt.key" :value="opt.key">
+                        {{ opt.label }}
+                    </option>
+                </select>
+                <span class="sort_dir_btn" @click="toggleSortDir">
+                    {{ filter_sort_dir === 'asc' ? '▲' : '▼' }}
+                </span>
+            </div>
             <div class="components" v-for="comp in Components" :key="comp">
                 <span class="tristate" @click="cycleComponent(comp)" :class="{'tristate--active': filter_components[comp] === true, 'tristate--inactive': filter_components[comp] === false}">
                     <span v-if="filter_components[comp] === null">{{ comp }}</span>
@@ -230,7 +258,7 @@
         <!--Tarjetas de los conjuros-->
         <div v-if="loading" class="loading">Cargando...</div>
         <div v-else class="spell_list">
-            <div v-for="spell in spells" :key="spell.name" class="spell_card" :style="{ backgroundColor: Damage_Colors[spell.damageTypes[0]?.damageType] || '#ffffff'}" :class="{ 'spell_card--expanded': expanded_id === spell.id }" @click="expandSpell(spell)">
+            <div v-for="spell in spells" :key="spell.name" class="spell_card" :style="{ backgroundColor: `var(${Damage_Colors[spell.damageTypes[0]?.damageType] || '--damage-default'})`}" :class="{ 'spell_card--expanded': expanded_id === spell.id }" @click="expandSpell(spell)">
                 <div class="spell_card_base">
                     <span class="spell_name"> {{ spell.name }} </span>
                     <span class="spell_attackroll">{{spell.attackRoll === true ? '⚔️' : ''}}</span>
