@@ -22,14 +22,11 @@
     const filter_concentration = ref(null)
     const school_open = ref(false)
     //Constantes de ordenacion
-    const SortOptions = [
-        { key: 'name',  label: 'Nombre' },
-        { key: 'level', label: 'Nivel' },
-        { key: 'school', label: 'Escuela' },
-    ]
-    const filter_sort_field = ref('name')
-    const filter_sort_dir = ref('asc')
-
+    const filter_sort = ref([
+        { field: 'name',   label: 'Nombre',  dir: 'asc',  active: false },
+        { field: 'level',  label: 'Nivel',   dir: 'asc',  active: false },
+        { field: 'school', label: 'Escuela', dir: 'asc',  active: false },
+    ])
     //Constantes de la lista de conjuros
     const spells = ref([])
     const loading = ref(false)
@@ -47,8 +44,8 @@
         loading.value = true
         try{
             const params = new URLSearchParams({ page, size: 20 })
-            if (filter_sort_field.value) {
-                params.append('sort', `${filter_sort_field.value},${filter_sort_dir.value}`)
+            for (const s of filter_sort.value) {
+                if (s.active) params.append('sort', `${s.field},${s.dir}`)
             }
             if (filter_name.value) {
                 params.append('name', filter_name.value)
@@ -151,13 +148,23 @@
         else filter_school.value.splice(i, 1)
         applyFilters()
     }
-    function selectSortField(key) {
-        filter_sort_field.value = key
+    //Metodos Ordenación
+    function toggleSortActive(index) {
+        filter_sort.value[index].active = !filter_sort.value[index].active
         applyFilters()
     }
-    function toggleSortDir() {
-        filter_sort_dir.value = filter_sort_dir.value === 'asc' ? 'desc' : 'asc'
-        applyFilters()
+
+    function toggleSortDir(index) {
+        filter_sort.value[index].dir = filter_sort.value[index].dir === 'asc' ? 'desc' : 'asc'
+        if (filter_sort.value[index].active) applyFilters()
+    }
+
+    function moveSortCriterion(index, direction) {
+        const newIndex = index + direction
+        if (newIndex < 0 || newIndex >= filter_sort.value.length) return
+        const arr = filter_sort.value
+        ;[arr[index], arr[newIndex]] = [arr[newIndex], arr[index]]
+        if (arr[index].active || arr[newIndex].active) applyFilters()
     }
 
     function sliderOrder(value){
@@ -223,14 +230,13 @@
                 </div>
             </div>
             <div class="sort_filter">
-                <select v-model="filter_sort_field" @change="applyFilters">
-                    <option v-for="opt in SortOptions" :key="opt.key" :value="opt.key">
-                        {{ opt.label }}
-                    </option>
-                </select>
-                <span class="sort_dir_btn" @click="toggleSortDir">
-                    {{ filter_sort_dir === 'asc' ? '▲' : '▼' }}
-                </span>
+                <div v-for="(s, index) in filter_sort" :key="s.field" class="sort_chip" :class="{ 'sort_chip--active': s.active }">
+                    <span class="sort_priority" v-if="s.active">{{ filter_sort.filter(x => x.active).findIndex(x => x.field === s.field) + 1 }}</span>
+                    <span class="sort_label" @click="toggleSortActive(index)">{{ s.label }}</span>
+                    <span class="sort_dir_btn" @click="toggleSortDir(index)"> {{ s.dir === 'asc' ? '▲' : '▼' }} </span>
+                    <span class="sort_move_btn" @click="moveSortCriterion(index, -1)" v-if="index > 0">↑</span>
+                    <span class="sort_move_btn" @click="moveSortCriterion(index, 1)" v-if="index < filter_sort.length - 1">↓</span>
+                </div>
             </div>
             <div class="components" v-for="comp in Components" :key="comp">
                 <span class="tristate" @click="cycleComponent(comp)" :class="{'tristate--active': filter_components[comp] === true, 'tristate--inactive': filter_components[comp] === false}">
@@ -258,7 +264,7 @@
         <!--Tarjetas de los conjuros-->
         <div v-if="loading" class="loading">Cargando...</div>
         <div v-else class="spell_list">
-            <div v-for="spell in spells" :key="spell.name" class="spell_card" :style="{ backgroundColor: `var(${Damage_Colors[spell.damageTypes[0]?.damageType] || '--damage-default'})`}" :class="{ 'spell_card--expanded': expanded_id === spell.id }" @click="expandSpell(spell)">
+            <div v-for="spell in spells" :key="spell.id" class="spell_card" :style="{ backgroundColor: `var(${Damage_Colors[spell.damageTypes[0]?.damageType] || '--default'})`}" :class="{ 'spell_card--expanded': expanded_id === spell.id }" @click="expandSpell(spell)">
                 <div class="spell_card_base">
                     <span class="spell_name"> {{ spell.name }} </span>
                     <span class="spell_attackroll">{{spell.attackRoll === true ? '⚔️' : ''}}</span>

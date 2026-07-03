@@ -1,0 +1,60 @@
+/*Colores*/
+:root{
+    --background: rgb(255, 230, 186);
+    --buttons: rgb(220, 220, 220);
+    --card-background: white;
+}
+/*Main-general*/
+.classes_page{
+    min-height: 100vh;
+    background-color: var(--background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/*Tarjeta de Clase (Sin extender)*/
+.classes_list{
+    display: flex;
+    flex-direction: column;
+    align-items: space-between;
+    justify-content: space-between;
+    width: 75%;
+    margin-top: 30px;
+}
+.class_card{
+    display: flex;
+    background-color: var(--card-background);
+    flex-direction: column;
+    padding: 10px;
+    border: solid;
+    border-width: 2px;
+    margin: 10px;
+    justify-content: space-between;
+    position: relative; 
+    height: auto; 
+    cursor: pointer;
+    transition: height 0.2s;
+}
+.class_card_base{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    height: 40px;
+    flex-shrink: 0;    
+}
+/*Tarjeta de Clase (Extendida)*/
+.class_card_expanded {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,0,0,0.2);
+}
+.class_card_expanded_content {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 8px;
+}

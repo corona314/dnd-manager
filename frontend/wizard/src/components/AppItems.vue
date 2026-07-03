@@ -20,7 +20,7 @@
 
     const SpecificFilters = {
         armor:   [{ key: 'armorType',   label: 'All Types',    options: ['Light', 'Medium', 'Heavy'] }],
-        weapons: [{ key: 'weaponType',     label: 'All Ranges', options: ['Melee', 'Ranged'] }, { key: 'weaponCategory', label: 'Tipo',        options: ['Simple', 'Martial'] }],
+        weapons: [{ key: 'weaponType',  label: 'All Ranges', options: ['Melee', 'Ranged'] }, { key: 'weaponCategory', label: 'Tipo',        options: ['Simple', 'Martial'] }],
         shields: [],
         items:   [{ key: 'itemType',    label: 'All',    options: ['Item','Wondrous','Gear','Vehicle','Tool','Potion','Ammunition'] }],
     }
@@ -288,7 +288,7 @@
                             <template v-else>
                                 <span>📦 {{ expanded_item.itemType }}</span>
                             </template>
-                            <!-- Propiertys -->
+                            <!-- Propierties -->
                             <div v-if="expanded_item.weaponDto?.properties?.length" class="item_properties">
                                 <span v-for="p in expanded_item.weaponDto.properties" :key="p.name" class="item_property_chip" :title="p.description">
                                     {{ p.name }}<span v-if="p.value"> ({{ p.value }})</span>

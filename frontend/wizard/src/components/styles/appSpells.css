@@ -1,5 +1,7 @@
     /*Colores*/
     :root{
+        --background: rgb(255, 230, 186);
+
         --damage-acid: #a8c94d;
         --damage-cold: #7ec8e3;
         --damage-fire: #e25822;
@@ -13,7 +15,14 @@
         --damage-slashing: #f87171;
         --damage-thunder: #818cf8;
         --damage-bludgeoning: #a78bfa;
-        --damage-default: #ffffff;
+        --default: #ffffff;
+
+        --inactive: #f87171;
+        --active:#4ade80;
+        --border:#666;
+        --separator-lines: rgba(0,0,0,0.2);
+        --element-background: #be9a7f;
+        --element-foreground:#b45309;
     }
     /*Main-General*/ 
     .spell_page{
@@ -23,7 +32,7 @@
         justify-content: center;
         flex-direction: column;
         position: relative;
-        background-color: rgb(255, 230, 186);
+        background-color: var(--background);
     }
     /*Cabecera-Filtrado*/ 
     .filters{
@@ -64,10 +73,10 @@
     .p-slider {
         height: 6px;
         width: 100%;
-        --p-slider-track-background: #be9a7f;
+        --p-slider-track-background: var(--element-background);
     }
     .p-slider-range {
-        --p-slider-range-background: #b45309; /* marrón temático D&D */
+        --p-slider-range-background: var(--element-foreground); 
     }
 
     .school_filter {
@@ -81,8 +90,8 @@
         position: absolute;
         top: 100%;
         z-index: 10;
-        background: white;
-        border: 1px solid #666;
+        background: var(--default);
+        border: 1px solid var(--border);
         padding: 5px;
     }
 
@@ -96,7 +105,7 @@
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        border: 1px solid #666;
+        border: 1px solid var(--border);
         padding: 2px 6px;
         border-radius: 999px;
     }
@@ -104,29 +113,48 @@
     .sort_filter {
         display: flex;
         align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .sort_chip {
+        display: flex;
+        align-items: center;
         gap: 4px;
-    }
-    .sort_filter select {
-        padding: 4px 8px;
-        border: 1px solid #666;
+        border: 1px solid var(--border);
         border-radius: 4px;
-        background: white;
-        cursor: pointer;
+        padding: 2px 6px;
+        background: var(--default);
+        opacity: 0.55;
     }
-    .sort_dir_btn {
+    .sort_chip--active {
+        opacity: 1;
+        border-color: var(--element-foreground);
+        background: var(--element-background);
+    }
+    .sort_priority {
+        font-size: 0.7rem;
+        font-weight: bold;
+        color: var(--element-foreground);
+        width: 14px;
+        text-align: center;
+    }
+    .sort_label {
+        cursor: pointer;
+        font-size: 0.85rem;
+        user-select: none;
+    }
+    .sort_dir_btn, .sort_move_btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
-        border: 2px solid #666;
-        border-radius: 4px;
+        width: 20px;
+        height: 20px;
         cursor: pointer;
         user-select: none;
-        background-color: white;
+        border-radius: 3px;
     }
-    .sort_dir_btn:hover {
-        border-color: #333;
+    .sort_dir_btn:hover, .sort_move_btn:hover {
+        background: var(--separator-lines);
     }
 
     .tristate {
@@ -140,18 +168,15 @@
         cursor: pointer;
         font-weight: bold;
         user-select: none;
-        background-color: white;
+        background-color: var(--default);
     }
     .tristate--active {
-        background-color: #4ade80;
-        border-color: #16a34a;
+        background-color: var(--active);
+        border-color: var(--border);
     }
     .tristate--inactive {
-        background-color: #f87171;
-        border-color: #dc2626;
-    }
-    .tristate:hover {
-        border-color: #333;
+        background-color: var(--inactive);
+        border-color: var(--border);
     }
 
 
@@ -193,7 +218,7 @@
     .spell_card_expanded {
         margin-top: 10px;
         padding-top: 10px;
-        border-top: 1px solid rgba(0,0,0,0.2);
+        border-top: 1px solid var(--separator-lines);
     }
     .spell_desc {
         line-height: 1.5;
@@ -211,13 +236,13 @@
     }
     .spell_desc th,
     .spell_desc td {
-        border: 1px solid rgba(0,0,0,0.2);
+        border: 1px solid var(--separator-lines);
         padding: 4px 10px;
         text-align: left;
         vertical-align: top;
     }
     .spell_desc th {
-        background: rgba(0,0,0,0.08);
+        background: var(--separator-lines);
         font-weight: bold;
         white-space: nowrap;
     }
@@ -298,7 +323,7 @@
     .upcast_section {
         margin-top: 10px;
         padding-top: 8px;
-        border-top: 1px solid rgba(0,0,0,0.15);
+        border-top: 1px solid var(--separator-lines);
     }
     .upcast_levels {
         display: flex;
@@ -317,16 +342,16 @@
         cursor: pointer;
         font-size: 0.8rem;
         font-weight: bold;
-        background: white;
+        background: var(--default);
     }
     .upcast_button--active {
         background-color: grey;
         border-color: black;
-        color: white;
+        color: var(--default);
     }
     .upcast_result {
         font-size: 14px;
-        background: rgba(0,0,0,0.05);
+        background: var(--separator-lines);
         padding: 6px 10px;
         border-radius: 4px;
     }
