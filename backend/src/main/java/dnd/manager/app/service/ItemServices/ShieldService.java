@@ -2,6 +2,7 @@ package dnd.manager.app.service.ItemServices;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -50,8 +51,7 @@ public class ShieldService {
         Boolean attunement,
         List<String> rarity,
         Integer acBonus,
-        int page,
-        int size
+        Pageable pageable
     ){
         Specification<Item> spec = Specification
         .where(hasName(name))
@@ -63,10 +63,8 @@ public class ShieldService {
         .and(hasRarity(rarity))
         .and(hasAcBonus(acBonus));
         
-        Page<Item> shields = itemRepository.findAll(
-                    spec,
-                    PageRequest.of(page, size)
-            );
+        Page<Item> shields = itemRepository.findAll(spec, pageable);
+        
         return shields.map(mapper::toShieldSummaryDto);
     }
 

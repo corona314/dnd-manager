@@ -2,6 +2,7 @@ package dnd.manager.app.service.ItemServices.ArmorServices;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -55,8 +56,7 @@ public class ArmorService {
         Integer str,
         Boolean stealthDis,
         List<String> armorType,
-        int page,
-        int size
+        Pageable pageable
     ){
         Specification<Item> spec = Specification
         .where(hasName(name))
@@ -71,10 +71,8 @@ public class ArmorService {
         .and(hasStealthDis(stealthDis))
         .and(hasArmorType(armorType));
         
-        Page<Item> armor = itemRepository.findAll(
-                    spec,
-                    PageRequest.of(page, size)
-            );
+        Page<Item> armor = itemRepository.findAll(spec, pageable);
+
         return armor.map(mapper::toArmorSummaryDto);
     }
 

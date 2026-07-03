@@ -77,12 +77,11 @@ public class ItemController {
         @RequestParam(required = false) Integer str,
         @RequestParam(required = false) Boolean stealthDis,
         @RequestParam(required = false) List<String> armorType,
-        @RequestParam(defaultValue = "0")  int page,
-        @RequestParam(defaultValue = "20") int size
+        @PageableDefault(size = 20, page = 0) Pageable pageable
 
     ) {
         return ResponseEntity.ok(
-            armorService.findArmor(name, weightMin, weightMax, priceMin, priceMax, magic, attunement, rarity, acMin, acMax, str, stealthDis, armorType, page, size)
+            armorService.findArmor(name, weightMin, weightMax, priceMin, priceMax, magic, attunement, rarity, acMin, acMax, str, stealthDis, armorType, pageable)
         );
     }
 
@@ -138,12 +137,11 @@ public class ItemController {
         @RequestParam(required = false) Boolean attunement,
         @RequestParam(required = false) List<String> rarity,
         @RequestParam(required = false) Integer acBonus,
-        @RequestParam(defaultValue = "0")  int page,
-        @RequestParam(defaultValue = "20") int size
+        @PageableDefault(size = 20, page = 0) Pageable pageable
 
     ) {
         return ResponseEntity.ok(
-            shieldService.findShields(name, weightMin, weightMax, priceMin, priceMax, magic, attunement, rarity, acBonus, page, size)
+            shieldService.findShields(name, weightMin, weightMax, priceMin, priceMax, magic, attunement, rarity, acBonus, pageable)
         );
     }
 
