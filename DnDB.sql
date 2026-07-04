@@ -118,7 +118,7 @@ CREATE TABLE `background` (
 
 LOCK TABLES `background` WRITE;
 /*!40000 ALTER TABLE `background` DISABLE KEYS */;
-INSERT INTO `background` VALUES (1,'Acolyte',''),(2,'Criminal',''),(3,'Sage',''),(4,'Soldier','');
+INSERT INTO `background` VALUES (1,'Acolyte','You devoted part of your life to serving a temple, faith, or sacred tradition. You are familiar with religious rituals, spiritual teachings, and guiding the faithful.'),(2,'Criminal','You lived outside the law as a thief, smuggler, con artist, or member of a criminal organization. You know how to stay unnoticed and seize opportunities.'),(3,'Sage','You spent years studying the world and gathering knowledge. Ancient tomes, libraries, and forgotten lore are your domain, and you are always eager to learn more.'),(4,'Soldier','You served in an army, militia, or other organized force. Discipline, training, and battlefield experience have prepared you to face danger and fight alongside others.');
 /*!40000 ALTER TABLE `background` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1488,4 +1488,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-03 12:45:50
+-- Dump completed on 2026-07-03 20:28:39

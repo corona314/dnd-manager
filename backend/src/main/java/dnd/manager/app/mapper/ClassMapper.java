@@ -9,7 +9,6 @@ import dnd.manager.app.dto.ClassDto.ClassArmorTypeDto;
 import dnd.manager.app.dto.ClassDto.ClassFeatureDto;
 import dnd.manager.app.dto.ClassDto.ClassResponseDto;
 import dnd.manager.app.dto.ClassDto.ClassSavingThrowDto;
-import dnd.manager.app.dto.ClassDto.ClassSkillDto;
 import dnd.manager.app.dto.ClassDto.ClassSummaryDto;
 import dnd.manager.app.dto.ClassDto.SubclassFeatureDto;
 import dnd.manager.app.dto.ClassDto.SubclassResponseDto;
@@ -22,17 +21,21 @@ import dnd.manager.app.model.ClassEntities.ClassSavingThrow;
 import dnd.manager.app.model.ClassEntities.ClassSkill;
 import dnd.manager.app.model.ClassEntities.ClassSpell;
 import dnd.manager.app.model.SubclassEntities.Subclass;
+import dnd.manager.app.repository.SubclassRepositories.SubclassRepository;
 
 @Component
 public class ClassMapper {
 
     private final FeatureMapper featureMapper;
     private final SpellMapper spellMapper;
-    private final dnd.manager.app.repository.SubclassRepositories.SubclassRepository subclassRepository;
+    private final SkillMapper skillMapper;
+    private final SubclassRepository subclassRepository;
 
-    ClassMapper(FeatureMapper featureMapper, SpellMapper spellMapper, dnd.manager.app.repository.SubclassRepositories.SubclassRepository subclassRepository) {
+
+    ClassMapper(FeatureMapper featureMapper, SpellMapper spellMapper, dnd.manager.app.repository.SubclassRepositories.SubclassRepository subclassRepository, SkillMapper skillMapper) {
         this.featureMapper = featureMapper;
         this.spellMapper = spellMapper;
+        this.skillMapper = skillMapper;
         this.subclassRepository = subclassRepository;
     }
 
@@ -48,19 +51,12 @@ public class ClassMapper {
         return new ClassResponseDto(
             e.getName(),
             e.getHitPointDie(),
-            e.getSkills().stream().map(this::toClassSkillDto).toList(),
+            e.getSkills().stream().map(ClassSkill::getSkill).map(skillMapper::toDto).toList(),
             e.getSavingThrows().stream().map(this::toClassSavingThrowDto).toList(),
             e.getFeatures().stream().sorted(Comparator.comparingInt(ClassFeature::getLevel)).map(this::toClassFeatureDto).toList(),
             e.getSpells().stream().sorted(Comparator.comparingInt((ClassSpell cs) -> cs.getSpell().getLevel())).map(cs -> spellMapper.toSummaryDto(cs.getSpell())).toList(),
             e.getArmorTypes().stream().map(this::toClassArmorTypeDto).toList(),
             subclassRepository.findByClassEntityId(e.getId()).stream().map(this::subclassToSummaryDto).toList()
-        );
-    }
-
-    private ClassSkillDto toClassSkillDto(ClassSkill e) {
-        return new ClassSkillDto(
-            e.getSkill() == null ? null : e.getSkill().getName(),
-            e.getSkill() == null ? null : e.getSkill().getAbility() == null ? null : e.getSkill().getAbility().getCode()
         );
     }
 
