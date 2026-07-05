@@ -3,7 +3,6 @@
     import { ref, onMounted} from 'vue'
     const props = defineProps({ token: String, subclassId: Number })
     const API_BASE = 'http://localhost:8080/api'
-    defineEmits(['back'])
     //Constantes
     const loading = ref(true)
     const subclass= ref(null)
@@ -40,7 +39,6 @@
                 </div>
             </div>
         </div>
-        <button @click="$emit('back')">Back</button>
     </div>
     
 </template>

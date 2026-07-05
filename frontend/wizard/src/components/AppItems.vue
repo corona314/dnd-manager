@@ -5,7 +5,6 @@
     import { marked } from 'marked'
     const props = defineProps({ token: String })
     const API_BASE = 'http://localhost:8080/api'
-    defineEmits(['back'])
     //Constantes 
     const loading = ref(false)
     const activeTab = ref('items')  // pestaña activa
@@ -20,7 +19,7 @@
 
     const SpecificFilters = {
         armor:   [{ key: 'armorType',   label: 'All Types',    options: ['Light', 'Medium', 'Heavy'] }],
-        weapons: [{ key: 'weaponType',  label: 'All Ranges', options: ['Melee', 'Ranged'] }, { key: 'weaponCategory', label: 'Tipo',        options: ['Simple', 'Martial'] }],
+        weapons: [{ key: 'weaponType',  label: 'All Ranges', options: ['Melee', 'Ranged'] }, { key: 'category', label: 'Tipo',        options: ['Simple', 'Martial'] }],
         shields: [],
         items:   [{ key: 'itemType',    label: 'All',    options: ['Item','Wondrous','Gear','Vehicle','Tool','Potion','Ammunition'] }],
     }
@@ -319,8 +318,6 @@
             <button @click="goToPage(current_page + 1)" :disabled="current_page >= total_pages - 1">›</button>
             <button @click="goToPage(total_pages - 1)" :disabled="current_page >= total_pages - 1">»»</button>
         </div>
-        <!--Volver a Main-->
-        <button @click="$emit('back')">Volver</button>
     </div>
 </template>
 

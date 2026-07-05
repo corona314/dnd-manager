@@ -6,7 +6,6 @@
     import { marked } from 'marked';
     const props = defineProps({ token: String })
     const API_BASE = 'http://localhost:8080/api'
-    defineEmits(['back'])
 
     const Levels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     const Components = ['V', 'S', 'M']
@@ -335,8 +334,6 @@
             <button @click="goToPage(current_page + 1)" :disabled="current_page >= total_pages - 1">›</button>
             <button @click="goToPage(total_pages - 1)" :disabled="current_page >= total_pages - 1">»»</button>
         </div>
-        <!--Volver a Main-->
-        <button @click="$emit('back')">Volver</button>
     </div>
 </template>
 

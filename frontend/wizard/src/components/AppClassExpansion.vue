@@ -3,7 +3,7 @@
     import { ref, onMounted} from 'vue'
     const props = defineProps({ token: String, classId: Number })
     const API_BASE = 'http://localhost:8080/api'
-    defineEmits(['back', 'navigate'])
+    defineEmits(['navigate'])
     //Constantes
     const loading = ref(true)
     const class_data = ref(null)
@@ -45,7 +45,6 @@
                 </div>
             </div>
         </div>
-        <button @click="$emit('back')">Back</button>
     </div>
     
 </template>
