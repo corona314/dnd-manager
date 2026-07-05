@@ -1,53 +1,42 @@
 package dnd.manager.app.service.BackgroundServices;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import dnd.manager.app.dto.BackgroundDto.BackgroundResponseDto;
+import dnd.manager.app.dto.BackgroundDto.BackgroundSummaryDto;
+import dnd.manager.app.mapper.BackgroundMapper;
 import dnd.manager.app.model.BackgroundEntities.Background;
 import dnd.manager.app.repository.BackgroundRepositories.BackgroundRepository;
-import dnd.manager.app.repository.BackgroundRepositories.BackgroundSkillRepository;
-import dnd.manager.app.repository.BackgroundRepositories.BackgroundFeatRepository;
+import static dnd.manager.app.repository.BackgroundRepositories.spec.BackgroundSpecifications.*;
 
 @Service
 public class BackgroundService {
 
-    private final BackgroundRepository backgroundRepository;
-    private final BackgroundSkillRepository backgroundSkillRepository;
-    private final BackgroundFeatRepository backgroundFeatureRepository;
+    private final BackgroundRepository repository;
+    private final BackgroundMapper mapper;
 
-    public BackgroundService(BackgroundRepository backgroundRepository,
-                             BackgroundSkillRepository backgroundSkillRepository,
-                             BackgroundFeatRepository backgroundFeatureRepository) {
-        this.backgroundRepository = backgroundRepository;
-        this.backgroundSkillRepository = backgroundSkillRepository;
-        this.backgroundFeatureRepository = backgroundFeatureRepository;
+    public BackgroundService(BackgroundRepository repository, BackgroundMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
-    public List<Background> findAll() {
-        return backgroundRepository.findAll();
+    public BackgroundResponseDto findById(Long id) {
+        return mapper.toResponseDto(repository.findById(id).orElse(null));
     }
 
-    public Background findById(Long id) {
-        return backgroundRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Background not found with id: " + id));
+    public Page<BackgroundSummaryDto> findBackgrounds(
+        String name,
+        Pageable pageable
+    ){
+        Specification<Background> spec = Specification
+        .where(hasName(name));
+        
+        Page<Background> backgrounds = repository.findAll(spec, pageable);
+        
+        return backgrounds.map(mapper::toSummaryDto);
     }
 
-    public Background save(Background background) {
-        return backgroundRepository.save(background);
-    }
-
-    public void deleteById(Long id) {
-        backgroundRepository.deleteById(id);
-    }
-
-    // Skills de proficiencia que otorga este trasfondo
-    public List<?> findSkillsByBackground(Long backgroundId) {
-        return backgroundSkillRepository.findByBackgroundId(backgroundId);
-    }
-
-    // Features/feats que otorga este trasfondo (incluye el Origin Feat)
-    public List<?> findFeaturesByBackground(Long backgroundId) {
-        return backgroundFeatureRepository.findByBackgroundId(backgroundId);
-    }
 }
