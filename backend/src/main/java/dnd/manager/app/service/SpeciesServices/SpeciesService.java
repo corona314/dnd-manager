@@ -2,49 +2,47 @@ package dnd.manager.app.service.SpeciesServices;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import dnd.manager.app.repository.SpeciesRepositories.SpeciesRepository;
-import dnd.manager.app.repository.SpeciesRepositories.SpeciesFeatureRepository;
+import dnd.manager.app.dto.SpeciesDto.SpeciesResponseDto;
+import dnd.manager.app.dto.SpeciesDto.SpeciesSummaryDto;
+import dnd.manager.app.mapper.SpeciesMapper;
 import dnd.manager.app.model.SpeciesEntities.Species;
+import static dnd.manager.app.repository.SpeciesRepositories.spec.SpeciesSpecifications.*;
 
 @Service
 public class SpeciesService {
 
-    private final SpeciesRepository speciesRepository;
-    private final SpeciesFeatureRepository speciesFeatureRepository;
+    private final SpeciesRepository repository;
+    private final SpeciesMapper mapper;
 
-    public SpeciesService(SpeciesRepository speciesRepository, SpeciesFeatureRepository speciesFeatureRepository) {
-        this.speciesRepository = speciesRepository;
-        this.speciesFeatureRepository = speciesFeatureRepository;
+    public SpeciesService(SpeciesRepository repository, SpeciesMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
-    public List<Species> findAll() {
-        return speciesRepository.findAll();
+    public SpeciesResponseDto findById(Long id){
+        return mapper.toResponseDto(repository.findById(id).orElse(null));
     }
 
-    public Species findById(Long id) {
-        return speciesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Species not found with id: " + id));
+    public Page<SpeciesSummaryDto> findSpecies(
+        String name,
+        String size,
+        Integer walkSpeed,
+        Pageable pageable
+    ){
+        Specification<Species> spec = Specification
+        .where(hasName(name))
+        .and(hasSize(size))
+        .and(hasWalkSpeed(walkSpeed));        
+        
+        Page<Species> species = repository.findAll(spec, pageable);
+        
+        return species.map(mapper::toSummaryDto);
     }
 
-    public Species save(Species species) {
-        return speciesRepository.save(species);
-    }
-
-    public void deleteById(Long id) {
-        speciesRepository.deleteById(id);
-    }
-
-    // Todas las especies que tengan velocidad de vuelo
-    public List<Species> findFlying() {
-        return speciesRepository.findAll().stream()
-                .filter(s -> s.getFlySpeed() != null && s.getFlySpeed() > 0)
-                .toList();
-    }
-
-    // Features de una especie concreta
-    public List<?> findFeaturesBySpecie(Long speciesId) {
-        return speciesFeatureRepository.findBySpeciesId(speciesId);
-    }
 }

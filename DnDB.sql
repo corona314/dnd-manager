@@ -1085,9 +1085,9 @@ DROP TABLE IF EXISTS `species`;
 CREATE TABLE `species` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
+  `description` text,
   `size` varchar(20) DEFAULT NULL,
   `walk_speed` int NOT NULL,
-  `description` text,
   `fly_speed` int DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
@@ -1100,7 +1100,7 @@ CREATE TABLE `species` (
 
 LOCK TABLES `species` WRITE;
 /*!40000 ALTER TABLE `species` DISABLE KEYS */;
-INSERT INTO `species` VALUES (20,'Dragonborn','Medium',30,'',0),(21,'Dwarf','Medium',30,'',0),(22,'Elf','Medium',30,'',0),(23,'Gnome','Small',30,'',0),(24,'Goliath','Medium',35,'',0),(25,'Halfling','Small',30,'',0),(26,'Human','Medium',30,'',0),(27,'Orc','Medium',30,'',0),(28,'Tiefling','Medium',30,'',0);
+INSERT INTO `species` VALUES (20,'Dragonborn','','Medium',30,0),(21,'Dwarf','','Medium',30,0),(22,'Elf','','Medium',30,0),(23,'Gnome','','Small',30,0),(24,'Goliath','','Medium',35,0),(25,'Halfling','','Small',30,0),(26,'Human','','Medium',30,0),(27,'Orc','','Medium',30,0),(28,'Tiefling','','Medium',30,0);
 /*!40000 ALTER TABLE `species` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1488,4 +1488,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-03 20:28:39
+-- Dump completed on 2026-07-06  9:53:46
