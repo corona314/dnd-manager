@@ -27,15 +27,14 @@ public class SpeciesController {
         this.service = service;
     }
 
-
     @GetMapping
     public ResponseEntity<Page<SpeciesSummaryDto>> species(
         @RequestParam(required = false) String name,
-        @RequestParam(required = false) String size,
+        @RequestParam(required = false) String sizeS,
         @RequestParam(required = false) Integer walkSpeed,
         @PageableDefault(size = 20, page = 0) Pageable pageable
     ) {
-        return ResponseEntity.ok(service.findSpecies(name, size, walkSpeed, pageable));
+        return ResponseEntity.ok(service.findSpecies(name, sizeS, walkSpeed, pageable));
     }
 
     @GetMapping("/{id}")
