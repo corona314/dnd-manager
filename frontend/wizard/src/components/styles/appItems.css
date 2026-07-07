@@ -3,6 +3,12 @@
     --background: rgb(255, 230, 186);
     --buttons: rgb(220, 220, 220);
 }
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: rgb(35, 35, 35);
+        --buttons: rgb(70, 70, 70);
+    }
+}
 
 /*Main-General*/ 
     .items_page{

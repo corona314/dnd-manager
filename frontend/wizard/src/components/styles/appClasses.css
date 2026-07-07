@@ -4,6 +4,18 @@
     --buttons: rgb(220, 220, 220);
     --card-background: white;
 }
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #1f1f1f;
+        --card-background: #2d2d2d;
+        --buttons: #444;
+
+        --text: #f2f2f2;
+        --text-secondary: #bdbdbd;
+        --border: #888;
+    }
+}
+
 /*Main-general*/
 .classes_page{
     min-height: 100vh;

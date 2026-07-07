@@ -75,26 +75,53 @@
 </template>
 
 <style>
+
+  :root {
+      --background: rgb(255, 230, 186);
+      --card-background: white;
+      --buttons: rgb(220, 220, 220);
+
+      --text: #222;
+      --border: #666;
+  }
+
+  @media (prefers-color-scheme: dark) {
+      :root {
+          --background: #1f1f1f;
+          --card-background: #2d2d2d;
+          --buttons: #3a3a3a;
+
+          --text: #f2f2f2;
+          --border: #888;
+      }
+  }
+
   .app_header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background: rgb(220, 220, 220);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: var(--buttons);
+      position: sticky;
+      top: 0;
+      z-index: 100;
   }
-  .header_back_btn, .header_logout_btn {
-    padding: 6px 12px;
-    border: 1px solid #666;
-    border-radius: 4px;
-    background: white;
-    cursor: pointer;
+
+  .header_back_btn,
+  .header_logout_btn {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--card-background);
+      color: var(--text);
+      cursor: pointer;
   }
+
   .header_title {
-    font-weight: bold;
-    text-transform: capitalize;
+      font-weight: bold;
+      text-transform: capitalize;
+      color: var(--text);
   }
+
 </style>
 
