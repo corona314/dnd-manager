@@ -1,4 +1,5 @@
 <script setup>
+  import './components/styles/app.css'
   //Componentes
   import AppClasses from './components/AppClasses.vue';
   import AppClassExpansion from './components/AppClassExpansion.vue';
@@ -6,15 +7,23 @@
   import AppLogin from './components/AppLogin.vue';
   import AppMain from './components/AppMain.vue';
   import AppSpells from './components/AppSpells.vue';
+  import AppSubclassExpansion from './components/AppSubclassExpansion.vue';
+  import AppSpecies from './components/AppSpecies.vue';
+  import AppBackgrounds from './components/AppBackgrounds.vue';
+  import AppSpecieExpansion from './components/AppSpecieExpansion.vue';
+  import AppBackgroundExpansion from './components/AppBackgroundExpansion.vue';
 
   import { ref, onMounted } from 'vue'
-  import AppSubclassExpansion from './components/AppSubclassExpansion.vue';
 
+
+  
   const authToken = ref(localStorage.getItem('dnd_token') || '')
-  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended'
-  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended'}
+  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended'
+  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds'}
   const selectedClassId = ref(null)
   const selectedSubclassId = ref(null)
+  const selectedSpecieId = ref(null)
+  const selectedBackgroundId = ref(null)
 
   function handleLogin(token) {
     authToken.value = token
@@ -32,6 +41,8 @@
     currentPage.value = 'main'
     selectedClassId.value = null
     selectedSubclassId.value = null
+    selectedSpecieId.value = null
+    selectedBackgroundId.value = null
   }
 
   function goBack() {
@@ -46,6 +57,8 @@
     currentPage.value = event.page
     if ('classId' in event) selectedClassId.value = event.classId
     if ('subclassId' in event) selectedSubclassId.value = event.subclassId
+    if ('specieId' in event) selectedSpecieId.value = event.specieId
+    if ('backgroundId' in event) selectedBackgroundId.value = event.backgroundId
   }
 </script>
 
@@ -62,66 +75,18 @@
         <button class="header_logout_btn" @click="logout">Log Out</button>
       </header>
       <div class="app_content">
-        <AppMain v-if="currentPage === 'main'" @navigate="currentPage = $event" @logout="logout" :token="authToken"/>
+        <AppMain v-if="currentPage === 'main'" @navigate="handleNavigate" @logout="logout" :token="authToken"/>
         <AppSpells v-if="currentPage === 'spells'" :token="authToken"/>
         <AppItems v-if="currentPage === 'items'"  :token="authToken"/>
         <AppClasses v-if="currentPage === 'classes'"  @navigate="handleNavigate" :token="authToken"/>
         <AppClassExpansion v-if="currentPage === 'classExtended'" :classId="selectedClassId" @navigate="handleNavigate" :token="authToken"></AppClassExpansion>
         <AppSubclassExpansion v-if="currentPage === 'subclassExtended'" :subclassId="selectedSubclassId" :token="authToken"></AppSubclassExpansion>
+        <AppSpecies v-if="currentPage === 'species'" @navigate="handleNavigate" :token="authToken"></AppSpecies>
+        <AppSpecieExpansion v-if="currentPage === 'specieExtended'" :specieId="selectedSpecieId" @navigate="handleNavigate" :token="authToken"></AppSpecieExpansion>
+        <AppBackgrounds v-if="currentPage === 'backgrounds'" @navigate="handleNavigate" :token="authToken"></AppBackgrounds>
+        <AppBackgroundExpansion v-if="currentPage === 'backgroundExtended'" :backgroundId="selectedBackgroundId" @navigate="handleNavigate" :token="authToken"></AppBackgroundExpansion>
       </div>
     </div>
   </transition>
 
 </template>
-
-<style>
-
-  :root {
-      --background: rgb(255, 230, 186);
-      --card-background: white;
-      --buttons: rgb(220, 220, 220);
-
-      --text: #222;
-      --border: #666;
-  }
-
-  @media (prefers-color-scheme: dark) {
-      :root {
-          --background: #1f1f1f;
-          --card-background: #2d2d2d;
-          --buttons: #3a3a3a;
-
-          --text: #f2f2f2;
-          --border: #888;
-      }
-  }
-
-  .app_header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      background: var(--buttons);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-  }
-
-  .header_back_btn,
-  .header_logout_btn {
-      padding: 6px 12px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      background: var(--card-background);
-      color: var(--text);
-      cursor: pointer;
-  }
-
-  .header_title {
-      font-weight: bold;
-      text-transform: capitalize;
-      color: var(--text);
-  }
-
-</style>
-
