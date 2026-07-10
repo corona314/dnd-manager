@@ -1,318 +1,230 @@
-# Backend API Guide
+# D&D Manager
 
-Esta guía describe las APIs disponibles en el backend de `dnd-manager` para que el equipo de frontend pueda consumirlas.
+Una plataforma de gestión integral para Dungeons & Dragons que combinará un compendio exhaustivo, herramientas de creación de personajes y un ecosistema de contenido personalizado (homebrew). Diseñada con arquitectura escalable para soportar campañas colaborativas en tiempo real. Toda la información está sacada del SRD 5.2 de D&D.
 
-## Base URL
+## Descripción General
 
-Cuando el backend está en ejecución, la ruta base es:
+**D&D Manager** es un proyecto full-stack que busca consolidarse como una solución profesional de referencia para la comunidad D&D. El proyecto implementará patrones de arquitectura moderna y una experiencia de usuario intuitiva.
 
-- `http://localhost:8080/api`
+La plataforma estará estructurada en módulos independientes que funcionan de manera cohesiva:
 
+1. **Compendio centralizado**: Base de datos exhaustiva y searchable de reglas, items, hechizos, clases y razas
+2. **Asistente de creación de personajes**: Wizard interactivo multi-paso con validación en tiempo real
+3. **Gestor de homebrew descentralizado**: Contenido personalizado gestionado localmente con capacidad de exportar/importar
+4. **Foro de comunidad**: Plataforma abierta para compartir y descubrir creaciones homebrew
+5. **Sistema colaborativo DM-Players**: Gestión de sesiones, sincronización de experiencia y control de progresión
 
-## Autenticación
+---
 
-### `POST /api/auth/login`
+## 🏗️ Arquitectura Técnica
 
-Request body:
-```json
-{
-  "username": "usuario",
-  "password": "clave"
-}
+### Backend (Spring Boot 4.0.6 + Java 21)
+
+**Patrones utilizados:**
+- **MVC + Capas**: Separación clara entre `controller` → `service` → `repository` → `model`
+- **DTOs (Data Transfer Objects)**: Mapeo de entidades con Lombok para reducir boilerplate
+- **Repository Pattern**: Acceso a datos abstrayendo la complejidad de JPA
+- **REST API**: Endpoints RESTful con validación de entrada y manejo de errores consistente
+
+**Herramientas principales:**
+- `Spring Boot Starter Data JPA`: ORM con Hibernate para persistencia relacional
+- `Spring Boot Starter WebMVC`: Construcción de API REST y manejo de HTTP
+- `MySQL Connector`: Driver nativo para bases de datos MySQL
+- `Lombok`: Generación automática de getters, setters y constructores
+- `Spring Boot DevTools`: Hot reload para desarrollo ágil
+
+**Estructura de carpetas backend:**
+```
+backend/
+├── controller/      # Endpoints REST y mapping de requests
+├── service/         # Lógica de negocio e integración de entidades
+├── repository/      # Interfaces JPA para consultas a BD
+├── model/           # Entidades JPA mapeadas a tablas
+├── dto/             # Objetos de transferencia de datos (segregación por tipo)
+├── mapper/          # Conversión entre DTOs y modelos
+└── config/          # Configuración de Spring Security, CORS, etc.
 ```
 
-Response:
-```json
-{
-  "token": "OK_1"
-}
+### Frontend (Vue 3 + TypeScript + Vite)
+
+**Filosofía de diseño:**
+- **Componentes reutilizables**: SFCs (Single File Components) con scoped styling
+- **Type Safety**: TypeScript strict para evitar errores en tiempo de compilación
+- **Experiencia moderna**: Vite para desarrollo ultra-rápido con HMR (Hot Module Replacement)
+
+**Stack tecnológico:**
+- **Vue 3 (Composition API)**: Framework progresivo con reactividad granular
+- **TypeScript 6.0**: Type checking completo en frontend
+- **Vite**: Bundler de próxima generación (desarrollo <100ms, build optimizado)
+- **PrimeVue 4.5**: Librería de componentes profesionales pre-estilizados (DataTable, Dialog, Forms, etc.)
+- **Marked**: Parser de Markdown para renderizar documentación de hechizos/items
+
+**Estructura de carpetas frontend:**
+```
+frontend/wizard/
+├── src/
+│   ├── components/      # Componentes Vue reutilizables
+│   ├── api/             # Cliente HTTP y servicios de integración
+│   ├── assets/          # Estilos CSS modularizados
+│   └── App.vue          # Componente raíz
+├── vite.config.ts       # Configuración de bundler y plugins
+└── tsconfig.json        # Configuración TypeScript strict
 ```
 
-### `POST /api/auth/register`
+### Base de Datos
 
-Request body:
-```json
-{
-  "username": "usuario",
-  "password": "clave"
-}
+**Gestión:**
+- **MySQL (Principal)**: Almacena datos canónicos (items, hechizos, clases, razas, users)
+- **BD Local (Homebrew)**: Bases de datos descentralizadas por usuario/grupo para contenido personalizado
+- **Docker Compose**: Orquestación de contenedores para levantar MySQL en desarrollo
+
+**Características:**
+- Soporte para exportación/importación de datos en formato estándar (JSON/SQL)
+- Diseño de schema escalable para soportar relaciones complejas entre entidades
+- Seeding automático de datos canónicos mediante scripts Python
+
+---
+
+## Stack Detallado
+
+| Componente | Tecnología | Versión | Propósito |
+|-----------|-----------|---------|----------|
+| **Lenguaje Backend** | Java | 21 | Performance, type safety, ecosystem maduro |
+| **Framework Backend** | Spring Boot | 4.0.6 | Abstracción de boilerplate, producción-ready |
+| **ORM** | JPA + Hibernate | Built-in | Mapeo objeto-relacional, queries optimizadas |
+| **Seguridad** | Spring Security | 4.0.6 | Autenticación, autorización, filtros |
+| **Autenticación** | JWT | 0.11.5 | Tokens stateless, escalable |
+| **BD Principal** | MySQL | 8.0+ | ACID, confiable, escalable |
+| **Lenguaje Frontend** | TypeScript | 6.0 | Type safety en frontend |
+| **Framework Frontend** | Vue 3 | 3.5.32 | Reactivo, componentes, DX excelente |
+| **Bundler** | Vite | 8.0.8 | Desarrollo rápido, build optimizado |
+| **Componentes UI** | PrimeVue | 4.5.5 | Componentes profesionales, accesibles |
+| **Parseo Markdown** | Marked | 18.0.5 | Renderizado de documentación en-app |
+| **Contenedores** | Docker | Latest | Reproducibilidad de entorno |
+| **Orquestación** | Docker Compose | - | Levantar stack completo en desarrollo |
+
+---
+
+## Instalación y Ejecución
+
+### Requisitos previos
+```
+Java 21+
+Node.js 20.19.0 o 22.12.0+
+npm / pnpm
+Docker & Docker Compose
+MySQL 8.0+ (o levantar con Docker)
 ```
 
-Response:
-```json
-{
-  "token": "OK<id>"
-}
+### Pasos de instalación actual
+
+**1. Clonar repositorio**
+```bash
+git clone https://github.com/corona314/dnd-manager.git
+cd dnd-manager
 ```
 
-> Nota: el filtro de autenticación actual escucha tokens que comienzan con `Bearer OK_`. Por eso, para pruebas de frontend es más seguro usar `login`.
-
-### Header para endpoints autenticados
-
-Enviar el token así:
-
+**2. Iniciar base de datos con Docker**
+```bash
+docker-compose up -d
 ```
-Authorization: Bearer OK_{userId}
+Esto levanta MySQL en `localhost:3306` con credenciales de desarrollo.
+
+**3. Ejecutar backend**
+```bash
+cd backend
+
+# Compilar proyecto (descarga dependencias automáticamente)
+./mvnw clean package
+
+# Ejecutar en desarrollo (con hot reload)
+./mvnw spring-boot:run
 ```
+Backend disponible en `http://localhost:8080`
 
+**4. Ejecutar frontend**
+```bash
+cd frontend/wizard
 
-## Endpoints de Items
+# Instalar dependencias
+npm install
 
-### `GET /api/items`
+# Ejecutar en desarrollo (Vite HMR activo)
+npm run dev
+```
+Frontend disponible en `http://localhost:5173`
 
-Obtiene items generales.
+### Build para producción
 
-Query params opcionales:
-- `name`
-- `weightMin`, `weightMax`
-- `priceMin`, `priceMax`
-- `itemType`
-- `magic`
-- `attunement`
-- `rarity`
-- `page` (default `0`)
-- `size` (default `20`)
-
-Respuesta: paginada (`Page<ItemSummaryDto>`).
-
-### `GET /api/items/{id}`
-
-Devuelve detalle de un item específico.
-
-### `GET /api/items/armor`
-
-Obtiene armaduras.
-
-Query params opcionales:
-- `name`
-- `weightMin`, `weightMax`
-- `priceMin`, `priceMax`
-- `magic`
-- `attunement`
-- `rarity`
-- `acMin`, `acMax`
-- `str`
-- `stealthDis`
-- `armorType`
-- `page`, `size`
-
-### `GET /api/items/armor/{id}`
-
-Detalle de armadura por id.
-
-### `GET /api/items/weapons`
-
-Obtiene armas.
-
-Query params opcionales:
-- `name`
-- `weightMin`, `weightMax`
-- `priceMin`, `priceMax`
-- `magic`
-- `attunement`
-- `rarity`
-- `rangeMin`, `rangeMax`
-- `rangeNormalMin`, `rangeNormalMax`
-- `rangeLongMin`, `rangeLongMax`
-- `mastery`
-- `damageTypes` (lista de strings)
-- `page`, `size`
-
-### `GET /api/items/weapons/{id}`
-
-Detalle de arma por id.
-
-### `GET /api/items/shields`
-
-Obtiene escudos.
-
-Query params opcionales:
-- `name`
-- `weightMin`, `weightMax`
-- `priceMin`, `priceMax`
-- `magic`
-- `attunement`
-- `rarity`
-- `acBonus`
-- `page`, `size`
-
-### `GET /api/items/shield/{id}`
-
-Detalle de escudo por id.
-
-
-## Endpoints de Spells
-
-### `GET /api/spells`
-
-Obtiene hechizos.
-
-Query params opcionales:
-- `name`
-- `levelMin`, `levelMax`
-- `schoolId`
-- `components`
-- `concentration`
-- `ritual`
-- `savingThrowAbility`
-- `attackRoll`
-- `damageTypes` (lista de strings)
-- `page`, `size`
-
-### `GET /api/spells/{id}`
-
-Detalle de hechizo por id.
-
-
-## Endpoints de Characters
-
-Estos endpoints requieren autenticación.
-
-### `GET /api/characters/me`
-
-Devuelve la lista de personajes del usuario autenticado.
-
-### `GET /api/characters/{id}`
-
-Devuelve detalle de un personaje del usuario autenticado.
-
-### `POST /api/characters`
-
-Crea un personaje.
-
-Request body mínimo:
-```json
-{
-  "name": "Mi Personaje"
-}
+**Backend (JAR empaquetado):**
+```bash
+cd backend
+./mvnw clean package -DskipTests
+# Genera: target/app-0.0.1-SNAPSHOT.jar
+java -jar target/app-0.0.1-SNAPSHOT.jar
 ```
 
-Nota: aunque el DTO contiene `userId`, el backend usa el usuario autenticado.
-
-### `PATCH /api/characters/{id}`
-
-Actualiza un personaje.
-
-Ejemplo de body:
-```json
-{
-  "name": "Nuevo Nombre",
-  "maxHp": 30,
-  "currentHp": 28,
-  "walkSpeed": 30,
-  "flySpeed": 0,
-  "speciesId": 1,
-  "classId": 1,
-  "subclassId": 2,
-  "backgroundId": 3
-}
+**Frontend (Build estático):**
+```bash
+cd frontend/wizard
+npm run build
+# Genera: dist/ (listo para servir con nginx)
 ```
 
-### `PATCH /api/characters/{id}/abilities`
+---
 
-Reemplaza la lista de abilities del personaje.
+## Flujos de Desarrollo
 
-Request body:
-```json
-[
-  { "abilityId": 1, "baseValue": 15 },
-  { "abilityId": 2, "baseValue": 14 }
-]
-```
+### Ejemplo: Agregar nuevo endpoint de items
 
-### `DELETE /api/characters/{id}`
+1. **Backend (Spring Boot)**
+   - Crear método en `ItemService` con lógica
+   - Crear `@RestController` endpoint en `ItemController`
+   - Retornar `ItemSummaryDto` (no exposer entidad directa)
 
-Elimina un personaje.
+2. **Frontend (Vue 3)**
+   - Crear función en `api/api.js` que llame al endpoint
+   - Crear componente Vue que use la API
+   - Agregar al router si es una nueva página
 
+3. **Validación**
+   - Probar manualmente lo desarrollado
+   - Verificar hot reload en frontend
+   - Revisar logs de Spring Boot para errores
 
-## Estructuras importantes
+---
 
-### ItemSummaryDto
-- `id`
-- `name`
-- `weight`
-- `price`
-- `itemType`
-- `magic`
-- `attunement`
-- `rarity`
+## Notas de Desarrollo
 
-### ItemResponseDto
-- `name`
-- `weight`
-- `price`
-- `itemType`
-- `magic`
-- `attunement`
-- `rarity`
-- `description`
-- `features`
-- `armorDto`
-- `weaponDto`
-- `shieldDto`
+### Por qué estas tecnologías
 
-### SpellSummaryDto
-- `id`
-- `name`
-- `level`
-- `school`
-- `components`
-- `concentration`
-- `ritual`
-- `savingThrowAbility`
-- `attackRoll`
-- `damageTypes`
+- **Spring Boot 4.0.6**: Versión más reciente, soporte a Java 21, nuevas optimizaciones
+- **Vue 3 + TypeScript**: Balance entre curva de aprendizaje y potencia; type safety sin verbosidad de Java
+- **Vite**: Desarrollo ultra-rápido (vs Webpack); tiempo de compilación <100ms
+- **PrimeVue**: Componentes enterprise-grade sin necesidad de construir UI from scratch
+- **MySQL**: ACID compliant, familiar para equipos, excelente soporte
 
-### SpellResponseDto
-- `name`
-- `level`
-- `school`
-- `castingTime`
-- `range`
-- `duration`
-- `components`
-- `material`
-- `concentration`
-- `ritual`
-- `description`
-- `savingThrowAbility`
-- `attackRoll`
-- `damageRoll`
-- `damageTypes`
+### Decisiones de arquitectura
 
-### CharacterSummaryDto
-- `id`
-- `name`
-- `level`
-- `status`
-- `updatedAt`
+- **DTO segregation**: DTOs separados para cada tipo de entidad evita conflictos y hace explícito qué datos se exponen
+- **Service layer**: Centraliza lógica de negocio, facilita testing
+- **Local homebrew DB**: Evita centralización, permite que usuarios controlen su contenido
 
-### CharacterResponseDto
-- `id`
-- `name`
-- `level`
-- `maxHp`
-- `currentHp`
-- `walkSpeed`
-- `flySpeed`
-- `speciesId`
-- `classId`
-- `subclassId`
-- `backgroundId`
-- `status`
-- `createdAt`
-- `updatedAt`
-- `finalizedAt`
-- `abilities`
-- `skills`
-- `items`
+---
 
+## Próximos Pasos
 
-## Nota sobre paginación
+1. Completar wizard de creación de personajes (Q3 2026)
+2. Implementar exportación de personajes a PDF
+3. Iniciar construcción del creador de homebrew
+4. Agregar foro básico de comunidad
+5. Gestor de iniciativas
+6. Sistema colaborativo DM-Players con WebSockets
 
-Los endpoints de listados usan `Page<T>`, por lo que la respuesta incluye campos de paginación y `content` con los registros.
+---
 
+## Autores
 
-## CORS
-
-Permite `http://localhost:5173` con todos los métodos y headers.
+Desarrollado como proyecto portfolio serio entre dos devs: 
+- Backend: Imanol Eguidón (corona314 en GitHub)
+- Frontend: Irune Cereijo (Iruneca en GitHub)
