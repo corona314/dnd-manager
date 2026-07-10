@@ -151,6 +151,45 @@
         border: 1px solid #666;
         border-radius: 4px;
     }
+/*Filtros de ordenación*/
+.sort_filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sort_chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #666;
+    border-radius: 4px;
+    padding: 2px 6px;
+    background: white;
+    opacity: 0.55;
+}
+.sort_chip--active {
+    opacity: 1;
+    border-color: #b45309;
+    background: #fde68a;
+}
+.sort_label {
+    cursor: pointer;
+    font-size: 0.85rem;
+    user-select: none;
+}
+.sort_dir_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 3px;
+}
+.sort_dir_btn:hover {
+    background: rgba(0,0,0,0.08);
+}
 
 /*Filtros especificos*/
     .specific_filters {

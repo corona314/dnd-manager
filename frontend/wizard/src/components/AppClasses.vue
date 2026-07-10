@@ -61,18 +61,19 @@
             <div v-for="class_data in classes_data" :key="class_data.name" class="class_card" @click="expandedClass(class_data)">
                 <div class="class_card_base">
                     <span>{{ class_data.name }}</span>
-                    <span>Dice: {{ class_data.hitPointDie }}</span>
+                    <span class="class_card_base_hitpoint">Dice: {{ class_data.hitPointDie }}</span>
                 </div>
                 <div v-if="expanded_id===class_data.id" class="class_card_expanded" @click.stop>
                     <div v-if="expanded_loading">Cargando...</div>
                     <div v-else class="class_card_expanded_content">
-                        <div v-if="expanded_class.subclasses?.length" class="class_subclasses">
-                            <span v-for="p in expanded_class.subclasses" :key="p.name" class="class_subclasses_chip">
+                        <div v-if="expanded_class.subclasses?.length" class="comp_class_subclasses">
+                            <span v-for="p in expanded_class.subclasses" :key="p.name" class="comp_subclasses_chip">
                                 {{ p.name }}
                             </span>
                         </div>
-                        <div v-if="expanded_class.savingThrows?.length" class="class_saving_throws">
-                            <span v-for="p in expanded_class.savingThrows" :key="p.ability" class="class_saving_throws_chip">
+                        <div v-if="expanded_class.savingThrows?.length" class="comp_class_saving_throws">
+                            <span class="comp_class_saving_throws_label">Saving Throw Proficiencies:</span>
+                            <span v-for="p in expanded_class.savingThrows" :key="p.ability" class="comp_class_saving_throws_chip">
                                 {{ p.ability }}
                             </span>
                         </div>

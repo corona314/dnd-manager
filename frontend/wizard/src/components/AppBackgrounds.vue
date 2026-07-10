@@ -64,10 +64,9 @@
                 <div v-if="expanded_id===background.id" class="background_card_expanded" @click.stop>
                     <div v-if="expanded_loading">Cargando...</div>
                     <div v-else class="background_card_expanded_content">
-                        <div v-if="expanded_background.feats?.length" class="background_subclasses">
-                            <span v-for="feat in expanded_background.feats" :key="feat.id" class="background_subclasses_chip">
-                                {{ feat.name }}
-                            </span>
+                        <span class="background_card_expanded_description">{{ background.description }}</span>
+                        <div class="background_card_expanded_abilities">
+                            <span v-for="ability in expanded_background.abilities" :key="ability" class="background_card_expanded_ability"> {{ ability }} </span>
                         </div>
                         <button @click="$emit('navigate', { page: 'backgroundExtended', backgroundId: background.id })">More about {{ background.name }}</button>
                     </div>

@@ -41,6 +41,9 @@
     //Filtros concretos
     const filter_specific = reactive({})
 
+    //Ordenación
+    const filter_sort_name = ref({ active: false, dir: 'asc' })
+
     //paginación
     const current_page = ref(0)
     const total_pages = ref(1)
@@ -52,6 +55,9 @@
             const tab = Tabs.find(t => t.key === activeTab.value)
             const params = new URLSearchParams({ page, size: 20 })
 
+            if (filter_sort_name.value.active) {
+                params.append('sort', `name,${filter_sort_name.value.dir}`)
+            }
             if(filter_name.value){
                 params.append('name', filter_name.value)
             }
@@ -116,6 +122,16 @@
             expanded_loading.value = false
             console.log('haces algo?')
         }
+    }
+
+    function toggleSortNameActive() {
+        filter_sort_name.value.active = !filter_sort_name.value.active
+        fetchItems(0)
+    }
+
+    function toggleSortNameDir() {
+        filter_sort_name.value.dir = filter_sort_name.value.dir === 'asc' ? 'desc' : 'asc'
+        if (filter_sort_name.value.active) fetchItems(0)
     }
 
     function cycleMagic(){
@@ -233,6 +249,14 @@
                         <span v-else-if="filter_attunement === true">A</span>
                         <span v-else>A</span>
                     </span>
+                </div>
+                <div class="sort_filter">
+                    <div class="sort_chip" :class="{ 'sort_chip--active': filter_sort_name.active }">
+                        <span class="sort_label" @click="toggleSortNameActive">Nombre</span>
+                        <span class="sort_dir_btn" @click="toggleSortNameDir">
+                            {{ filter_sort_name.dir === 'asc' ? '▲' : '▼' }}
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="specific_filters" v-if="SpecificFilters[activeTab]?.length">

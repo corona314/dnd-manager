@@ -3,6 +3,7 @@
     --background: rgb(255, 230, 186);
     --buttons: rgb(220, 220, 220);
     --card-background: white;
+    --border-background: black;
 }
 @media (prefers-color-scheme: dark) {
     :root {
@@ -51,10 +52,9 @@
 }
 .class_card_base{
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
-    position: relative;
     height: 40px;
     flex-shrink: 0;    
 }
@@ -69,4 +69,24 @@
     flex-direction: column;
     position: relative;
     gap: 8px;
+}
+.comp_class_subclasses {
+    display: flex;
+    gap: 4px;
+}
+
+.comp_subclasses_chip {
+    border: 1px solid var(--border-background);
+    border-radius: 10px;
+    padding: 2px 3px;
+    cursor: pointer;
+    font-size: 0.85rem;
+
+}
+
+.comp_class_saving_throws{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
 }

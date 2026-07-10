@@ -65,11 +65,8 @@
                 <div v-if="expanded_id===specie.id" class="specie_card_expanded" @click.stop>
                     <div v-if="expanded_loading">Cargando...</div>
                     <div v-else class="specie_card_expanded_content">
-                        <div v-if="expanded_specie.features?.length" class="specie_subclasses">
-                            <span v-for="feat in expanded_specie.features" :key="feat.id" class="specie_subclasses_chip">
-                                {{ feat.name }}
-                            </span>
-                        </div>
+                        <span class="specie_card_expanded_walk">Movement: {{ expanded_specie.walkSpeed }}ft</span>
+                        <span v-if="expanded_specie.flySpeed !== 0" class="specie_card_expanded_fly">Fly movement: {{ expanded_specie.flySpeed }}ft</span>
                         <button @click="$emit('navigate', { page: 'specieExtended', specieId: specie.id })">More about {{ specie.name }}</button>
                     </div>
                 </div>
