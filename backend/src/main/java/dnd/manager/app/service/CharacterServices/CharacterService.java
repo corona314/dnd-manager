@@ -14,7 +14,7 @@ import dnd.manager.app.mapper.CharacterMapper;
 import dnd.manager.app.model.User;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterAbility;
-import dnd.manager.app.model.CharacterEntities.CharacterAbilityus;
+import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 import dnd.manager.app.repository.AbilityRepository;
 import dnd.manager.app.repository.UserRepository;
 import dnd.manager.app.repository.CharacterRepositories.CharacterRepository;
@@ -67,7 +67,7 @@ public class CharacterService {
         CharacterEntity entity = mapper.toEntity(dto);
         entity.setUser(user);
         entity.setLevel(0);
-        entity.setStatus(CharacterAbilityus.DRAFT);
+        entity.setStatus(CharacterStatus.DRAFT);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
         return mapper.toResponseDto(repository.save(entity));
@@ -102,7 +102,7 @@ public class CharacterService {
         List<CharacterAbility> abilities = dtos.stream().map(dto -> {
                 CharacterAbility ability = new CharacterAbility();
                 ability.setCharacter(entity);
-                ability.setAbility(abilityRepository.findById(dto.abilityId()).orElseThrow(() -> new RuntimeException("Ability not found: " + dto.abilityId())));
+                ability.setAbility(abilityRepository.findByCode(dto.ability()).orElseThrow(() -> new RuntimeException("Ability not found: " + dto.ability())));
                 ability.setBaseValue(dto.baseValue());
                 return ability;
             }
@@ -122,7 +122,7 @@ public class CharacterService {
     public CharacterResponseDto finalize(Long userId, Long id) {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);
 
-        entity.setStatus(CharacterAbilityus.FINAL);
+        entity.setStatus(CharacterStatus.FINAL);
         entity.setUpdatedAt(LocalDateTime.now());
         entity.setFinalizedAt(LocalDateTime.now());
         entity.setLevel(entity.getLevel()+1);

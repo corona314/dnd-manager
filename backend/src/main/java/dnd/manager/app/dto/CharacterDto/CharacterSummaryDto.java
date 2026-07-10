@@ -2,7 +2,7 @@ package dnd.manager.app.dto.CharacterDto;
 
 import java.time.LocalDateTime;
 
-import dnd.manager.app.model.CharacterEntities.CharacterAbilityus;
+import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 
 /*
     Clase necesaria para poder ver la información de tus personajes
@@ -13,7 +13,7 @@ public record CharacterSummaryDto (
     Long id,
     String name,
     Integer level,
-    CharacterAbilityus status,
+    CharacterStatus status,
     LocalDateTime updatedAt
 
 ){}

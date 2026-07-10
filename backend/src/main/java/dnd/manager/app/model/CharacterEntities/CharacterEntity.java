@@ -80,7 +80,7 @@ public class CharacterEntity {
     
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private CharacterAbilityus status = CharacterAbilityus.DRAFT;
+    private CharacterStatus status = CharacterStatus.DRAFT;
 
     @OneToMany(mappedBy = "character")
     private List<CharacterSkill> skills;

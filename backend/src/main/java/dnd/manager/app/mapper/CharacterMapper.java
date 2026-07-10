@@ -13,11 +13,21 @@ import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterItem;
 import dnd.manager.app.model.CharacterEntities.CharacterSkill;
+import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 import dnd.manager.app.model.CharacterEntities.CharacterAbility;
-import dnd.manager.app.model.CharacterEntities.CharacterAbilityus;
 
 @Component
 public class CharacterMapper {
+
+    private final SpeciesMapper speciesMapper;
+    private final ClassMapper classMapper;
+    private final BackgroundMapper backgroundMapper;
+
+    public CharacterMapper(SpeciesMapper speciesMapper, ClassMapper classMapper, BackgroundMapper backgroundMapper) {
+        this.speciesMapper = speciesMapper;
+        this.classMapper = classMapper;
+        this.backgroundMapper = backgroundMapper;
+    }
 
     public CharacterSummaryDto toSummaryDto(CharacterEntity e) {
         return new CharacterSummaryDto(
@@ -31,17 +41,16 @@ public class CharacterMapper {
 
     public CharacterResponseDto toResponseDto(CharacterEntity e) {
         return new CharacterResponseDto(
-            e.getId(),
             e.getName(),
             e.getLevel(),
             e.getMaxHp(),
             e.getCurrentHp(),
             e.getWalkSpeed(),
             e.getFlySpeed(),
-            e.getSpecies() != null ? e.getSpecies().getId() : null,
-            e.getClassEntity() != null ? e.getClassEntity().getId() : null,
-            e.getSubclass() != null ? e.getSubclass().getId() : null,
-            e.getBackground() != null ? e.getBackground().getId() : null,
+            speciesMapper.toSummaryDto(e.getSpecies()),
+            classMapper.toSummaryDto(e.getClassEntity()),
+            classMapper.subclassToSummaryDto(e.getSubclass()),
+            backgroundMapper.toSummaryDto(e.getBackground()),
             e.getStatus(),
             e.getCreatedAt(),
             e.getUpdatedAt(),
@@ -55,14 +64,14 @@ public class CharacterMapper {
     public CharacterEntity toEntity(CharacterCreateDto dto) {
     CharacterEntity entity = new CharacterEntity();
     entity.setName(dto.name());
-    entity.setStatus(CharacterAbilityus.DRAFT);
+    entity.setStatus(CharacterStatus.DRAFT);
     return entity;
 
     }
 
     private CharacterAbilityDto toStatDto(CharacterAbility ability) {
         return new CharacterAbilityDto(
-            ability.getAbility().getId(),
+            ability.getAbility().getCode(),
             ability.getBaseValue()
         );
     }
