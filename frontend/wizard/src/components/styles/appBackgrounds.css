@@ -3,6 +3,7 @@
     --background: rgb(255, 230, 186);
     --buttons: rgb(220, 220, 220);
     --card-background: white;
+    --separador:rgba(0,0,0,0.2);
 }
 @media (prefers-color-scheme: dark) {
     :root {
@@ -22,11 +23,11 @@
     background-color: var(--background);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
     flex-direction: column;
 }
 
-/*Tarjeta de Clase (Sin extender)*/
+/*Tarjeta de Trasfondo (Sin extender)*/
 .backgrounds_list{
     display: flex;
     flex-direction: column;
@@ -57,11 +58,11 @@
     height: 40px;
     flex-shrink: 0;    
 }
-/*Tarjeta de Clase (Extendida)*/
+/*Tarjeta de Trasfondo (Extendida)*/
 .background_card_expanded {
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid rgba(0,0,0,0.2);
+    border-top: 1px solid var(--separador);
 }
 .background_card_expanded_content {
     display: flex;

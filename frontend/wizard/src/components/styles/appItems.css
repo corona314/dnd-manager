@@ -2,6 +2,27 @@
 :root{
     --background: rgb(255, 230, 186);
     --buttons: rgb(220, 220, 220);
+
+    --border: #666;
+    --border-hover: #333;
+    --surface: white;
+
+    --success-bg: #4ade80;
+    --success-border: #16a34a;
+    --danger-bg: #f87171;
+    --danger-border: #dc2626;
+
+    --background-card: white;
+    --accent-bg: #fde68a;
+    --accent-border: #b45309;
+    --accent-text: white;
+
+    --overlay-weak: rgba(0, 0, 0, 0.05);
+    --overlay-medium: rgba(0, 0, 0, 0.08);
+    --overlay-strong: rgba(0, 0, 0, 0.2);
+
+    --property-bg: lightgray;
+    --property-border: gray;
 }
 @media (prefers-color-scheme: dark) {
     :root {
@@ -15,7 +36,7 @@
         min-height: 100vh;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: start;
         flex-direction: column;
         background-color: var(--background);
     }
@@ -65,23 +86,23 @@
         justify-content: center;
         width: 24px;
         height: 24px;
-        border: 2px solid #666;
+        border: 2px solid var(--border);
         border-radius: 4px;
         cursor: pointer;
         font-weight: bold;
         user-select: none;
-        background-color: white;
+        background-color: var(--surface);
     }
     .tristate--active {
-        background-color: #4ade80;
-        border-color: #16a34a;
+        background-color: var(--success-bg);
+        border-color: var(--success-border);
     }
     .tristate--inactive {
-        background-color: #f87171;
-        border-color: #dc2626;
+        background-color: var(--danger-bg);
+        border-color: var(--danger-border);
     }
     .tristate:hover {
-        border-color: #333;
+        border-color: var(--border-hover);
     }
 
     .general_filters {
@@ -99,16 +120,16 @@
     }
     .rarity_dropdown_btn {
         padding: 4px 10px;
-        border: 1px solid #666;
+        border: 1px solid var(--border);
         cursor: pointer;
-        background: white;
+        background: var(--surface);
         border-radius: 4px;
     }
     .rarity_dropdown_menu {
         position: absolute;
         top: 100%;
-        background: white;
-        border: 1px solid #666;
+        background: var(--surface);
+        border: 1px solid var(--border);
         padding: 4px;
         border-radius: 4px;
         min-width: 120px;
@@ -118,8 +139,8 @@
         cursor: pointer;
         border-radius: 3px;
     }
-    .rarity_option:hover { background: #fde68a; }
-    .rarity_option.selected { background: #b45309; color: white; }
+    .rarity_option:hover { background: var(--accent-bg); }
+    .rarity_option.selected { background: var(--accent-border); color: var(--accent-text); }
 
     .rarity_chips {
         display: flex;
@@ -131,11 +152,11 @@
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        border: 1px solid #b45309;
+        border: 1px solid var(--accent-border);
         padding: 2px 6px;
         border-radius: 999px;
         font-size: 0.8rem;
-        background: #fde68a;
+        background: var(--accent-bg);
         cursor: pointer;
     }
 
@@ -148,7 +169,7 @@
     .price_inputs input {
         width: 70px;
         padding: 4px 6px;
-        border: 1px solid #666;
+        border: 1px solid var(--border);
         border-radius: 4px;
     }
 /*Filtros de ordenación*/
@@ -161,16 +182,16 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    border: 1px solid #666;
+    border: 1px solid var(--border);
     border-radius: 4px;
     padding: 2px 6px;
-    background: white;
+    background: var(--surface);
     opacity: 0.55;
 }
 .sort_chip--active {
     opacity: 1;
-    border-color: #b45309;
-    background: #fde68a;
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
 }
 .sort_label {
     cursor: pointer;
@@ -188,7 +209,7 @@
     border-radius: 3px;
 }
 .sort_dir_btn:hover {
-    background: rgba(0,0,0,0.08);
+    background: var(--overlay-medium);
 }
 
 /*Filtros especificos*/
@@ -201,9 +222,9 @@
     }
     .specific_filters select {
         padding: 4px 8px;
-        border: 1px solid #666;
+        border: 1px solid var(--border);
         border-radius: 4px;
-        background: white;
+        background: var(--surface);
         cursor: pointer;
     }
 /*Tarjetas de items*/
@@ -224,7 +245,7 @@
         justify-content: space-between;
         position: relative; 
         height: 70px; 
-        background-color: white;
+        background-color: var(--background-card);
         cursor: pointer;
     }
     .item_card_base{
@@ -279,7 +300,7 @@
     .item_card_expanded {
         margin-top: 10px;
         padding-top: 10px;
-        border-top: 1px solid rgba(0,0,0,0.2);
+        border-top: 1px solid var(--overlay-strong);
     }
     .item_card_expanded_content {
         display: flex;
@@ -308,13 +329,13 @@
     }
     .item_desc th,
     .item_desc td {
-        border: 1px solid rgba(0,0,0,0.2);
+        border: 1px solid var(--overlay-strong);
         padding: 4px 10px;
         text-align: left;
         vertical-align: top;
     }
     .item_desc th {
-        background: rgba(0,0,0,0.08);
+        background: var(--overlay-medium);
         font-weight: bold;
         white-space: nowrap;
     }
@@ -325,15 +346,15 @@
         flex-wrap: wrap;
     }
     .item_property_chip {
-        border: 1px solid gray;
+        border: 1px solid var(--property-border);
         padding: 2px 8px;
         border-radius: 20px;
-        background: lightgray;
+        background: var(--property-bg);
         cursor: help;
     }
     .item_mastery {
         font-size: 13px;
-        background: rgba(0,0,0,0.05);
+        background: var(--overlay-weak);
         padding: 6px 10px;
         border-radius: 4px;
         line-height: 1.4;

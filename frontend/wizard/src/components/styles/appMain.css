@@ -1,3 +1,7 @@
+:root{
+    --shadow:  rgba(0, 0, 0, 0.15);
+    --text: black;
+}
 @media (prefers-color-scheme: dark) {
         .success_card button:hover {
             filter: brightness(1.15);
@@ -11,7 +15,7 @@
         border-radius: 10px;
         background: var(--card-background);
         color: var(--text);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 8px var(--shadow);
     }
 
     .success_card button {

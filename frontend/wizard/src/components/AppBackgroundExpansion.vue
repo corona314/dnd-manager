@@ -58,7 +58,7 @@
                 </span>
             </div>
             <div v-if="background.tools?.length" class="background_tools">
-                    <span class="background_section_label">Tools:</span>
+                    <span class="background_section_label">Tools (Choose 1):</span>
                     <span v-for="t in background.tools" :key="t.id" class="background_tool_chip" :title="`${t.weight} lb · ${t.rarity}`">
                         {{ t.name }}
                     </span>

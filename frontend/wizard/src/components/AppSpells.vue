@@ -21,11 +21,12 @@
     const filter_concentration = ref(null)
     const school_open = ref(false)
     //Constantes de ordenacion
-    const filter_sort = ref([
-        { field: 'name',   label: 'Nombre',  dir: 'asc',  active: false },
-        { field: 'level',  label: 'Nivel',   dir: 'asc',  active: false },
-        { field: 'school', label: 'Escuela', dir: 'asc',  active: false },
+    const sort_fields = ref([
+        { field: 'name',   label: 'Nombre',  dir: 'asc', active: false },
+        { field: 'level',  label: 'Nivel',   dir: 'asc', active: false },
+        { field: 'school', label: 'Escuela', dir: 'asc', active: false },
     ])
+    const sort_order = ref([]) 
     //Constantes de la lista de conjuros
     const spells = ref([])
     const loading = ref(false)
@@ -43,8 +44,9 @@
         loading.value = true
         try{
             const params = new URLSearchParams({ page, size: 20 })
-            for (const s of filter_sort.value) {
-                if (s.active) params.append('sort', `${s.field},${s.dir}`)
+            for (const field of sort_order.value) {
+                const s = sort_fields.value.find(x => x.field === field)
+                params.append('sort', `${s.field},${s.dir}`)
             }
             if (filter_name.value) {
                 params.append('name', filter_name.value)
@@ -148,22 +150,30 @@
         applyFilters()
     }
     //Metodos Ordenación
-    function toggleSortActive(index) {
-        filter_sort.value[index].active = !filter_sort.value[index].active
+    function toggleSort(index) {
+        const s = sort_fields.value[index]
+        if (s.active) {
+            s.active = false
+            sort_order.value = sort_order.value.filter(f => f !== s.field)
+        } else {
+            s.active = true
+            sort_order.value.push(s.field)
+        }
         applyFilters()
     }
 
     function toggleSortDir(index) {
-        filter_sort.value[index].dir = filter_sort.value[index].dir === 'asc' ? 'desc' : 'asc'
-        if (filter_sort.value[index].active) applyFilters()
+        const s = sort_fields.value[index]
+        s.dir = s.dir === 'asc' ? 'desc' : 'asc'
+        sort_order.value = sort_order.value.filter(f => f !== s.field)
+        sort_order.value.unshift(s.field)
+        if (!s.active) s.active = true
+        applyFilters()
     }
 
-    function moveSortCriterion(index, direction) {
-        const newIndex = index + direction
-        if (newIndex < 0 || newIndex >= filter_sort.value.length) return
-        const arr = filter_sort.value
-        ;[arr[index], arr[newIndex]] = [arr[newIndex], arr[index]]
-        if (arr[index].active || arr[newIndex].active) applyFilters()
+    function sortPriority(field) {
+        const i = sort_order.value.indexOf(field)
+        return i === -1 ? null : i + 1
     }
 
     function sliderOrder(value){
@@ -229,12 +239,12 @@
                 </div>
             </div>
             <div class="sort_filter">
-                <div v-for="(s, index) in filter_sort" :key="s.field" class="sort_chip" :class="{ 'sort_chip--active': s.active }">
-                    <span class="sort_priority" v-if="s.active">{{ filter_sort.filter(x => x.active).findIndex(x => x.field === s.field) + 1 }}</span>
-                    <span class="sort_label" @click="toggleSortActive(index)">{{ s.label }}</span>
-                    <span class="sort_dir_btn" @click="toggleSortDir(index)"> {{ s.dir === 'asc' ? '▲' : '▼' }} </span>
-                    <span class="sort_move_btn" @click="moveSortCriterion(index, -1)" v-if="index > 0">↑</span>
-                    <span class="sort_move_btn" @click="moveSortCriterion(index, 1)" v-if="index < filter_sort.length - 1">↓</span>
+                <div v-for="(s, index) in sort_fields" :key="s.field" class="sort_chip" :class="{ 'sort_chip--active': s.active }">
+                    <span class="sort_priority" v-if="s.active">{{ sortPriority(s.field) }}</span>
+                    <span class="sort_label" @click="toggleSort(index)">{{ s.label }}</span>
+                    <span class="sort_dir_btn" @click="toggleSortDir(index)">
+                        {{ s.dir === 'asc' ? '▲' : '▼' }}
+                    </span>
                 </div>
             </div>
             <div class="components" v-for="comp in Components" :key="comp">

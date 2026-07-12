@@ -3,6 +3,7 @@
     --background: rgb(255, 230, 186);
     --buttons: rgb(220, 220, 220);
     --card-background: white;
+    --separator: rgba(0,0,0,0.2);
 }
 @media (prefers-color-scheme: dark) {
     :root {
@@ -61,7 +62,7 @@
 .specie_card_expanded {
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid rgba(0,0,0,0.2);
+    border-top: 1px solid var(--separator);
 }
 .specie_card_expanded_content {
     display: flex;

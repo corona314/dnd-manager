@@ -1,378 +1,383 @@
-    /*Colores*/
-    :root{
-        --background: rgb(255, 230, 186);
+/*Colores*/
+:root{
+    --background: rgb(255, 230, 186);
 
-        --damage-acid: #a8c94d;
-        --damage-cold: #7ec8e3;
-        --damage-fire: #e25822;
-        --damage-force: #c084fc;
-        --damage-lightning: #facc15;
-        --damage-necrotic: #4ade80;
-        --damage-piercing: #94a3b8;
-        --damage-poison: #86efac;
-        --damage-psychic: #f472b6;
-        --damage-radiant: #fde68a;
-        --damage-slashing: #f87171;
-        --damage-thunder: #818cf8;
-        --damage-bludgeoning: #a78bfa;
-        --default: #ffffff;
+    --damage-acid: #a8c94d;
+    --damage-cold: #7ec8e3;
+    --damage-fire: #e25822;
+    --damage-force: #c084fc;
+    --damage-lightning: #facc15;
+    --damage-necrotic: #4ade80;
+    --damage-piercing: #94a3b8;
+    --damage-poison: #86efac;
+    --damage-psychic: #f472b6;
+    --damage-radiant: #fde68a;
+    --damage-slashing: #f87171;
+    --damage-thunder: #818cf8;
+    --damage-bludgeoning: #a78bfa;
+    --default: #ffffff;
 
-        --inactive: #f87171;
-        --active:#4ade80;
-        --border:#666;
-        --separator-lines: rgba(0,0,0,0.2);
-        --element-background: #be9a7f;
-        --element-foreground:#b45309;
-    }
+    --inactive: #f87171;
+    --active:#4ade80;
+    --border:#666;
+    --separator-lines: rgba(0,0,0,0.2);
+    --element-background: #be9a7f;
+    --element-foreground:#b45309;
 
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --background: #1a1a1a;
-            --default: #2b2b2b;
-            --border: #999;
-            --separator-lines: rgba(255,255,255,0.2);
-            --element-background: #3f3a35;
-            --element-foreground: #d9a441;
-        }
-    }
+    --upcast-active-bg: grey;
+    --upcast-active-border: black;
+}
 
-    
-    /*Main-General*/ 
-    .spell_page{
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        position: relative;
-        background-color: var(--background);
-    }
-    /*Cabecera-Filtrado*/ 
-    .filters{
-        display: flex;
-        width: 75%;
-        justify-content: space-between;
-        align-items: center;
-        margin: 30px 0px 30px 0px;
-        position: absolute;
-        top: 30px;
-    }
-    .name, .name_input, .search_button{
-        display: flex;
-    }
-    .name_input{
-        height: 26px;
-        border-radius: 0;
-        border-width: 1px;
-    }
-    .search_button{
-        margin-left: -1px;
-        padding: 3px 6px 3px 6px;
-        border-radius: 0;
-        border-width: 1px;
-    }
-    .level{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        width: 120px;
-    }
-    .level_lalbel{
-        font-size: 0.75rem;
-        font-weight: bold;
-        white-space: nowrap;
-    }
-    .p-slider {
-        height: 6px;
-        width: 100%;
-        --p-slider-track-background: var(--element-background);
-    }
-    .p-slider-range {
-        --p-slider-range-background: var(--element-foreground); 
-    }
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #1a1a1a;
+        --default: #2b2b2b;
+        --border: #999;
+        --separator-lines: rgba(255,255,255,0.2);
+        --element-background: #3f3a35;
+        --element-foreground: #d9a441;
 
-    .school_filter {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        position: relative;        
+        --upcast-active-bg: #555;
+        --upcast-active-border: #e5e5e5;
     }
-
-    .school_dropdown_menu {
-        position: absolute;
-        top: 100%;
-        z-index: 10;
-        background: var(--default);
-        border: 1px solid var(--border);
-        padding: 5px;
-    }
-
-    .school_chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
-
-    .school_chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        border: 1px solid var(--border);
-        padding: 2px 6px;
-        border-radius: 999px;
-    }
-
-    .sort_filter {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-    .sort_chip {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        padding: 2px 6px;
-        background: var(--default);
-        opacity: 0.55;
-    }
-    .sort_chip--active {
-        opacity: 1;
-        border-color: var(--element-foreground);
-        background: var(--element-background);
-    }
-    .sort_priority {
-        font-size: 0.7rem;
-        font-weight: bold;
-        color: var(--element-foreground);
-        width: 14px;
-        text-align: center;
-    }
-    .sort_label {
-        cursor: pointer;
-        font-size: 0.85rem;
-        user-select: none;
-    }
-    .sort_dir_btn, .sort_move_btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-        user-select: none;
-        border-radius: 3px;
-    }
-    .sort_dir_btn:hover, .sort_move_btn:hover {
-        background: var(--separator-lines);
-    }
-
-    .tristate {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        border: 2px solid #666;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        user-select: none;
-        background-color: var(--default);
-    }
-    .tristate--active {
-        background-color: var(--active);
-        border-color: var(--border);
-    }
-    .tristate--inactive {
-        background-color: var(--inactive);
-        border-color: var(--border);
-    }
+}
 
 
-    /*Muestra de Spells*/ 
-    .spell_list{
-        display: flex;
-        flex-direction: column;
-        align-items: space-between;
-        justify-content: space-between;
-        width: 75%;
-        margin-top: 130px;
-    }
-    .spell_card{
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-        border: solid;
-        border-width: 2px;
-        margin: 10px;
-        justify-content: space-between;
-        position: relative; 
-        height: 60px; 
-        cursor: pointer;
-        transition: height 0.2s;
-    }
-    .spell_card_base{
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 100%;
-        position: relative;
-        height: 40px;
-        flex-shrink: 0;    
-    }
+/*Main-General*/ 
+.spell_page{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    flex-direction: column;
+    position: relative;
+    background-color: var(--background);
+}
+/*Cabecera-Filtrado*/ 
+.filters{
+    display: flex;
+    width: 75%;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0px 30px 0px;
+    position: absolute;
+    top: 30px;
+}
+.name, .name_input, .search_button{
+    display: flex;
+}
+.name_input{
+    height: 26px;
+    border-radius: 0;
+    border-width: 1px;
+}
+.search_button{
+    margin-left: -1px;
+    padding: 3px 6px 3px 6px;
+    border-radius: 0;
+    border-width: 1px;
+}
+.level{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 120px;
+}
+.level_lalbel{
+    font-size: 0.75rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+.p-slider {
+    height: 6px;
+    width: 100%;
+    --p-slider-track-background: var(--element-background);
+}
+.p-slider-range {
+    --p-slider-range-background: var(--element-foreground); 
+}
 
-    .spell_card--expanded {
-        height: auto;
-    }
-    .spell_card_expanded {
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid var(--separator-lines);
-    }
-    .spell_desc {
-        line-height: 1.5;
-        margin-bottom: 8px;
-        font-size: 15px;
-    }
+.school_filter {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;        
+}
 
-    .spell_desc table {
-        border-collapse: collapse;
-        margin: 8px 0;
-        font-size: 14px;
-        width: 100%;
-        table-layout: fixed;
-        word-wrap: break-word;
-    }
-    .spell_desc th,
-    .spell_desc td {
-        border: 1px solid var(--separator-lines);
-        padding: 4px 10px;
-        text-align: left;
-        vertical-align: top;
-    }
-    .spell_desc th {
-        background: var(--separator-lines);
-        font-weight: bold;
-        white-space: nowrap;
-    }
+.school_dropdown_menu {
+    position: absolute;
+    top: 100%;
+    z-index: 10;
+    background: var(--default);
+    border: 1px solid var(--border);
+    padding: 5px;
+}
 
-    .spell_details {
-        display: flex;
-        gap: 16px;
-        font-weight: bold;
-    }
+.school_chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
 
-    /*TOP LEFT*/ 
-    .spell_name {
-        position: absolute;
-        top: 0;
-        left: 0;
-        font-weight: bold;
-    }
-    .spell_attackroll{
-        position: absolute;
-        top: 0;
-        left: 200px;
-    }
-   /* TOP RIGHT */
-    .spell_component_v {
-        position: absolute;
-        top: 0;
-        right: 45px;
-        font-size: 0.85rem;
-    } 
-    .spell_component_s {
-        position: absolute;
-        top: 0;
-        right: 25px;
-        font-size: 0.85rem;
-    }
-    .spell_component_m {
-        position: absolute;
-        top: 0;
-        right: 2px;
-        font-size: 0.85rem;
-    }
+.school_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 999px;
+}
 
-    /* BOTTOM LEFT */
-    .spell_level {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        font-size: 0.8rem;
-    }
+.sort_filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.sort_chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    background: var(--default);
+    opacity: 0.55;
+}
+.sort_chip--active {
+    opacity: 1;
+    border-color: var(--element-foreground);
+    background: var(--element-background);
+}
+.sort_priority {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--element-foreground);
+    width: 14px;
+    text-align: center;
+}
+.sort_label {
+    cursor: pointer;
+    font-size: 0.85rem;
+    user-select: none;
+}
+.sort_dir_btn, .sort_move_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 3px;
+}
+.sort_dir_btn:hover, .sort_move_btn:hover {
+    background: var(--separator-lines);
+}
 
-    .spell_school {
-        position: absolute;
-        bottom: 0;
-        left: 60px;          /* separado del nivel */
-        font-size: 0.8rem;
-    }
-    .spell_savingthrow{
-        position: absolute;
-        bottom: 0;
-        left: 200px;
-    }
-    /* BOTTOM RIGHT */
-    .spell_ritual {
-        position: absolute;
-        bottom: 0;
-        right: 40px;
-        font-size: 0.8rem;
-    }
+.tristate {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+    background-color: var(--default);
+}
+.tristate--active {
+    background-color: var(--active);
+    border-color: var(--border);
+}
+.tristate--inactive {
+    background-color: var(--inactive);
+    border-color: var(--border);
+}
 
-    .spell_concentration {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        font-size: 0.8rem;
-    }
 
-    /*Upcast*/
-    .upcast_section {
-        margin-top: 10px;
-        padding-top: 8px;
-        border-top: 1px solid var(--separator-lines);
-    }
-    .upcast_levels {
-        display: flex;
-        gap: 4px;
-        margin-bottom: 6px;
-        flex-wrap: wrap;
-    }
-    .upcast_button {
-        width: 26px;
-        height: 26px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid #666;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: bold;
-        background: var(--default);
-    }
-    .upcast_button--active {
-        background-color: grey;
-        border-color: black;
-        color: var(--default);
-    }
-    .upcast_result {
-        font-size: 14px;
-        background: var(--separator-lines);
-        padding: 6px 10px;
-        border-radius: 4px;
-    }
-    .upcast_cantrip_row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        font-size: 13px;
-    }
-    /*Selector de pagina*/
+/*Muestra de Spells*/ 
+.spell_list{
+    display: flex;
+    flex-direction: column;
+    align-items: space-between;
+    justify-content: space-between;
+    width: 75%;
+    margin-top: 130px;
+}
+.spell_card{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: solid;
+    border-width: 2px;
+    margin: 10px;
+    justify-content: space-between;
+    position: relative; 
+    height: 60px; 
+    cursor: pointer;
+    transition: height 0.2s;
+}
+.spell_card_base{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    height: 40px;
+    flex-shrink: 0;    
+}
 
+.spell_card--expanded {
+    height: auto;
+}
+.spell_card_expanded {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--separator-lines);
+}
+.spell_desc {
+    line-height: 1.5;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.spell_desc table {
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 14px;
+    width: 100%;
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+.spell_desc th,
+.spell_desc td {
+    border: 1px solid var(--separator-lines);
+    padding: 4px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+.spell_desc th {
+    background: var(--separator-lines);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.spell_details {
+    display: flex;
+    gap: 16px;
+    font-weight: bold;
+}
+
+/*TOP LEFT*/ 
+.spell_name {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-weight: bold;
+}
+.spell_attackroll{
+    position: absolute;
+    top: 0;
+    left: 200px;
+}
+/* TOP RIGHT */
+.spell_component_v {
+    position: absolute;
+    top: 0;
+    right: 45px;
+    font-size: 0.85rem;
+} 
+.spell_component_s {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 0.85rem;
+}
+.spell_component_m {
+    position: absolute;
+    top: 0;
+    right: 2px;
+    font-size: 0.85rem;
+}
+
+/* BOTTOM LEFT */
+.spell_level {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 0.8rem;
+}
+
+.spell_school {
+    position: absolute;
+    bottom: 0;
+    left: 60px;          /* separado del nivel */
+    font-size: 0.8rem;
+}
+.spell_savingthrow{
+    position: absolute;
+    bottom: 0;
+    left: 200px;
+}
+/* BOTTOM RIGHT */
+.spell_ritual {
+    position: absolute;
+    bottom: 0;
+    right: 40px;
+    font-size: 0.8rem;
+}
+
+.spell_concentration {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 0.8rem;
+}
+
+/*Upcast*/
+.upcast_section {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--separator-lines);
+}
+.upcast_levels {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+.upcast_button {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    background: var(--default);
+}
+.upcast_button--active {
+    background-color: var(--upcast-active-bg);
+    border-color: var(--upcast-active-border);
+    color: var(--default);
+}
+.upcast_result {
+    font-size: 14px;
+    background: var(--separator-lines);
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+.upcast_cantrip_row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 13px;
+}
+/*Selector de pagina*/
