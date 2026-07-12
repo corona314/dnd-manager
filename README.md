@@ -16,7 +16,7 @@ La plataforma estará estructurada en módulos independientes que funcionan de m
 
 ---
 
-## 🏗️ Arquitectura Técnica
+## Arquitectura Técnica
 
 ### Backend (Spring Boot 4.0.6 + Java 21)
 

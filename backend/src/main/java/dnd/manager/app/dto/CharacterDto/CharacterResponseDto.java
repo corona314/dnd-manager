@@ -3,25 +3,28 @@ package dnd.manager.app.dto.CharacterDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import dnd.manager.app.model.CharacterEntities.CharacterAbilityus;
+import dnd.manager.app.dto.BackgroundDto.BackgroundSummaryDto;
+import dnd.manager.app.dto.ClassDto.ClassSummaryDto;
+import dnd.manager.app.dto.ClassDto.SubclassSummaryDto;
+import dnd.manager.app.dto.SpeciesDto.SpeciesSummaryDto;
+import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 
 /*
     Clase con toda la información del personaje
 */
 
 public record CharacterResponseDto(
-    Long id,
     String name,
     Integer level,
     Integer maxHp,
     Integer currentHp,
     Integer walkSpeed,
     Integer flySpeed,
-    Long speciesId,
-    Long classId,
-    Long subclassId,
-    Long backgroundId,
-    CharacterAbilityus status,
+    SpeciesSummaryDto species,
+    ClassSummaryDto classEntity,
+    SubclassSummaryDto subclass,
+    BackgroundSummaryDto background,
+    CharacterStatus status,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
     LocalDateTime finalizedAt,

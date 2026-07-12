@@ -51,11 +51,13 @@ public class ClassMapper {
         return new ClassResponseDto(
             e.getName(),
             e.getHitPointDie(),
+            e.getNumberSkills(),
             e.getSkills().stream().map(ClassSkill::getSkill).map(skillMapper::toDto).toList(),
             e.getSavingThrows().stream().map(this::toClassSavingThrowDto).toList(),
             e.getFeatures().stream().sorted(Comparator.comparingInt(ClassFeature::getLevel)).map(this::toClassFeatureDto).toList(),
             e.getSpells().stream().sorted(Comparator.comparingInt((ClassSpell cs) -> cs.getSpell().getLevel())).map(cs -> spellMapper.toSummaryDto(cs.getSpell())).toList(),
             e.getArmorTypes().stream().map(this::toClassArmorTypeDto).toList(),
+            e.getShield(),
             subclassRepository.findByClassEntityId(e.getId()).stream().map(this::subclassToSummaryDto).toList()
         );
     }
@@ -88,7 +90,6 @@ public class ClassMapper {
 
     public SubclassResponseDto subclassToResponseDto(Subclass e) {
         return new SubclassResponseDto(
-            e.getId(),
             e.getName(),
             e.getSubclassFeatures() == null ? List.of() : e.getSubclassFeatures().stream()
                 .map(sf -> new SubclassFeatureDto(

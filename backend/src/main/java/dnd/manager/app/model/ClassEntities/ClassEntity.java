@@ -33,6 +33,9 @@ public class ClassEntity {
     @Column(name = "shield", nullable = false)
     private Boolean shield;
 
+    @Column(name = "number_skills", nullable = false)
+    private Integer numberSkills;
+
     @OneToMany(mappedBy = "classEntity")
     private List<ClassSavingThrow> savingThrows;
 

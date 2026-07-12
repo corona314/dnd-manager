@@ -598,6 +598,7 @@ CREATE TABLE `class` (
   `name` varchar(45) NOT NULL,
   `hit_point_die` varchar(6) NOT NULL DEFAULT '1d6',
   `shield` tinyint NOT NULL DEFAULT '0',
+  `number_skills` int NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Class Catalog';
@@ -609,7 +610,7 @@ CREATE TABLE `class` (
 
 LOCK TABLES `class` WRITE;
 /*!40000 ALTER TABLE `class` DISABLE KEYS */;
-INSERT INTO `class` VALUES (1,'Barbarian','1d12',1),(2,'Bard','1d8',0),(3,'Cleric','1d8',1),(4,'Druid','1d8',1),(5,'Fighter','1d10',1),(6,'Monk','1d8',0),(7,'Paladin','1d10',1),(8,'Ranger','1d10',1),(9,'Rogue','1d8',0),(10,'Sorcerer','1d6',0),(11,'Warlock','1d8',0),(12,'Wizard','1d6',0);
+INSERT INTO `class` VALUES (1,'Barbarian','1d12',1,2),(2,'Bard','1d8',0,3),(3,'Cleric','1d8',1,2),(4,'Druid','1d8',1,2),(5,'Fighter','1d10',1,2),(6,'Monk','1d8',0,2),(7,'Paladin','1d10',1,2),(8,'Ranger','1d10',1,3),(9,'Rogue','1d8',0,4),(10,'Sorcerer','1d6',0,2),(11,'Warlock','1d8',0,2),(12,'Wizard','1d6',0,2);
 /*!40000 ALTER TABLE `class` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1488,4 +1489,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-07 12:23:27
+-- Dump completed on 2026-07-10 14:01:52
