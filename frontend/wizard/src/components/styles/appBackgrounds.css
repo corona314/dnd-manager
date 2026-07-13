@@ -1,23 +1,41 @@
-/*Colores*/
-:root{
-    --background: rgb(255, 230, 186);
-    --buttons: rgb(220, 220, 220);
-    --card-background: white;
-    --separador:rgba(0,0,0,0.2);
-}
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #1f1f1f;
-        --card-background: #2d2d2d;
-        --buttons: #444;
-
-        --text: #f2f2f2;
-        --text-secondary: #bdbdbd;
-        --border: #888;
-    }
-}
 
 /*Main-general*/
+
+.background_card_expanded button {
+    margin-top: 10px;
+    padding: 4px 10px;
+
+    background: var(--accent-strong);
+    color: var(--text-on-accent);
+
+    border: 1px solid var(--accent-strong-border);
+    border-radius: 8px;
+
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background-color .2s ease,
+        transform .15s ease,
+        box-shadow .2s ease;
+}
+
+.background_card_expanded button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,.18);
+}
+
+.background_card_expanded button:active {
+    transform: translateY(0);
+}
+
+.background_card_expanded button:focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+}
+
 .backgrounds_page{
     min-height: 100vh;
     background-color: var(--background);
@@ -38,7 +56,7 @@
 }
 .background_card{
     display: flex;
-    background-color: var(--card-background);
+    background-color: var(--surface);
     flex-direction: column;
     padding: 10px;
     border: solid;
@@ -47,13 +65,13 @@
     justify-content: space-between;
     position: relative; 
     height: auto; 
-    cursor: pointer;
     transition: height 0.2s;
 }
 .background_card_base{
     display: flex;
     align-items: center;
     justify-content: space-between;
+    cursor: pointer;
     width: 100%;
     height: 40px;
     flex-shrink: 0;    

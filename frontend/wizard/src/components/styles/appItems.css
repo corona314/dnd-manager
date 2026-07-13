@@ -1,35 +1,3 @@
-/*Colores*/
-:root{
-    --background: rgb(255, 230, 186);
-    --buttons: rgb(220, 220, 220);
-
-    --border: #666;
-    --border-hover: #333;
-    --surface: white;
-
-    --success-bg: #4ade80;
-    --success-border: #16a34a;
-    --danger-bg: #f87171;
-    --danger-border: #dc2626;
-
-    --background-card: white;
-    --accent-bg: #fde68a;
-    --accent-border: #b45309;
-    --accent-text: white;
-
-    --overlay-weak: rgba(0, 0, 0, 0.05);
-    --overlay-medium: rgba(0, 0, 0, 0.08);
-    --overlay-strong: rgba(0, 0, 0, 0.2);
-
-    --property-bg: lightgray;
-    --property-border: gray;
-}
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: rgb(35, 35, 35);
-        --buttons: rgb(70, 70, 70);
-    }
-}
 
 /*Main-General*/ 
     .items_page{
@@ -51,7 +19,7 @@
     }
     .tabs button{
         padding: 8px;
-        background-color: var(--buttons);
+        background-color: var(--surface-secondary);
     }
 
 /*Filtros*/

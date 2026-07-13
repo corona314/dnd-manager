@@ -1,41 +1,4 @@
-/*Colores*/
-:root{
-    --background: rgb(255, 230, 186);
-    --buttons: rgb(220, 220, 220);
-    --card-background: white;
 
-    --border: #666;
-    --border-subtle: rgba(0, 0, 0, 0.15);
-    --divider: rgba(0, 0, 0, 0.2);
-    --divider-subtle: rgba(0, 0, 0, 0.1);
-    --surface-hover: rgba(0, 0, 0, 0.03);
-    --surface-hover-strong: rgba(0, 0, 0, 0.06);
-
-    --accent-strong: #1f1e1d;
-    --accent-strong-border: black;
-    --text-on-accent: white;
-    --text-secondary: #666;
-}
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #1f1f1f;
-        --card-background: #2d2d2d;
-        --buttons: #444;
-
-        --text: #f2f2f2;
-        --text-secondary: #bdbdbd;
-        --border: #888;
-        --border-subtle: rgba(255, 255, 255, 0.15);
-        --divider: rgba(255, 255, 255, 0.2);
-        --divider-subtle: rgba(255, 255, 255, 0.1);
-        --surface-hover: rgba(255, 255, 255, 0.05);
-        --surface-hover-strong: rgba(255, 255, 255, 0.09);
-
-        --accent-strong: #d9d9d9;
-        --accent-strong-border: white;
-        --text-on-accent: #1f1f1f;
-    }
-}
 .background_page{
     min-height: 100vh;
     background-color: var(--background);
@@ -110,7 +73,7 @@
     height: 24px;
     border-radius: 50%;
     border: 1px solid var(--border);
-    background: var(--card-background);
+    background: var(--surface);
     cursor: pointer;
     font-weight: bold;
     line-height: 1;

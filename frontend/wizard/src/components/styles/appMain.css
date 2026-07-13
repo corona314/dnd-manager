@@ -1,19 +1,11 @@
-:root{
-    --shadow:  rgba(0, 0, 0, 0.15);
-    --text: black;
-}
-@media (prefers-color-scheme: dark) {
-        .success_card button:hover {
-            filter: brightness(1.15);
-        }
-    }
+
     .success_card {
         display: flex;
         align-items: center;
         gap: 16px;
         padding: 32px;
         border-radius: 10px;
-        background: var(--card-background);
+        background: var(--surface);
         color: var(--text);
         box-shadow: 0 2px 8px var(--shadow);
     }
@@ -23,7 +15,7 @@
         padding: 10px 16px;
         border: 1px solid var(--border);
         border-radius: 6px;
-        background: var(--buttons);
+        background: var(--surface-secondary);
         color: var(--text);
         cursor: pointer;
         transition: background-color 0.2s, transform 0.1s;

@@ -1,22 +1,4 @@
-/*Colores*/
-:root{
-    --background: rgb(255, 230, 186);
-    --buttons: rgb(220, 220, 220);
-    --card-background: white;
-    --border-background: black;
-    --separador: rgba(0,0,0,0.2);
-}
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #1f1f1f;
-        --card-background: #2d2d2d;
-        --buttons: #444;
 
-        --text: #f2f2f2;
-        --text-secondary: #bdbdbd;
-        --border: #888;
-    }
-}
 
 /*Main-general*/
 .classes_page{
@@ -39,7 +21,7 @@
 }
 .class_card{
     display: flex;
-    background-color: var(--card-background);
+    background-color: var(--surface);
     flex-direction: column;
     padding: 10px;
     border: solid;

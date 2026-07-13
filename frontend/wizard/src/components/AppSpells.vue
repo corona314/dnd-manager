@@ -39,6 +39,23 @@
     const current_page = ref(0)
     const total_pages = ref(1)
 
+
+    const Damage_Text = {
+        Fire: '--text-on-dark',
+        Cold: '--text-on-dark',
+        Lightning: '--text-on-light',
+        Poison: '--text-on-dark',
+        Acid: '--text-on-light',
+        Necrotic: '--text-on-dark',
+        Radiant: '--text-on-light',
+        Psychic: '--text-on-dark',
+        Force: '--text-on-dark',
+        Thunder: '--text-on-dark',
+        Piercing: '--text-on-dark',
+        Slashing: '--text-on-dark',
+        Bludgeoning: '--text-on-dark'
+    }
+
     //Metodos
     async function fetchSpells(page = 0) {
         loading.value = true
@@ -273,7 +290,17 @@
         <!--Tarjetas de los conjuros-->
         <div v-if="loading" class="loading">Cargando...</div>
         <div v-else class="spell_list">
-            <div v-for="spell in spells" :key="spell.id" class="spell_card" :style="{ backgroundColor: `var(${Damage_Colors[spell.damageTypes[0]?.damageType] || '--default'})`}" :class="{ 'spell_card--expanded': expanded_id === spell.id }" @click="expandSpell(spell)">
+            <div
+                v-for="spell in spells"
+                :key="spell.id"
+                class="spell_card"
+                :style="{
+                    backgroundColor: `var(${Damage_Colors[spell.damageTypes[0]?.damageType] || '--surface'})`,
+                    color: `var(${Damage_Text[spell.damageTypes[0]?.damageType] || '--text'})`
+                }"
+                :class="{ 'spell_card--expanded': expanded_id === spell.id }"
+                @click="expandSpell(spell)"
+            >
                 <div class="spell_card_base">
                     <span class="spell_name"> {{ spell.name }} </span>
                     <span class="spell_attackroll">{{spell.attackRoll === true ? '⚔️' : ''}}</span>
