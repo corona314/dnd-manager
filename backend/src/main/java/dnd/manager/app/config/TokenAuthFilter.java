@@ -17,9 +17,11 @@ import java.util.List;
 public class TokenAuthFilter extends OncePerRequestFilter {
 
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    public TokenAuthFilter(UserRepository userRepository) {
+    public TokenAuthFilter(UserRepository userRepository, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -29,15 +31,16 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        if (header != null && header.startsWith("Bearer OK_")) {
-            try {
-                Long userId = Long.parseLong(header.replace("Bearer OK_", ""));
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+            if (jwtService.isValid(token)) {
+                Long userId = jwtService.extractUserId(token);
                 userRepository.findById(userId).ifPresent(user -> {
                     UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(user, null, List.of());
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 });
-            } catch (NumberFormatException ignored) {}
+            }
         }
 
         chain.doFilter(request, response);

@@ -80,6 +80,7 @@ public class CharacterService {
         
         if (entity == null) throw new RuntimeException("Character not found");        
         if (dto.name() != null) entity.setName(dto.name());
+        if (dto.levelUp() != null && dto.levelUp()) entity.setLevel(entity.getLevel() + 1);
         if (dto.maxHp() != null) entity.setMaxHp(dto.maxHp());
         if (dto.currentHp() != null) entity.setCurrentHp(dto.currentHp());
         if (dto.walkSpeed() != null) entity.setWalkSpeed(dto.walkSpeed());

@@ -13,6 +13,8 @@ public record CharacterSummaryDto (
     Long id,
     String name,
     Integer level,
+    String className,
+    String speciesName,
     CharacterStatus status,
     LocalDateTime updatedAt
 

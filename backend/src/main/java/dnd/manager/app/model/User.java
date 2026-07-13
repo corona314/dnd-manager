@@ -61,7 +61,6 @@ public class User implements UserDetails {
         return password;
     }
 
-    //TODO: A futuro con email y verificación
     @Override
     public String getUsername() {
         return username;

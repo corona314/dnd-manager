@@ -10,7 +10,8 @@ La plataforma estará estructurada en módulos independientes que funcionan de m
 
 1. **Compendio centralizado**: Base de datos exhaustiva y searchable de reglas, items, hechizos, clases y razas
 2. **Asistente de creación de personajes**: Wizard interactivo multi-paso con validación en tiempo real
-3. **Gestor de homebrew descentralizado**: Contenido personalizado gestionado localmente con capacidad de exportar/importar
+3. **Gestor de homebrew**: Contenido personalizado gestionado localmente 
+   mediante IndexedDB con capacidad de exportar/importar en formato JSON
 4. **Foro de comunidad**: Plataforma abierta para compartir y descubrir creaciones homebrew
 5. **Sistema colaborativo DM-Players**: Gestión de sesiones, sincronización de experiencia y control de progresión
 
@@ -75,7 +76,8 @@ frontend/wizard/
 
 **Gestión:**
 - **MySQL (Principal)**: Almacena datos canónicos (items, hechizos, clases, razas, users)
-- **BD Local (Homebrew)**: Bases de datos descentralizadas por usuario/grupo para contenido personalizado
+- **IndexedDB (Homebrew)**: Almacenamiento local en navegador para contenido 
+  personalizado, sin límite de creación y sin dependencia del servidor
 - **Docker Compose**: Orquestación de contenedores para levantar MySQL en desarrollo
 
 **Características:**

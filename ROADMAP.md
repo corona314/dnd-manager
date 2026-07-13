@@ -58,17 +58,17 @@ Implementar un wizard multi-step que guíe al usuario a través de la creación 
 **Objetivo:**
 Permitir que usuarios creen contenido personalizado sin tocar la BD principal.
 
-**Funcionalidades:** (Puede que un SQLite local no sea la solución, se verá durante desarrollo)
+**Funcionalidades:**
 - Editor visual para items, hechizos, clases y razas personalizadas
-- Validación de reglas básicas (ej: rareza vs precio, balanceo de stats)
-- Almacenamiento local en BD local a nivel usuario para no limitar la creación de Hombrew
+- Validación de reglas básicas (rareza vs precio, balanceo de stats)
+- Almacenamiento local en el navegador (IndexedDB) sin límite de creación
 - Exportación a JSON para compartir con otros usuarios
 - Importación de contenido homebrew de otros jugadores
 
 **Arquitectura:**
-- BD local descentralizada por usuario (Quizás SQLite con sync)
-- Versionado de cambios para auditoría
-- Sistema de plantillas para acelerar creación de nuevos items
+- Contenido homebrew descentralizado por usuario via IndexedDB
+- Exportación/importación mediante JSON con UUID por entidad para evitar conflictos
+- Sistema de versionado en el JSON para gestionar actualizaciones de contenido compartido
 
 ### Fase 4: Foro Homebrew (Planificado)
 

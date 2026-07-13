@@ -6,6 +6,7 @@ package dnd.manager.app.dto.CharacterDto;
 
 public record CharacterPatchDto(
     String name,
+    Boolean levelUp,
     Integer maxHp,
     Integer currentHp,
     Integer walkSpeed,

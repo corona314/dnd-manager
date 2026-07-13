@@ -22,11 +22,13 @@ public class CharacterMapper {
     private final SpeciesMapper speciesMapper;
     private final ClassMapper classMapper;
     private final BackgroundMapper backgroundMapper;
+    private final ItemMapper itemMapper;
 
-    public CharacterMapper(SpeciesMapper speciesMapper, ClassMapper classMapper, BackgroundMapper backgroundMapper) {
+    public CharacterMapper(SpeciesMapper speciesMapper, ClassMapper classMapper, BackgroundMapper backgroundMapper, ItemMapper itemMapper) {
         this.speciesMapper = speciesMapper;
         this.classMapper = classMapper;
         this.backgroundMapper = backgroundMapper;
+        this.itemMapper = itemMapper;
     }
 
     public CharacterSummaryDto toSummaryDto(CharacterEntity e) {
@@ -34,6 +36,8 @@ public class CharacterMapper {
             e.getId(),
             e.getName(),
             e.getLevel(),
+            e.getClassEntity() != null ? e.getClassEntity().getName() : null,
+            e.getSpecies() != null ? e.getSpecies().getName() : null,
             e.getStatus(),
             e.getUpdatedAt()
         );
@@ -47,17 +51,17 @@ public class CharacterMapper {
             e.getCurrentHp(),
             e.getWalkSpeed(),
             e.getFlySpeed(),
-            speciesMapper.toSummaryDto(e.getSpecies()),
-            classMapper.toSummaryDto(e.getClassEntity()),
-            classMapper.subclassToSummaryDto(e.getSubclass()),
-            backgroundMapper.toSummaryDto(e.getBackground()),
+            e.getSpecies() == null ? null : speciesMapper.toSummaryDto(e.getSpecies()),
+            e.getClassEntity() == null ? null : classMapper.toSummaryDto(e.getClassEntity()),
+            e.getSubclass() == null ? null : classMapper.subclassToSummaryDto(e.getSubclass()),
+            e.getBackground() == null ? null : backgroundMapper.toSummaryDto(e.getBackground()),
+            e.getAbilities() != null ? e.getAbilities().stream().map(this::toStatDto).toList() : List.of(),
+            e.getSkills() != null ? e.getSkills().stream().map(this::toSkillDto).toList() : List.of(),
+            e.getItems() != null ? e.getItems().stream().map(this::toItemDto).toList() : List.of(),
             e.getStatus(),
             e.getCreatedAt(),
             e.getUpdatedAt(),
-            e.getFinalizedAt(),
-            e.getAbilities() != null ? e.getAbilities().stream().map(this::toStatDto).toList() : List.of(),
-            e.getSkills() != null ? e.getSkills().stream().map(this::toSkillDto).toList() : List.of(),
-            e.getItems() != null ? e.getItems().stream().map(this::toItemDto).toList() : List.of()
+            e.getFinalizedAt()
         );
     }
 
@@ -86,6 +90,7 @@ public class CharacterMapper {
 
     private CharacterItemDto toItemDto(CharacterItem item){
         return new CharacterItemDto(
+            itemMapper.toSummaryDto(item.getItem()),
             item.getQuantity(), 
             item.getEquipped(), 
             item.getAttuned()

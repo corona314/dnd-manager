@@ -24,12 +24,12 @@ public record CharacterResponseDto(
     ClassSummaryDto classEntity,
     SubclassSummaryDto subclass,
     BackgroundSummaryDto background,
+    List<CharacterAbilityDto> abilities,
+    List<CharacterSkillDto> skills,
+    List<CharacterItemDto> items,
     CharacterStatus status,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
-    LocalDateTime finalizedAt,
-    List<CharacterAbilityDto> abilities,
-    List<CharacterSkillDto> skills,
-    List<CharacterItemDto> items
+    LocalDateTime finalizedAt
 
 ) {}

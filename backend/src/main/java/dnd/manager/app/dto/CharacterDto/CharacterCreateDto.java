@@ -7,6 +7,5 @@ import jakarta.validation.constraints.NotNull;
     Clase mínima necesaria para que exista un Character
 */
 public record CharacterCreateDto(
-    @NotBlank @NotNull Long userId,
     @NotBlank @NotNull String name
 ) {}
