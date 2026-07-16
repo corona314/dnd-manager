@@ -13,7 +13,6 @@
   import AppSpecieExpansion from './components/AppSpecieExpansion.vue';
   import AppBackgroundExpansion from './components/AppBackgroundExpansion.vue';
   import AppCharacters from './components/AppCharacters.vue';
-  import AppCharacterCreate from './components/AppCharacterCreate.vue';
 
   import { ref, onMounted } from 'vue'
 
@@ -88,7 +87,6 @@
         <AppBackgrounds v-if="currentPage === 'backgrounds'" @navigate="handleNavigate" :token="authToken"></AppBackgrounds>
         <AppBackgroundExpansion v-if="currentPage === 'backgroundExtended'" :backgroundId="selectedBackgroundId" @navigate="handleNavigate" :token="authToken"></AppBackgroundExpansion>
         <AppCharacters v-if="currentPage === 'characters'" @navigate="handleNavigate" :token="authToken"/>
-        <AppCharacterCreate v-if="currentPage === 'characterCreate'" @navigate="handleNavigate" :token="authToken"/>
       </div>
     </div>
   </transition>

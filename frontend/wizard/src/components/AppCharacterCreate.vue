@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 const props = defineProps({ token: String })
-const emit = defineEmits(['navigate'])
+const emit = defineEmits(['created'])
 const API_BASE = 'http://localhost:8080/api'
 
 const name = ref('')
@@ -23,10 +23,10 @@ async function createCharacter() {
             },
             body: JSON.stringify({ name: name.value.trim() })
         })
-        if (res.ok) {
-            emit('navigate', 'characters')
-        } else {
+        if (!res.ok) {
             error.value = 'Error al crear el personaje'
+        }else{
+            emit('created')
         }
     } catch (e) {
         console.error(e)

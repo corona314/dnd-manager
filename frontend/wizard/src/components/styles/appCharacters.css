@@ -1,0 +1,52 @@
+/*Main-General*/
+.characters_page{
+    min-height: 100vh;
+    background-color: var(--background);
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    flex-direction: column;
+}
+
+/*Lista de personajes*/
+.characters_list{
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    margin-top: 20px;
+}
+
+/*Tarjeta de personaje*/
+.character_card{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--surface);
+    padding: 10px;
+    border: solid;
+    border-width: 2px;
+    margin: 10px;
+}
+
+/*Estado del personaje*/
+.status_draft{
+    background-color: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+
+.status_completed{
+    background-color: var(--success-bg);
+    border: 1px solid var(--success-border);
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+
+/*Creador de personaje inline*/
+.character_name_creator{
+    margin: 10px;
+    padding: 10px;
+    background-color: var(--surface-secondary);
+    border: 1px solid var(--border);
+}
