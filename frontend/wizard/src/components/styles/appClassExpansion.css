@@ -4,7 +4,7 @@
     background-color: var(--background);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
     flex-direction: column;
     padding: 25px 0;
 }

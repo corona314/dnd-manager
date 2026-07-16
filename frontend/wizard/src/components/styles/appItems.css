@@ -22,6 +22,12 @@
         background-color: var(--surface-secondary);
     }
 
+    .tabs button.active {
+        background-color: var(--selected);
+        color: var(--accent-text);
+        border-color: var(--border);
+    }
+
 /*Filtros*/
     .all_filters {
         display: flex;

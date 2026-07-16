@@ -12,14 +12,16 @@
   import AppBackgrounds from './components/AppBackgrounds.vue';
   import AppSpecieExpansion from './components/AppSpecieExpansion.vue';
   import AppBackgroundExpansion from './components/AppBackgroundExpansion.vue';
+  import AppCharacters from './components/AppCharacters.vue';
+  import AppCharacterCreate from './components/AppCharacterCreate.vue';
 
   import { ref, onMounted } from 'vue'
 
 
   
   const authToken = ref(localStorage.getItem('dnd_token') || '')
-  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended'
-  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds'}
+  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterCreate'
+  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterCreate: 'characters'}
   const selectedClassId = ref(null)
   const selectedSubclassId = ref(null)
   const selectedSpecieId = ref(null)
@@ -85,6 +87,8 @@
         <AppSpecieExpansion v-if="currentPage === 'specieExtended'" :specieId="selectedSpecieId" @navigate="handleNavigate" :token="authToken"></AppSpecieExpansion>
         <AppBackgrounds v-if="currentPage === 'backgrounds'" @navigate="handleNavigate" :token="authToken"></AppBackgrounds>
         <AppBackgroundExpansion v-if="currentPage === 'backgroundExtended'" :backgroundId="selectedBackgroundId" @navigate="handleNavigate" :token="authToken"></AppBackgroundExpansion>
+        <AppCharacters v-if="currentPage === 'characters'" @navigate="handleNavigate" :token="authToken"/>
+        <AppCharacterCreate v-if="currentPage === 'characterCreate'" @navigate="handleNavigate" :token="authToken"/>
       </div>
     </div>
   </transition>

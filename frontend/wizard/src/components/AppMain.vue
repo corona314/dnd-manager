@@ -15,6 +15,6 @@
         <button @click = "$emit('navigate', 'classes')">Clases</button>
         <button @click = "$emit('navigate', 'species')">Razas</button>
         <button @click = "$emit('navigate', 'backgrounds')">Trasfondos</button>
-        <button @click="$emit('logout')">Cerrar sesión</button>
+        <button @click="$emit('navigate', 'characters')">Personajes</button>
     </div>
 </template>
