@@ -33,6 +33,7 @@
     //Filtros generales
     const filter_name = ref('')
     const filter_price = ref([0,40000])
+    const filter_price_max = ref(40000)
     const filter_rarity = ref([])
     const filter_magic = ref(null)
     const filter_attunement = ref(null)
@@ -158,11 +159,13 @@
         current_page.value = 0
         Object.keys(filter_specific).forEach(k => delete filter_specific[k])
         SpecificFilters[key]?.forEach(f => { filter_specific[f.key] = '' })
+        fetchMaxPrice()
         fetchItems(0)
     }
  
     onMounted(() => {
         SpecificFilters[activeTab.value]?.forEach(f => { filter_specific[f.key] = '' })
+        fetchMaxPrice()
         fetchItems()})
 
     function goToPage(page){
@@ -192,6 +195,28 @@
         if (cp < 10) return `${cp} cp`
         if (cp < 100) return `${cp / 10} sp`
         return `${cp / 100} gp`
+    }
+
+    async function fetchMaxPrice() {
+        try {
+            const tab = Tabs.find(t => t.key === activeTab.value)
+            const params = new URLSearchParams({ page: 0, size: 1, sort: 'price,desc' })
+
+            const res = await fetch(`${API_BASE}${tab.endpoint}?${params}`, {
+                headers: { Authorization: `Bearer ${props.token}` }
+            })
+            const data = await res.json()
+
+            if (data.content?.length) {
+                filter_price_max.value = data.content[0].price / 100
+            } else {
+                filter_price_max.value = 40000
+            }
+            filter_price.value = [0, filter_price_max.value]
+        } catch (e) {
+            console.error(e)
+            filter_price_max.value = 40000
+        }
     }
 </script>
 
@@ -232,9 +257,9 @@
                     <div class="price_inputs">
                         <input type="number" v-model.number="filter_price[0]" @change="onPriceInputChange" min="0" :max="filter_price[1]"/>
                         <span>—</span>
-                        <input type="number" v-model.number="filter_price[1]" @change="onPriceInputChange" :min="filter_price[0]" max="40000"/>
+                        <input type="number" v-model.number="filter_price[1]" @change="onPriceInputChange" :min="filter_price[0]" :max="filter_price_max"/>
                     </div>
-                    <Slider class="price_slider" v-model="filter_price" :min="0" :max="40000" :step="50" range @slideend="fetchItems" @update:modelValue="onPriceSlide"/>
+                    <Slider class="price_slider" v-model="filter_price" :min="0" :max="filter_price_max" :step="50" range @slideend="fetchItems" @update:modelValue="onPriceSlide"/>
                 </div>
                 <div class="magic" >
                     <span class="tristate" @click="cycleMagic" :class="{'tristate--active': filter_magic === true, 'tristate--inactive': filter_magic === false}">
