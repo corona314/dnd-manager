@@ -9,10 +9,12 @@ import dnd.manager.app.dto.CharacterDto.CharacterItemResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
+import dnd.manager.app.dto.CharacterDto.CharacterSpellResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterItem;
 import dnd.manager.app.model.CharacterEntities.CharacterSkill;
+import dnd.manager.app.model.CharacterEntities.CharacterSpell;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 import dnd.manager.app.model.CharacterEntities.CharacterAbility;
 
@@ -24,13 +26,15 @@ public class CharacterMapper {
     private final BackgroundMapper backgroundMapper;
     private final ItemMapper itemMapper;
     private final SkillMapper skillMapper;
+    private final SpellMapper spellMapper;
 
-    public CharacterMapper(SpeciesMapper speciesMapper, ClassMapper classMapper, BackgroundMapper backgroundMapper, ItemMapper itemMapper, SkillMapper skillMapper) {
+    public CharacterMapper(SpeciesMapper speciesMapper, ClassMapper classMapper, BackgroundMapper backgroundMapper, ItemMapper itemMapper, SkillMapper skillMapper, SpellMapper spellMapper) {
         this.speciesMapper = speciesMapper;
         this.classMapper = classMapper;
         this.backgroundMapper = backgroundMapper;
         this.itemMapper = itemMapper;
         this.skillMapper = skillMapper;
+        this.spellMapper = spellMapper;
     }
 
     public CharacterSummaryDto toSummaryDto(CharacterEntity e) {
@@ -60,6 +64,7 @@ public class CharacterMapper {
             e.getAbilities() != null ? e.getAbilities().stream().map(this::toStatDto).toList() : List.of(),
             e.getSkills() != null ? e.getSkills().stream().map(this::toSkillResponseDto).toList() : List.of(),
             e.getItems() != null ? e.getItems().stream().map(this::toItemResponseDto).toList() : List.of(),
+            e.getSpells() != null ? e.getSpells().stream().map(this::toSpellResponseDto).toList() : List.of(),
             e.getStatus(),
             e.getCreatedAt(),
             e.getUpdatedAt(),
@@ -96,6 +101,14 @@ public class CharacterMapper {
             item.getQuantity(), 
             item.getEquipped(), 
             item.getAttuned()
+        );
+    }
+
+    private CharacterSpellResponseDto toSpellResponseDto(CharacterSpell spell){
+        return new CharacterSpellResponseDto(
+            spellMapper.toSummaryDto(spell.getSpell()),
+            spell.getPrepared(),
+            spell.getAlwaysPrepared()
         );
     }
 }

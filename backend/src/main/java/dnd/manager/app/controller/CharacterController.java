@@ -10,6 +10,7 @@ import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
+import dnd.manager.app.dto.CharacterDto.CharacterSpellDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.User;
 import dnd.manager.app.service.CharacterServices.CharacterService;
@@ -114,5 +115,34 @@ public class CharacterController {
     ) {
         return ResponseEntity.ok(service.removeItem(user.getId(), id, itemId, quantity));
 
+    }
+
+    @PostMapping("/{id}/spells/{spellId}")
+    public ResponseEntity<CharacterResponseDto> addSpell(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long spellId,
+        @RequestBody(required = false) CharacterSpellDto dto
+    ) {
+        return ResponseEntity.ok(service.addSpell(user.getId(), id, spellId, dto));
+    }
+
+    @PatchMapping("/{id}/spells/{spellId}")
+    public ResponseEntity<CharacterResponseDto> updateSpell(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long spellId,
+        @RequestBody CharacterSpellDto dto
+    ) {
+        return ResponseEntity.ok(service.updateSpell(user.getId(), id, spellId, dto));
+    }
+
+    @DeleteMapping("/{id}/spells/{spellId}")
+    public ResponseEntity<CharacterResponseDto> removeSpell(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long spellId
+    ) {
+        return ResponseEntity.ok(service.removeSpell(user.getId(), id, spellId));
     }
 }

@@ -1,6 +1,7 @@
 package dnd.manager.app.service.CharacterServices;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
+import dnd.manager.app.dto.CharacterDto.CharacterSpellDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.mapper.CharacterMapper;
 import dnd.manager.app.model.User;
@@ -19,6 +21,7 @@ import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterItem;
 import dnd.manager.app.model.CharacterEntities.CharacterSkill;
 import dnd.manager.app.model.CharacterEntities.CharacterAbility;
+import dnd.manager.app.model.CharacterEntities.CharacterSpell;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 import dnd.manager.app.model.ItemEntities.Item;
 import dnd.manager.app.repository.AbilityRepository;
@@ -26,9 +29,11 @@ import dnd.manager.app.repository.SkillRepository;
 import dnd.manager.app.repository.UserRepository;
 import dnd.manager.app.repository.BackgroundRepositories.BackgroundRepository;
 import dnd.manager.app.repository.CharacterRepositories.CharacterRepository;
+import dnd.manager.app.repository.CharacterRepositories.CharacterSpellRepository;
 import dnd.manager.app.repository.ClassRepositories.ClassRepository;
 import dnd.manager.app.repository.ItemRepositories.ItemRepository;
 import dnd.manager.app.repository.SpeciesRepositories.SpeciesRepository;
+import dnd.manager.app.repository.SpellRepositories.SpellRepository;
 import dnd.manager.app.repository.SubclassRepositories.SubclassRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -46,6 +51,8 @@ public class CharacterService {
     private final ClassRepository classRepository;
     private final SubclassRepository subclassRepository;
     private final BackgroundRepository backgroundRepository;
+    private final CharacterSpellRepository characterSpellRepository;
+    private final SpellRepository spellRepository;
 
     public CharacterService(
         CharacterRepository repository,
@@ -57,7 +64,9 @@ public class CharacterService {
         SpeciesRepository speciesRepository, 
         ClassRepository classRepository, 
         SubclassRepository subclassRepository,
-        BackgroundRepository backgroundRepository
+        BackgroundRepository backgroundRepository,
+        CharacterSpellRepository characterSpellRepository,
+        SpellRepository spellRepository
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
@@ -69,6 +78,8 @@ public class CharacterService {
         this.classRepository = classRepository;
         this.subclassRepository = subclassRepository;
         this.backgroundRepository = backgroundRepository;
+        this.characterSpellRepository = characterSpellRepository;
+        this.spellRepository = spellRepository;
     }
 
 
@@ -231,9 +242,72 @@ public class CharacterService {
         return mapper.toResponseDto(repository.save(character));
     }
 
+    @Transactional
+    public CharacterResponseDto addSpell(Long userId, Long characterId, Long spellId, CharacterSpellDto dto) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
 
+        dnd.manager.app.model.SpellEntities.Spell spell = spellRepository.findById(spellId)
+            .orElseThrow(() -> new EntityNotFoundException("Spell not found"));
 
+        if (character.getSpells() == null) {
+            character.setSpells(new ArrayList<>());
+        }
 
+        Optional<CharacterSpell> existing = character.getSpells().stream()
+            .filter(cs -> cs.getSpell().getId().equals(spellId))
+            .findFirst();
+
+        if (existing.isPresent()) {
+            CharacterSpell cs = existing.get();
+            if (dto != null) {
+                if (dto.prepared() != null) cs.setPrepared(dto.prepared());
+                if (dto.alwaysPrepared() != null) cs.setAlwaysPrepared(dto.alwaysPrepared());
+            }
+        } else {
+            CharacterSpell cs = new CharacterSpell();
+            cs.setCharacter(character);
+            cs.setSpell(spell);
+            cs.setPrepared(dto != null && dto.prepared() != null ? dto.prepared() : false);
+            cs.setAlwaysPrepared(dto != null && dto.alwaysPrepared() != null ? dto.alwaysPrepared() : false);
+            character.getSpells().add(cs);
+            characterSpellRepository.save(cs);
+        }
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+    @Transactional
+    public CharacterResponseDto updateSpell(Long userId, Long characterId, Long spellId, CharacterSpellDto dto) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        character.getSpells().stream()
+            .filter(cs -> cs.getSpell().getId().equals(spellId))
+            .findFirst()
+            .ifPresent(cs -> {
+                if (dto.prepared() != null) cs.setPrepared(dto.prepared());
+                if (dto.alwaysPrepared() != null) cs.setAlwaysPrepared(dto.alwaysPrepared());
+            });
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+    @Transactional
+    public CharacterResponseDto removeSpell(Long userId, Long characterId, Long spellId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        character.getSpells().stream()
+            .filter(cs -> cs.getSpell().getId().equals(spellId))
+            .findFirst()
+            .ifPresent(cs -> {
+                character.getSpells().remove(cs);
+                characterSpellRepository.delete(cs);
+            });
+
+        return mapper.toResponseDto(repository.save(character));
+    }
 
     // Finalizar personaje
     public CharacterResponseDto finalize(Long userId, Long id) {

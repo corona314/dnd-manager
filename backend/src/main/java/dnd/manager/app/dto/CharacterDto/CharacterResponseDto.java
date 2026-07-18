@@ -27,6 +27,7 @@ public record CharacterResponseDto(
     List<CharacterAbilityDto> abilities,
     List<CharacterSkillResponseDto> skills,
     List<CharacterItemResponseDto> items,
+    List<CharacterSpellResponseDto> spells,
     CharacterStatus status,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
