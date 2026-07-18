@@ -15,5 +15,4 @@ public class SkillMapper {
             s.getAbility() == null ? null : s.getAbility().getCode()
         );
     }
-    
 }

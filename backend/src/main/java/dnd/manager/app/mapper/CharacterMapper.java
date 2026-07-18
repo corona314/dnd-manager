@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
-import dnd.manager.app.dto.CharacterDto.CharacterItemDto;
+import dnd.manager.app.dto.CharacterDto.CharacterItemResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
-import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
+import dnd.manager.app.dto.CharacterDto.CharacterSkillResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
@@ -23,12 +23,14 @@ public class CharacterMapper {
     private final ClassMapper classMapper;
     private final BackgroundMapper backgroundMapper;
     private final ItemMapper itemMapper;
+    private final SkillMapper skillMapper;
 
-    public CharacterMapper(SpeciesMapper speciesMapper, ClassMapper classMapper, BackgroundMapper backgroundMapper, ItemMapper itemMapper) {
+    public CharacterMapper(SpeciesMapper speciesMapper, ClassMapper classMapper, BackgroundMapper backgroundMapper, ItemMapper itemMapper, SkillMapper skillMapper) {
         this.speciesMapper = speciesMapper;
         this.classMapper = classMapper;
         this.backgroundMapper = backgroundMapper;
         this.itemMapper = itemMapper;
+        this.skillMapper = skillMapper;
     }
 
     public CharacterSummaryDto toSummaryDto(CharacterEntity e) {
@@ -56,8 +58,8 @@ public class CharacterMapper {
             e.getSubclass() == null ? null : classMapper.subclassToSummaryDto(e.getSubclass()),
             e.getBackground() == null ? null : backgroundMapper.toSummaryDto(e.getBackground()),
             e.getAbilities() != null ? e.getAbilities().stream().map(this::toStatDto).toList() : List.of(),
-            e.getSkills() != null ? e.getSkills().stream().map(this::toSkillDto).toList() : List.of(),
-            e.getItems() != null ? e.getItems().stream().map(this::toItemDto).toList() : List.of(),
+            e.getSkills() != null ? e.getSkills().stream().map(this::toSkillResponseDto).toList() : List.of(),
+            e.getItems() != null ? e.getItems().stream().map(this::toItemResponseDto).toList() : List.of(),
             e.getStatus(),
             e.getCreatedAt(),
             e.getUpdatedAt(),
@@ -80,16 +82,16 @@ public class CharacterMapper {
         );
     }
 
-    private CharacterSkillDto toSkillDto(CharacterSkill skill) {
-        return new CharacterSkillDto(
-            skill.getSkill().getId(),
+    private CharacterSkillResponseDto toSkillResponseDto(CharacterSkill skill) {
+        return new CharacterSkillResponseDto(
+            skillMapper.toDto(skill.getSkill()),
             skill.getProficient(),
             skill.getExpertise()
         );
     }
 
-    private CharacterItemDto toItemDto(CharacterItem item){
-        return new CharacterItemDto(
+    private CharacterItemResponseDto toItemResponseDto(CharacterItem item){
+        return new CharacterItemResponseDto(
             itemMapper.toSummaryDto(item.getItem()),
             item.getQuantity(), 
             item.getEquipped(), 

@@ -1,11 +1,14 @@
 package dnd.manager.app.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
+import dnd.manager.app.dto.CharacterDto.CharacterItemDto;
 import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
+import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.User;
@@ -60,9 +63,56 @@ public class CharacterController {
         return ResponseEntity.noContent().build();
     }    
 
-    // Replace
+
+    //Replaces
     @PatchMapping("/{id}/abilities")
-    public ResponseEntity<CharacterResponseDto> replaceAbilities(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody List<CharacterAbilityDto> dto) {
-        return ResponseEntity.ok(service.replaceAbilities(user.getId(), id, dto));
+    public ResponseEntity<CharacterResponseDto> replaceAbilities(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id, 
+        @RequestBody List<CharacterAbilityDto> dtos
+    ) {
+        return ResponseEntity.ok(service.replaceAbilities(user.getId(), id, dtos));
+    }
+
+    @PatchMapping("/{id}/skills")
+    public ResponseEntity<CharacterResponseDto> replaceSkills(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody List<CharacterSkillDto> dto) {
+        return ResponseEntity.ok(service.replaceSkills(user.getId(), id, dto));
+    }
+
+    @PatchMapping("/{id}/finalize")
+    public ResponseEntity<CharacterResponseDto> finalize(@AuthenticationPrincipal User user, @PathVariable Long id){
+        return ResponseEntity.ok(service.finalize(user.getId(), id));
+    }
+
+
+    @PostMapping("/{id}/items/{itemId}")
+    public ResponseEntity<CharacterResponseDto> addItem(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id, 
+        @PathVariable Long itemId,
+        @RequestBody(required = false) CharacterItemDto dto
+    ) {
+        return ResponseEntity.ok(service.addItem(user.getId(), id, itemId, dto));
+    }
+
+    @PatchMapping("/{id}/items/{itemId}")
+    public ResponseEntity<CharacterResponseDto> updateItem(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long itemId,
+        @RequestBody CharacterItemDto dto
+    ) {
+        return ResponseEntity.ok(service.updateItem(user.getId(), id, itemId, dto));
+    }
+
+    @DeleteMapping("/{id}/items/{itemId}")
+    public ResponseEntity<CharacterResponseDto> removeItem(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long itemId,
+        @RequestParam(defaultValue = "1") Integer quantity
+    ) {
+        return ResponseEntity.ok(service.removeItem(user.getId(), id, itemId, quantity));
+
     }
 }

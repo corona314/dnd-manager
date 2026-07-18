@@ -10,4 +10,7 @@ import dnd.manager.app.model.CharacterEntities.CharacterSkillId;
 public interface CharacterSkillRepository extends JpaRepository<CharacterSkill, CharacterSkillId> {
 
     List<CharacterSkill> findByCharacterId(Long id);
+
+    void deleteByCharacterId(Long id);
+
 }

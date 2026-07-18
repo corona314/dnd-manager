@@ -33,11 +33,12 @@ Implementar un wizard multi-step que guíe al usuario a través de la creación 
 **Pasos del wizard:**
 1. **Selección de raza** - Elegir species y revisar bonificadores de atributos
 2. **Selección de clase** - Escoger clase y revisar habilidades iniciales
-3. **Selección de subclase** - Elección especializada dentro de la clase
-4. **Distribución de atributos** - Asignar puntos a STR, DEX, CON, INT, WIS, CHA
-5. **Selección de hechizos** - Si la clase lo permite, elegir spell list
-6. **Selección de equipo** - Escoger armadura, arma y items iniciales
-7. **Revisión final** - Preview del personaje antes de guardar
+3. **Selección de trasfondo** - Escoger trasfondo y puntos de habilidades adicionales
+4. **Selección de subclase** - Elección especializada dentro de la clase
+5. **Distribución de atributos** - Asignar puntos a STR, DEX, CON, INT, WIS, CHA
+6. **Selección de hechizos** - Si la clase lo permite, elegir spell list
+7. **Selección de equipo** - Escoger armadura, arma y items iniciales
+8. **Revisión final** - Preview del personaje antes de guardar
 
 **Características técnicas:**
 - Validación en tiempo real de restricciones (ej: hechizos solo para clases mágicas)

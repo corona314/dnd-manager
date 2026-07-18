@@ -8,6 +8,7 @@ import dnd.manager.app.model.BackgroundEntities.Background;
 import dnd.manager.app.model.ClassEntities.ClassEntity;
 import dnd.manager.app.model.SpeciesEntities.Species;
 import dnd.manager.app.model.SubclassEntities.Subclass;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -82,10 +83,10 @@ public class CharacterEntity {
     @Enumerated(EnumType.STRING)
     private CharacterStatus status = CharacterStatus.DRAFT;
 
-    @OneToMany(mappedBy = "character")
+    @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterSkill> skills;
 
-    @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "character", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterAbility> abilities;
 
     @OneToMany(mappedBy = "character")
@@ -95,7 +96,7 @@ public class CharacterEntity {
     @JoinColumn(name = "background_id")
     private Background background;
 
-    @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "character", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterItem> items;
 
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
