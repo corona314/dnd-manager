@@ -1,4 +1,7 @@
-
+body {
+    color: var(--text);
+    background-color: var(--background);
+}
 /*Main-General*/ 
     .items_page{
         min-height: 100vh;
@@ -19,12 +22,13 @@
     }
     .tabs button{
         padding: 8px;
+        color: var(--text);
         background-color: var(--surface-secondary);
     }
 
     .tabs button.active {
         background-color: var(--selected);
-        color: var(--accent-text);
+        color: var(--text);
         border-color: var(--border);
     }
 

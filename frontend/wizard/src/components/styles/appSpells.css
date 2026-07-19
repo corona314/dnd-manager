@@ -1,4 +1,7 @@
-
+body {
+    color: var(--text);
+    background-color: var(--background);
+}
 
 /*Main-General*/ 
 .spell_page{

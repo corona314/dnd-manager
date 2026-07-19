@@ -1,5 +1,6 @@
 <script setup>
   import './components/styles/app.css'
+  import ToggleSwitch from 'primevue/toggleswitch'
   //Componentes
   import AppClasses from './components/AppClasses.vue';
   import AppClassExpansion from './components/AppClassExpansion.vue';
@@ -61,6 +62,31 @@
     if ('specieId' in event) selectedSpecieId.value = event.specieId
     if ('backgroundId' in event) selectedBackgroundId.value = event.backgroundId
   }
+
+  //Metodos Dark-Mode
+
+  const isDark = ref(
+    localStorage.getItem('dnd_theme')
+      ? localStorage.getItem('dnd_theme') === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches
+  )
+
+  function applyTheme() {
+    if (isDark.value) {
+      document.documentElement.setAttribute('data-theme', 'dark')
+    } else {
+      document.documentElement.removeAttribute('data-theme')
+    }
+  }
+
+  function toggleTheme() {
+    localStorage.setItem('dnd_theme', isDark.value ? 'dark' : 'light')
+    applyTheme()
+  }
+
+  onMounted(() => {
+    applyTheme()
+  })
 </script>
 
 <template>
@@ -73,6 +99,7 @@
       <header class="app_header">
         <button v-if="currentPage !== 'main'" class="header_back_btn" @click="goBack">Back</button>
         <span class="header_title">{{ currentPage }}</span>
+        <ToggleSwitch class="header_color_switch" v-model="isDark" @change="toggleTheme" />
         <button class="header_logout_btn" @click="logout">Log Out</button>
       </header>
       <div class="app_content">

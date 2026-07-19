@@ -88,8 +88,8 @@
     --damage-bludgeoning: #8D6E63;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
+
+    :root[data-theme="dark"] {
         --background: #221A17;
         --surface: #2E2420;
         --surface-secondary: #3A2F29;
@@ -161,4 +161,3 @@
         --color-text: var(--text);
 
     }
-}
