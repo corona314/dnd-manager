@@ -15,6 +15,7 @@
     //Constantes de los filtros
     const filter_name = ref('')
     const filter_level = ref([0,9])
+    const prev_level = ref([0, 9])
     const filter_school = ref([])
     const filter_components = ref({V: null, S: null, M: null})
     const filter_ritual = ref(null)
@@ -194,11 +195,22 @@
     }
 
     function sliderOrder(value){
-        let [min, max] = value
-        if (min > max) {
-            max = min
+        const [newMin, newMax] = value
+        const [oldMin, oldMax] = prev_level.value
+
+        let min = newMin
+        let max = newMax
+
+        if (newMin !== oldMin) {
+            min = Math.min(newMin, oldMax)
+            max = oldMax
+        } else if (newMax !== oldMax) {
+            max = Math.max(newMax, oldMin)
+            min = oldMin
         }
+
         filter_level.value = [min, max]
+        prev_level.value = [min, max]
     }
 
     function selectUpcastLevel(level) {
@@ -248,12 +260,6 @@
                         {{ name }}
                     </div>
                 </div>
-                <div class="school_chips">
-                    <span v-for="id in filter_school" :key="id" class="school_chip">
-                    {{ Schools[id] }}
-                    <span @click="toggleSchool(id)">x</span>
-                    </span>
-                </div>
             </div>
             <div class="sort_filter">
                 <div v-for="(s, index) in sort_fields" :key="s.field" class="sort_chip" :class="{ 'sort_chip--active': s.active }">
@@ -285,6 +291,14 @@
                     <span v-else>C</span>
                 </span>
             </div>
+        </div>
+
+        <!--Escuelas seleccionadas-->
+        <div v-if="filter_school.length" class="school_chips">
+            <span v-for="id in filter_school" :key="id" class="school_chip">
+                {{ Schools[id] }}
+                <span class="school_chip_remove" @click="toggleSchool(id)">✕</span>
+            </span>
         </div>
 
         <!--Tarjetas de los conjuros-->
