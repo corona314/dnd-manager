@@ -3,7 +3,7 @@ import AppCharacterCreate from './AppCharacterCreate.vue';
 import './styles/appCharacters.css'
 import { ref, onMounted } from 'vue'
 const props = defineProps({ token: String })
-defineEmits(['navigate'])
+const emit = defineEmits(['navigate'])
 const API_BASE = 'http://localhost:8080/api'
 
 const characters = ref([])
@@ -41,6 +41,10 @@ function onCharacterCreated() {
     fetchCharacters()
 }
 
+function goToEditCharacter(id) {  
+    emit('navigate', { page: 'characterClass', characterId: id })
+}
+
 onMounted(() => fetchCharacters())
 </script>
 
@@ -53,7 +57,9 @@ onMounted(() => fetchCharacters())
             <div v-for="c in characters" :key="c.id" class="character_card">
                 <span class="character_name">{{ c.name }}</span>
                 <span class="character_status" :class="c.status === 'COMPLETED' ? 'status_completed' : 'status_draft'"> {{ c.status === 'COMPLETED' ? 'Completated' : 'Draft' }} </span>
+                <span>{{ c.className === null ? 'no hay clase' : c.className}}</span>
                 <button @click="deleteCharacter(c.id)">🗑️</button>
+                <button @click="goToEditCharacter(c.id)">Editar</button>
             </div>
             <div v-if="!characters.length" class="characters_empty">
                 No tienes personajes todavía.

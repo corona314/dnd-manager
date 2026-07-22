@@ -14,18 +14,18 @@
   import AppSpecieExpansion from './components/AppSpecieExpansion.vue';
   import AppBackgroundExpansion from './components/AppBackgroundExpansion.vue';
   import AppCharacters from './components/AppCharacters.vue';
+  import AppCharacterClass from './components/AppCharacterClass.vue';
 
   import { ref, onMounted } from 'vue'
-
-
   
   const authToken = ref(localStorage.getItem('dnd_token') || '')
-  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterCreate'
-  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterCreate: 'characters'}
+  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' 
+  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters'}
   const selectedClassId = ref(null)
   const selectedSubclassId = ref(null)
   const selectedSpecieId = ref(null)
   const selectedBackgroundId = ref(null)
+  const selectedCharacterId = ref(null)
 
   function handleLogin(token) {
     authToken.value = token
@@ -45,6 +45,7 @@
     selectedSubclassId.value = null
     selectedSpecieId.value = null
     selectedBackgroundId.value = null
+    selectedCharacterId.value = null
   }
 
   function goBack() {
@@ -61,6 +62,7 @@
     if ('subclassId' in event) selectedSubclassId.value = event.subclassId
     if ('specieId' in event) selectedSpecieId.value = event.specieId
     if ('backgroundId' in event) selectedBackgroundId.value = event.backgroundId
+    if ('characterId' in event) selectedCharacterId.value = event.characterId
   }
 
   //Metodos Dark-Mode
@@ -114,6 +116,7 @@
         <AppBackgrounds v-if="currentPage === 'backgrounds'" @navigate="handleNavigate" :token="authToken"></AppBackgrounds>
         <AppBackgroundExpansion v-if="currentPage === 'backgroundExtended'" :backgroundId="selectedBackgroundId" @navigate="handleNavigate" :token="authToken"></AppBackgroundExpansion>
         <AppCharacters v-if="currentPage === 'characters'" @navigate="handleNavigate" :token="authToken"/>
+        <AppCharacterClass v-if="currentPage === 'characterClass'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterClass>
       </div>
     </div>
   </transition>

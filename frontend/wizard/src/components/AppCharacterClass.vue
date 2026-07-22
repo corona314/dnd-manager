@@ -1,0 +1,163 @@
+<script setup>
+    import './styles/appCharacterClass.css'
+    import { ref, onMounted } from 'vue'
+    const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
+    const emit = defineEmits(['navigate'])
+    const API_BASE = 'http://localhost:8080/api'
+
+    //Constantes del personaje
+    const character = ref(null)
+    const loading_character = ref(false)
+
+    //Constantes de clases
+    const classes_data = ref([])
+    const loading_classes = ref(false)
+    const class_open = ref(false)
+
+    //Const clase seleccionada (para ver detalles)
+    const viewed_class = ref(null)
+    const viewed_loading = ref(false)
+    const viewed_id = ref(null)
+
+    //Guardado
+    const saving = ref(false)
+    const error = ref('')
+
+    //Metodos
+    async function fetchCharacter() {
+        loading_character.value = true
+        try {
+            const res = await fetch(`${API_BASE}/characters/${props.characterId}`, {
+                headers: { Authorization: `Bearer ${props.token}` }
+            })
+            character.value = await res.json()
+        } catch (e) {
+            console.error(e)
+        } finally {
+            loading_character.value = false
+        }
+    }
+
+    async function fetchClasses() {
+        loading_classes.value = true
+        try{        
+            const res = await fetch(`${API_BASE}/classes`, {
+            headers: { Authorization: `Bearer ${props.token}` }
+            })
+            const data = await res.json()
+            classes_data.value = data.content
+
+        }catch (e){
+            console.error(e)
+        }finally{
+            loading_classes.value = false
+        }
+    }
+
+    onMounted(() => {
+        fetchCharacter()
+        fetchClasses()
+    })
+
+    async function pickClassToView(class_data) {
+        class_open.value = false
+        viewed_loading.value = true
+        try{
+            const res = await fetch(`${API_BASE}/classes/${class_data.id}`, {
+                headers: { Authorization: `Bearer ${props.token}` }
+            })
+            viewed_class.value = await res.json()
+            viewed_id.value = class_data.id
+        }catch(e){
+            console.error(e)
+        }finally{
+            viewed_loading.value = false
+        }
+    }
+
+    async function selectClass(classId) {
+        saving.value = true
+        error.value = ''
+        try {
+            const res = await fetch(`${API_BASE}/characters/${props.characterId}`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${props.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ classId })
+            })
+            if (!res.ok) {
+                error.value = 'Error al guardar la clase'
+                return
+            }
+            await fetchCharacter()
+        } catch (e) {
+            console.error(e)
+            error.value = 'Error de conexión'
+        } finally {
+            saving.value = false
+        }
+    }
+
+    function goBackToCharacters() {
+        emit('navigate', 'characters')
+    }
+</script>
+
+<template>
+    <div class="character_class_page">
+        <!--Cabecera con info del personaje-->
+        <div v-if="loading_character">Cargando personaje...</div>
+        <div v-else-if="character" class="character_class_header">
+            <h1>{{ character.name }}</h1>
+            <span v-if="character.classEntity" class="character_class_current">
+                Current Class: {{ character.classEntity.name }}
+            </span>
+            <span v-else class="character_class_current character_class_current--empty">
+                No Class assigned
+            </span>
+        </div>
+
+        <span v-if="error" class="character_class_error">{{ error }}</span>
+
+        <!--Desplegable de clases-->
+        <h2>Pick a Class</h2>
+        <div class="class_filter">
+            <div class="class_dropdown_btn" @click="class_open = !class_open">
+                {{ viewed_class ? viewed_class.name : 'Selecciona una clase' }} <i>▾</i>
+            </div>
+            <div v-if="class_open" class="class_dropdown_menu">
+                <div v-if="loading_classes" class="loading">Cargando...</div>
+                <div v-else v-for="class_data in classes_data" :key="class_data.name" class="class_option" :class="{ selected: character?.classEntity?.id === class_data.id }" @click="pickClassToView(class_data)">
+                    {{ class_data.name }}
+                </div>
+            </div>
+        </div>
+
+        <!--Detalles de la clase elegida en el desplegable-->
+        <div v-if="viewed_loading" class="loading">Cargando...</div>
+        <div v-else-if="viewed_class" class="class_details_card">
+            <div class="class_details_header">
+                <span class="class_details_name">{{ viewed_class.name }}</span>
+                <span class="class_details_hitpoint">Dice: {{ viewed_class.hitPointDie }}</span>
+            </div>
+
+            <div v-if="viewed_class.savingThrows?.length" class="comp_class_saving_throws">
+                <span class="comp_class_saving_throws_label">Saving Throw Proficiencies:</span>
+                <span v-for="p in viewed_class.savingThrows" :key="p.ability" class="comp_class_saving_throws_chip">
+                    {{ p.ability }}
+                </span>
+            </div>
+
+            <button class="class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classEntity?.id === viewed_id">
+                {{ saving ? 'Guardando...' : (character?.classEntity?.id === viewed_id ? 'Clase actual' : `Elegir ${viewed_class.name}`) }}
+            </button>
+        </div>
+        <button class="character_class_back" @click="goBackToCharacters">Volver a mis personajes</button>
+    </div>
+</template>
+
+<style>
+
+</style>

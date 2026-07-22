@@ -278,14 +278,14 @@
                 </span>
             </div>
             <div class="ritual" >
-                <span class="tristate" @click="cycleRitual" :class="{'tristate--active': filter_ritual === true, 'tristate--inactive': filter_ritual === false}">
+                <span class="tristate" @click="cycleRitual" :class="{'tristate--active': filter_ritual === true, 'tristate--inactive': filter_ritual === false}" :title="'Ritual'">
                     <span v-if="filter_ritual === null">R</span>
                     <span v-else-if="filter_ritual === true">R</span>
                     <span v-else>R</span>
                 </span>
             </div>
             <div class="concentration" >
-                <span class="tristate" @click="cycleConcentration" :class="{'tristate--active': filter_concentration === true, 'tristate--inactive': filter_concentration === false}">
+                <span class="tristate" @click="cycleConcentration" :class="{'tristate--active': filter_concentration === true, 'tristate--inactive': filter_concentration === false}" :title="'Concentration'">
                     <span v-if="filter_concentration === null">C</span>
                     <span v-else-if="filter_concentration === true">C</span>
                     <span v-else>C</span>
