@@ -58,6 +58,7 @@ onMounted(() => fetchCharacters())
                 <span class="character_name">{{ c.name }}</span>
                 <span class="character_status" :class="c.status === 'COMPLETED' ? 'status_completed' : 'status_draft'"> {{ c.status === 'COMPLETED' ? 'Completated' : 'Draft' }} </span>
                 <span>{{ c.className === null ? 'no hay clase' : c.className}}</span>
+                <span>{{ c.speciesName === null ? 'no hay especie' : c.speciesName}}</span>
                 <button @click="deleteCharacter(c.id)">🗑️</button>
                 <button @click="goToEditCharacter(c.id)">Editar</button>
             </div>

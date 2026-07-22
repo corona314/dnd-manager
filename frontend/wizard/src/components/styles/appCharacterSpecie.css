@@ -1,0 +1,4 @@
+.specie_option, .specie_dropdown_btn{
+    cursor: pointer;
+    background-color: var(--surface);
+}

@@ -15,12 +15,13 @@
   import AppBackgroundExpansion from './components/AppBackgroundExpansion.vue';
   import AppCharacters from './components/AppCharacters.vue';
   import AppCharacterClass from './components/AppCharacterClass.vue';
+  import AppCharacterSpecie from './components/AppCharacterSpecie.vue';
 
   import { ref, onMounted } from 'vue'
-  
+
   const authToken = ref(localStorage.getItem('dnd_token') || '')
-  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' 
-  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters'}
+  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie'
+  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass'}
   const selectedClassId = ref(null)
   const selectedSubclassId = ref(null)
   const selectedSpecieId = ref(null)
@@ -117,6 +118,7 @@
         <AppBackgroundExpansion v-if="currentPage === 'backgroundExtended'" :backgroundId="selectedBackgroundId" @navigate="handleNavigate" :token="authToken"></AppBackgroundExpansion>
         <AppCharacters v-if="currentPage === 'characters'" @navigate="handleNavigate" :token="authToken"/>
         <AppCharacterClass v-if="currentPage === 'characterClass'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterClass>
+        <AppCharacterSpecie v-if="currentPage === 'characterSpecie'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSpecie>
       </div>
     </div>
   </transition>
