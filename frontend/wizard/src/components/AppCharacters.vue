@@ -56,12 +56,12 @@ onMounted(() => fetchCharacters())
         <div v-else class="characters_list">
             <div v-for="c in characters" :key="c.id" class="character_card">
                 <span class="character_name">{{ c.name }}</span>
-                <span class="character_status" :class="c.status === 'COMPLETED' ? 'status_completed' : 'status_draft'"> {{ c.status === 'COMPLETED' ? 'Completated' : 'Draft' }} </span>
+                <span class="character_status" :class="c.status === 'FINAL' ? 'status_completed' : 'status_draft'"> {{ c.status === 'FINAL' ? 'Completed' : 'Draft' }} </span>
                 <span>{{ c.className === null ? 'no hay clase' : c.className}}</span>
                 <span>{{ c.speciesName === null ? 'no hay especie' : c.speciesName}}</span>
-                <span>{{ c.speciesName === null ? 'no hay trasfondo' : c.speciesName}}</span>
                 <button @click="deleteCharacter(c.id)">🗑️</button>
                 <button @click="goToEditCharacter(c.id)">Editar</button>
+                <button v-if="c.status === 'FINAL'">Level Up</button>
             </div>
             <div v-if="!characters.length" class="characters_empty">
                 No tienes personajes todavía.

@@ -16,13 +16,15 @@
   import AppCharacters from './components/AppCharacters.vue';
   import AppCharacterClass from './components/AppCharacterClass.vue';
   import AppCharacterSpecie from './components/AppCharacterSpecie.vue';
-  import AppCharacterBackgrownd from './components/AppCharacterBackground.vue';
+  import AppCharacterBackground from './components/AppCharacterBackground.vue';
+  import AppCharacterAbilities from './components/AppCharacterAbilities.vue';
+  import AppCharacterFinalize from './components/AppCharacterFinalize.vue';
 
   import { ref, onMounted } from 'vue'
 
   const authToken = ref(localStorage.getItem('dnd_token') || '')
-  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackgrownd'
-  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackgrownd: 'characterSpecie'}
+  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackground' | 'characterAbility' | 'characterFinalize'
+  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackground: 'characterSpecie', characterAbilities: 'characterBackground', characterFinalize: 'characterAbilities'}
   const selectedClassId = ref(null)
   const selectedSubclassId = ref(null)
   const selectedSpecieId = ref(null)
@@ -120,7 +122,9 @@
         <AppCharacters v-if="currentPage === 'characters'" @navigate="handleNavigate" :token="authToken"/>
         <AppCharacterClass v-if="currentPage === 'characterClass'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterClass>
         <AppCharacterSpecie v-if="currentPage === 'characterSpecie'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSpecie>
-        <AppCharacterBackgrownd v-if="currentPage === 'characterBackgrownd'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterBackgrownd>
+        <AppCharacterBackground v-if="currentPage === 'characterBackground'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterBackground>
+        <AppCharacterAbilities v-if="currentPage === 'characterAbilities'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterAbilities>
+        <AppCharacterFinalize v-if="currentPage === 'characterFinalize'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterFinalize>
       </div>
     </div>
   </transition>

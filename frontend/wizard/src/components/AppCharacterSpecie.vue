@@ -85,7 +85,7 @@
                     Authorization: `Bearer ${props.token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ speciesId: specieId })
+                body: JSON.stringify({ speciesId: specieId, walkSpeed: viewed_specie.value?.walkSpeed ?? null, flySpeed: viewed_specie.value?.flySpeed ?? null, })
             })
             if (!res.ok) {
                 error.value = 'Error al guardar la especie'
@@ -146,7 +146,7 @@
                 {{ saving ? 'Guardando...' : (character?.specie?.id === viewed_id ? 'Especie actual' : `Elegir ${viewed_specie.name}`) }}
             </button>
         </div>
-        <button class="character_specie_forward" @click="emit('navigate', {page: 'characterBackgrownd', characterId: props.characterId})">Continue Creation</button>
+        <button class="character_specie_forward" @click="emit('navigate', {page: 'characterBackground', characterId: props.characterId})">Continue Creation</button>
         <button class="character_specie_back" @click="goBackToCharacters">Volver a mis personajes</button>
     </div>
 </template>
