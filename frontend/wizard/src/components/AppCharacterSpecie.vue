@@ -146,7 +146,7 @@
                 {{ saving ? 'Guardando...' : (character?.specie?.id === viewed_id ? 'Especie actual' : `Elegir ${viewed_specie.name}`) }}
             </button>
         </div>
-        <button class="character_specie_forward">Continue Creation</button>
+        <button class="character_specie_forward" @click="emit('navigate', {page: 'characterBackgrownd', characterId: props.characterId})">Continue Creation</button>
         <button class="character_specie_back" @click="goBackToCharacters">Volver a mis personajes</button>
     </div>
 </template>

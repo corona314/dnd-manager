@@ -1,0 +1,4 @@
+.background_option, .background_dropdown_btn{
+    cursor: pointer;
+    background-color: var(--surface);
+}
