@@ -11,6 +11,7 @@ public class SkillMapper {
 
     public SkillDto toDto(Skill s) {
         return new SkillDto(
+            s.getId(),
             s.getName(),
             s.getAbility() == null ? null : s.getAbility().getCode()
         );

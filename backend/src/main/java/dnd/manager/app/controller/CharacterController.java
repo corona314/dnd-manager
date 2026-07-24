@@ -5,12 +5,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
-import dnd.manager.app.dto.CharacterDto.CharacterItemDto;
 import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
-import dnd.manager.app.dto.CharacterDto.CharacterSpellDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.User;
 import dnd.manager.app.service.CharacterServices.CharacterService;
@@ -48,7 +46,7 @@ public class CharacterController {
     }
     
     @PostMapping
-    public ResponseEntity<CharacterResponseDto> create(@AuthenticationPrincipal User user, @RequestBody CharacterCreateDto dto) {
+    public ResponseEntity<CharacterSummaryDto> create(@AuthenticationPrincipal User user, @RequestBody CharacterCreateDto dto) {
         
         return ResponseEntity.ok(service.create(user.getId(), dto));
     }
@@ -80,10 +78,7 @@ public class CharacterController {
         return ResponseEntity.ok(service.replaceSkills(user.getId(), id, dto));
     }
 
-    @PatchMapping("/{id}/finalize")
-    public ResponseEntity<CharacterResponseDto> finalize(@AuthenticationPrincipal User user, @PathVariable Long id){
-        return ResponseEntity.ok(service.finalize(user.getId(), id));
-    }
+
 
 
     @PostMapping("/{id}/items/{itemId}")
@@ -91,9 +86,11 @@ public class CharacterController {
         @AuthenticationPrincipal User user, 
         @PathVariable Long id, 
         @PathVariable Long itemId,
-        @RequestBody(required = false) CharacterItemDto dto
+        @RequestBody(required = false) Integer quantity,
+        @RequestBody(required = false) Boolean equipped,
+        @RequestBody(required = false) Boolean attuned
     ) {
-        return ResponseEntity.ok(service.addItem(user.getId(), id, itemId, dto));
+        return ResponseEntity.ok(service.addItem(user.getId(), id, itemId, quantity, equipped, attuned));
     }
 
     @PatchMapping("/{id}/items/{itemId}")
@@ -101,9 +98,11 @@ public class CharacterController {
         @AuthenticationPrincipal User user,
         @PathVariable Long id,
         @PathVariable Long itemId,
-        @RequestBody CharacterItemDto dto
+        @RequestBody(required = false) Integer quantity,
+        @RequestBody(required = false) Boolean equipped,
+        @RequestBody(required = false) Boolean attuned
     ) {
-        return ResponseEntity.ok(service.updateItem(user.getId(), id, itemId, dto));
+        return ResponseEntity.ok(service.updateItem(user.getId(), id, itemId, quantity, equipped, attuned));
     }
 
     @DeleteMapping("/{id}/items/{itemId}")
@@ -122,9 +121,10 @@ public class CharacterController {
         @AuthenticationPrincipal User user,
         @PathVariable Long id,
         @PathVariable Long spellId,
-        @RequestBody(required = false) CharacterSpellDto dto
+        @RequestBody(required = false) Boolean prepared,
+        @RequestBody(required = false) Boolean alwaysPrepared
     ) {
-        return ResponseEntity.ok(service.addSpell(user.getId(), id, spellId, dto));
+        return ResponseEntity.ok(service.addSpell(user.getId(), id, spellId, prepared, alwaysPrepared));
     }
 
     @PatchMapping("/{id}/spells/{spellId}")
@@ -132,9 +132,10 @@ public class CharacterController {
         @AuthenticationPrincipal User user,
         @PathVariable Long id,
         @PathVariable Long spellId,
-        @RequestBody CharacterSpellDto dto
+        @RequestBody(required = false) Boolean prepared,
+        @RequestBody(required = false) Boolean alwaysPrepared
     ) {
-        return ResponseEntity.ok(service.updateSpell(user.getId(), id, spellId, dto));
+        return ResponseEntity.ok(service.updateSpell(user.getId(), id, spellId, prepared, alwaysPrepared));
     }
 
     @DeleteMapping("/{id}/spells/{spellId}")
@@ -145,4 +146,13 @@ public class CharacterController {
     ) {
         return ResponseEntity.ok(service.removeSpell(user.getId(), id, spellId));
     }
+
+
+
+
+    @PatchMapping("/{id}/finalize")
+    public ResponseEntity<CharacterResponseDto> finalize(@AuthenticationPrincipal User user, @PathVariable Long id){
+        return ResponseEntity.ok(service.finalize(user.getId(), id));
+    }
+
 }
