@@ -6,8 +6,10 @@ package dnd.manager.app.dto.CharacterDto;
 
 public record CharacterPatchDto(
     String name,
-    Integer maxHp,
     Integer currentHp,
+    Integer maxHp,
+    Integer money,
+    Integer experience,
     Integer walkSpeed,
     Integer flySpeed,
     Long speciesId,

@@ -53,8 +53,10 @@ public class CharacterMapper {
         return new CharacterResponseDto(
             e.getName(),
             e.getLevel(),
-            e.getMaxHp(),
             e.getCurrentHp(),
+            e.getMaxHp(),
+            e.getMoney(),
+            e.getExperience(),
             e.getWalkSpeed(),
             e.getFlySpeed(),
             e.getSpecies() == null ? null : speciesMapper.toSummaryDto(e.getSpecies()),

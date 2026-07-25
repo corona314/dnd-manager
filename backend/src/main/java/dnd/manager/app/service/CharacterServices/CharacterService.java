@@ -8,10 +8,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
+import dnd.manager.app.dto.CharacterDto.CharacterItemDto;
 import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
+import dnd.manager.app.dto.CharacterDto.CharacterSpellDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.mapper.CharacterMapper;
 import dnd.manager.app.model.User;
@@ -116,8 +118,10 @@ public class CharacterService {
         
         if (entity == null) throw new RuntimeException("Character not found");        
         if (dto.name() != null) entity.setName(dto.name());
-        if (dto.maxHp() != null) entity.setMaxHp(dto.maxHp());
         if (dto.currentHp() != null) entity.setCurrentHp(dto.currentHp());
+        if (dto.maxHp() != null) entity.setMaxHp(dto.maxHp());
+        if (dto.money() != null) entity.setMoney(dto.money());
+        if (dto.experience() != null) entity.setExperience(dto.experience());
         if (dto.walkSpeed() != null) entity.setWalkSpeed(dto.walkSpeed());
         if (dto.flySpeed() != null) entity.setFlySpeed(dto.flySpeed());
         if (dto.speciesId() != null) entity.setSpecies(speciesRepository.findById(dto.speciesId()).orElseThrow(() -> new RuntimeException("Species not found")));
@@ -140,8 +144,6 @@ public class CharacterService {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);
         
         entity.getAbilities().clear();
-        repository.flush();
-
 
         List<CharacterAbility> abilities = dtos.stream().map(dto -> {
                 CharacterAbility ability = new CharacterAbility();
@@ -178,7 +180,45 @@ public class CharacterService {
         return mapper.toResponseDto(repository.save(entity));
     }
 
-    public CharacterResponseDto addItem(Long userId, Long characterId, Long itemId, Integer quantity, Boolean equipped, Boolean attuned) {
+
+    //Item management
+
+    @Transactional
+    public CharacterResponseDto buyItem(Long userId, Long characterId, Long itemId, CharacterItemDto dto) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        Item item = itemRepository.findById(itemId)
+            .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+        int totalCost = item.getPrice() * (dto.quantity() != null ? dto.quantity() : 1);
+        if (character.getMoney() < totalCost) {
+            throw new RuntimeException("Not enough money to buy the item");
+        }
+
+        character.setMoney(character.getMoney() - totalCost);
+
+        Optional<CharacterItem> existing = character.getItems().stream()
+            .filter(ci -> ci.getItem().getId().equals(itemId))
+            .findFirst();
+
+        if (existing.isPresent()) {
+            CharacterItem ci = existing.get();
+            ci.setQuantity(ci.getQuantity() + (dto.quantity() != null ? dto.quantity() : 1));
+        } else {
+            CharacterItem ci = new CharacterItem();
+            ci.setCharacter(character);
+            ci.setItem(item);
+            ci.setQuantity(dto.quantity() != null ? dto.quantity() : 1);
+            ci.setEquipped(dto.equipped() != null ? dto.equipped() : false);
+            ci.setAttuned(dto.attuned() != null ? dto.attuned() : false);
+            character.getItems().add(ci);
+        }
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+    public CharacterResponseDto addItem(Long userId, Long characterId, Long itemId, CharacterItemDto dto) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         if (character == null) throw new EntityNotFoundException("Character not found");
 
@@ -193,21 +233,21 @@ public class CharacterService {
 
         if (existing.isPresent()) {
             CharacterItem ci = existing.get();
-            ci.setQuantity(ci.getQuantity() + (quantity != null ? quantity : 1));
+            ci.setQuantity(ci.getQuantity() + (dto != null && dto.quantity() != null ? dto.quantity() : 1));
         } else {
             CharacterItem ci = new CharacterItem();
             ci.setCharacter(character);
             ci.setItem(item);
-            ci.setQuantity(quantity != null ? quantity : 1);
-            ci.setEquipped(equipped != null ? equipped : false);
-            ci.setAttuned(attuned != null ? attuned : false);
+            ci.setQuantity(dto.quantity() != null ? dto.quantity() : 1);
+            ci.setEquipped(dto.equipped() != null ? dto.equipped() : false);
+            ci.setAttuned(dto.attuned() != null ? dto.attuned() : false);
             character.getItems().add(ci);
         }
 
         return mapper.toResponseDto(repository.save(character));
     }
 
-    public CharacterResponseDto updateItem(Long userId, Long characterId, Long itemId, Integer quantity, Boolean equipped, Boolean attuned) {
+    public CharacterResponseDto updateItem(Long userId, Long characterId, Long itemId, CharacterItemDto dto) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         if (character == null) throw new EntityNotFoundException("Character not found");
 
@@ -215,9 +255,9 @@ public class CharacterService {
             .filter(ci -> ci.getItem().getId().equals(itemId))
             .findFirst()
             .ifPresent(ci -> {
-                if (quantity != null) ci.setQuantity(quantity);
-                if (equipped != null) ci.setEquipped(equipped);
-                if (attuned != null) ci.setAttuned(attuned);
+                if (dto.quantity() != null) ci.setQuantity(dto.quantity());
+                if (dto.equipped() != null) ci.setEquipped(dto.equipped());
+                if (dto.attuned() != null) ci.setAttuned(dto.attuned());
             });
 
         return mapper.toResponseDto(repository.save(character));
@@ -242,8 +282,11 @@ public class CharacterService {
         return mapper.toResponseDto(repository.save(character));
     }
 
+
+    //Spell management
+
     @Transactional
-    public CharacterResponseDto addSpell(Long userId, Long characterId, Long spellId, Boolean prepared, Boolean alwaysPrepared) {
+    public CharacterResponseDto addSpell(Long userId, Long characterId, Long spellId, CharacterSpellDto dto) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         if (character == null) throw new EntityNotFoundException("Character not found");
 
@@ -260,14 +303,16 @@ public class CharacterService {
 
         if (existing.isPresent()) {
             CharacterSpell cs = existing.get();
-            if (prepared != null) cs.setPrepared(prepared);
-            if (alwaysPrepared != null) cs.setAlwaysPrepared(alwaysPrepared);
+            if (dto != null) {
+                if (dto.prepared() != null) cs.setPrepared(dto.prepared());
+                if (dto.alwaysPrepared() != null) cs.setAlwaysPrepared(dto.alwaysPrepared());
+            }
         } else {
             CharacterSpell cs = new CharacterSpell();
             cs.setCharacter(character);
             cs.setSpell(spell);
-            cs.setPrepared(prepared != null ? prepared : false);
-            cs.setAlwaysPrepared(alwaysPrepared != null ? alwaysPrepared : false);
+            cs.setPrepared(dto != null && dto.prepared() != null ? dto.prepared() : false);
+            cs.setAlwaysPrepared(dto != null && dto.alwaysPrepared() != null ? dto.alwaysPrepared() : false);
             character.getSpells().add(cs);
             characterSpellRepository.save(cs);
         }
@@ -276,7 +321,7 @@ public class CharacterService {
     }
 
     @Transactional
-    public CharacterResponseDto updateSpell(Long userId, Long characterId, Long spellId, Boolean prepared, Boolean alwaysPrepared) {
+    public CharacterResponseDto updateSpell(Long userId, Long characterId, Long spellId, CharacterSpellDto dto) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         if (character == null) throw new EntityNotFoundException("Character not found");
 
@@ -284,8 +329,8 @@ public class CharacterService {
             .filter(cs -> cs.getSpell().getId().equals(spellId))
             .findFirst()
             .ifPresent(cs -> {
-                if (prepared != null) cs.setPrepared(prepared);
-                if (alwaysPrepared != null) cs.setAlwaysPrepared(alwaysPrepared);
+                if (dto.prepared() != null) cs.setPrepared(dto.prepared());
+                if (dto.alwaysPrepared() != null) cs.setAlwaysPrepared(dto.alwaysPrepared());
             });
 
         return mapper.toResponseDto(repository.save(character));

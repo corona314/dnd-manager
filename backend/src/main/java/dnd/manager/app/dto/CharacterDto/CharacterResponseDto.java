@@ -16,8 +16,10 @@ import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 public record CharacterResponseDto(
     String name,
     Integer level,
-    Integer maxHp,
     Integer currentHp,
+    Integer maxHp,
+    Integer money,
+    Integer experience,
     Integer walkSpeed,
     Integer flySpeed,
     SpeciesSummaryDto species,

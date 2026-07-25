@@ -46,8 +46,17 @@ public class CharacterEntity {
     @Column(name = "level", nullable = false)
     private Integer level;
 
-    @Column(name = "max_hp")
+    @Column(name = "current_hp", nullable = false)
+    private Integer currentHp;
+
+    @Column(name = "max_hp", nullable = false)
     private Integer maxHp;
+
+    @Column(name = "money", nullable = false)
+    private Integer money;
+
+    @Column(name = "experience", nullable = false)
+    private Integer experience;
 
     @ManyToOne
     @JoinColumn(name = "species_id")
@@ -60,9 +69,6 @@ public class CharacterEntity {
     @ManyToOne
     @JoinColumn(name = "subclass_id")
     private Subclass subclass;
-
-    @Column(name = "current_hp")
-    private Integer currentHp;
 
     @Column(name = "walk_speed")
     private Integer walkSpeed;

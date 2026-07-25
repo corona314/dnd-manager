@@ -5,9 +5,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
+import dnd.manager.app.dto.CharacterDto.CharacterItemDto;
 import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
+import dnd.manager.app.dto.CharacterDto.CharacterSpellDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.User;
@@ -79,30 +81,36 @@ public class CharacterController {
     }
 
 
+    //Items
 
+    @PostMapping("/{id}/items/{itemId}/buy")
+    public ResponseEntity<CharacterResponseDto> buyItem(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id, 
+        @PathVariable Long itemId,
+        @RequestBody(required = false) CharacterItemDto dto
+    ) {
+        return ResponseEntity.ok(service.buyItem(user.getId(), id, itemId, dto));
+    }
 
     @PostMapping("/{id}/items/{itemId}")
     public ResponseEntity<CharacterResponseDto> addItem(
         @AuthenticationPrincipal User user, 
         @PathVariable Long id, 
         @PathVariable Long itemId,
-        @RequestBody(required = false) Integer quantity,
-        @RequestBody(required = false) Boolean equipped,
-        @RequestBody(required = false) Boolean attuned
+        @RequestBody(required = false) CharacterItemDto dto
     ) {
-        return ResponseEntity.ok(service.addItem(user.getId(), id, itemId, quantity, equipped, attuned));
+        return ResponseEntity.ok(service.addItem(user.getId(), id, itemId, dto));
     }
 
-    @PatchMapping("/{id}/items/{itemId}")
+    @PatchMapping("/{id}/items/{itemId}/buy")
     public ResponseEntity<CharacterResponseDto> updateItem(
         @AuthenticationPrincipal User user,
         @PathVariable Long id,
         @PathVariable Long itemId,
-        @RequestBody(required = false) Integer quantity,
-        @RequestBody(required = false) Boolean equipped,
-        @RequestBody(required = false) Boolean attuned
+        @RequestBody CharacterItemDto dto
     ) {
-        return ResponseEntity.ok(service.updateItem(user.getId(), id, itemId, quantity, equipped, attuned));
+        return ResponseEntity.ok(service.updateItem(user.getId(), id, itemId, dto));
     }
 
     @DeleteMapping("/{id}/items/{itemId}")
@@ -116,15 +124,17 @@ public class CharacterController {
 
     }
 
+
+    // Spells
+
     @PostMapping("/{id}/spells/{spellId}")
     public ResponseEntity<CharacterResponseDto> addSpell(
         @AuthenticationPrincipal User user,
         @PathVariable Long id,
         @PathVariable Long spellId,
-        @RequestBody(required = false) Boolean prepared,
-        @RequestBody(required = false) Boolean alwaysPrepared
+        @RequestBody(required = false) CharacterSpellDto dto
     ) {
-        return ResponseEntity.ok(service.addSpell(user.getId(), id, spellId, prepared, alwaysPrepared));
+        return ResponseEntity.ok(service.addSpell(user.getId(), id, spellId, dto));
     }
 
     @PatchMapping("/{id}/spells/{spellId}")
@@ -132,10 +142,9 @@ public class CharacterController {
         @AuthenticationPrincipal User user,
         @PathVariable Long id,
         @PathVariable Long spellId,
-        @RequestBody(required = false) Boolean prepared,
-        @RequestBody(required = false) Boolean alwaysPrepared
+        @RequestBody CharacterSpellDto dto
     ) {
-        return ResponseEntity.ok(service.updateSpell(user.getId(), id, spellId, prepared, alwaysPrepared));
+        return ResponseEntity.ok(service.updateSpell(user.getId(), id, spellId, dto));
     }
 
     @DeleteMapping("/{id}/spells/{spellId}")
