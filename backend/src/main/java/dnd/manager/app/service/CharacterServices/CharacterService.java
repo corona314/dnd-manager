@@ -105,6 +105,10 @@ public class CharacterService {
         CharacterEntity entity = mapper.toEntity(dto);
         entity.setUser(user);
         entity.setLevel(0);
+        entity.setCurrentHp(0);
+        entity.setMaxHp(0);
+        entity.setMoney(0);
+        entity.setExperience(0);
         entity.setStatus(CharacterStatus.DRAFT);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
