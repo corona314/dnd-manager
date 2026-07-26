@@ -148,6 +148,8 @@ public class CharacterService {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);
         
         entity.getAbilities().clear();
+        repository.flush();
+
 
         List<CharacterAbility> abilities = dtos.stream().map(dto -> {
                 CharacterAbility ability = new CharacterAbility();
