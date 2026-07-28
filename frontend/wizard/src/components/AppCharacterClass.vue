@@ -154,7 +154,7 @@
                 {{ saving ? 'Guardando...' : (character?.classEntity?.id === viewed_id ? 'Clase actual' : `Elegir ${viewed_class.name}`) }}
             </button>
         </div>
-        <button class="character_class_forward" @click="emit('navigate', {page: 'characterSpecie', characterId: props.characterId})">Continue Creation</button>
+        <button class="character_class_forward" @click="emit('navigate', {page: 'characterSpecie', characterId: props.characterId})" :disabled="character?.classEntity === null">Continue Creation</button>
         <button class="character_class_back" @click="goBackToCharacters">Volver a mis personajes</button>
     </div>
 </template>

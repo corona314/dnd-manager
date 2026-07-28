@@ -142,11 +142,11 @@
                 <span class="specie_details_name">{{ viewed_specie.name }}</span>
             </div>
 
-            <button class="specie_details_select_btn" @click="selectSpecie(viewed_id)" :disabled="saving || character?.specie?.id === viewed_id">
-                {{ saving ? 'Guardando...' : (character?.specie?.id === viewed_id ? 'Especie actual' : `Elegir ${viewed_specie.name}`) }}
+            <button class="specie_details_select_btn" @click="selectSpecie(viewed_id)" :disabled="saving || character?.species?.id === viewed_id">
+                {{ saving ? 'Guardando...' : (character?.species?.id === viewed_id ? 'Especie actual' : `Elegir ${viewed_specie.name}`) }}
             </button>
         </div>
-        <button class="character_specie_forward" @click="emit('navigate', {page: 'characterBackground', characterId: props.characterId})">Continue Creation</button>
+        <button class="character_specie_forward" @click="emit('navigate', {page: 'characterBackground', characterId: props.characterId})" :disabled="character?.species === null">Continue Creation</button>
         <button class="character_specie_back" @click="goBackToCharacters">Volver a mis personajes</button>
     </div>
 </template>

@@ -157,7 +157,7 @@
 
         <span v-if="error" class="character_finalize_error">{{ error }}</span>
 
-        <button class="character_finalize_save_btn" @click="finalizeCharacter" :disabled="saving || calculated_max_hp === null">
+        <button class="character_finalize_save_btn" @click="finalizeCharacter" :disabled="saving || calculated_max_hp === null || character.level !== 0">
             {{ saving ? 'Finalizando...' : 'Finalizar y Guardar' }}
         </button>
 

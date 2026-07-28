@@ -148,7 +148,7 @@
                 {{ saving ? 'Guardando...' : (character?.background?.id === viewed_id ? 'Trasfondo actual' : `Elegir ${viewed_background.name}`) }}
             </button>
         </div>
-        <button class="character_background_forward" @click="emit('navigate', {page: 'characterAbilities', characterId: props.characterId})">Continue Creation</button>
+        <button class="character_background_forward" @click="emit('navigate', {page: 'characterAbilities', characterId: props.characterId})" :disabled="character?.background === null">Continue Creation</button>
         <button class="character_background_back" @click="goBackToCharacters">Volver a mis personajes</button>
     </div>
 </template>

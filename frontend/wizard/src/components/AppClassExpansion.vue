@@ -71,7 +71,7 @@
             </div>
 
             <div v-if="class_data.skills?.length" class="class_skills">
-                <span class="class_section_label">Skill Proficiencies (Choose _):</span>
+                <span class="class_section_label">Skill Proficiencies (Choose {{ class_data.numberSkills }}):</span>
                 <span v-for="s in class_data.skills" :key="s.skill" class="class_skill_chip">
                     {{ s.skill }} ({{ s.ability }})
                 </span>

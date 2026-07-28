@@ -36,13 +36,32 @@ function createCharacter(){
     newCharacter.value = !newCharacter.value
 }
 
-function onCharacterCreated() {
+function onCharacterCreated(newId) {
     newCharacter.value = false
-    fetchCharacters()
+    emit('navigate', { page: 'characterClass', characterId: newId })
 }
 
-function goToEditCharacter(id) {  
-    emit('navigate', { page: 'characterClass', characterId: id })
+function determineResumeStep(character) {
+    if (!character.classEntity) return 'characterClass'
+    if (!character.species) return 'characterSpecie'
+    if (!character.background) return 'characterBackground'
+    if (!character.abilities?.length) return 'characterAbilities'
+    if (character.status !== 'FINAL') return 'characterFinalize'
+    return 'characterClass'
+}
+
+async function goToEditCharacter(id) {  
+    try {
+        const res = await fetch(`${API_BASE}/characters/${id}`, {
+            headers: { Authorization: `Bearer ${props.token}` }
+        })
+        const character = await res.json()
+        const page = determineResumeStep(character)
+        emit('navigate', { page, characterId: id })
+    } catch (e) {
+        console.error(e)
+        emit('navigate', { page: 'characterClass', characterId: id })
+    }
 }
 
 onMounted(() => fetchCharacters())
@@ -60,8 +79,9 @@ onMounted(() => fetchCharacters())
                 <span>{{ c.className === null ? 'no hay clase' : c.className}}</span>
                 <span>{{ c.speciesName === null ? 'no hay especie' : c.speciesName}}</span>
                 <button @click="deleteCharacter(c.id)">🗑️</button>
-                <button @click="goToEditCharacter(c.id)">Editar</button>
+                <button v-if="c.status === 'DRAFT'" @click="goToEditCharacter(c.id)">Editar</button>
                 <button v-if="c.status === 'FINAL'">Level Up</button>
+                <button v-if="c.status === 'FINAL'">View Details</button>
             </div>
             <div v-if="!characters.length" class="characters_empty">
                 No tienes personajes todavía.

@@ -26,7 +26,8 @@ async function createCharacter() {
         if (!res.ok) {
             error.value = 'Error al crear el personaje'
         }else{
-            emit('created')
+            const created = await res.json()
+            emit('created', created.id)
         }
     } catch (e) {
         console.error(e)
