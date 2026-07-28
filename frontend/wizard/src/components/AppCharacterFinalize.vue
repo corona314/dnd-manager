@@ -11,6 +11,14 @@
     const saving = ref(false)
     const error = ref('')
 
+    //--- Skills de clase ---
+    const class_detail = ref(null)
+    const loading_class = ref(false)
+    const selected_skill_ids = ref([])    
+    const pregranted_skill_ids = ref([]) 
+    const saving_skills = ref(false)
+    const skills_error = ref('')
+
     async function fetchCharacter() {
         loading_character.value = true
         try {
@@ -18,10 +26,110 @@
                 headers: { Authorization: `Bearer ${props.token}` }
             })
             character.value = await res.json()
+
+            if (character.value?.classEntity?.id) {
+                await fetchClassDetail(character.value.classEntity.id)
+            }
         } catch (e) {
             console.error(e)
         } finally {
             loading_character.value = false
+        }
+    }
+
+    async function fetchClassDetail(classId) {
+        loading_class.value = true
+        try {
+            const res = await fetch(`${API_BASE}/classes/${classId}`, {
+                headers: { Authorization: `Bearer ${props.token}` }
+            })
+            class_detail.value = await res.json()
+
+            const eligibleIds = new Set((class_detail.value?.skills ?? []).map(s => s.id))
+
+            const alreadyProficient = (character.value?.skills ?? [])
+                .filter(cs => cs.proficient && eligibleIds.has(cs.skill.id))
+                .map(cs => cs.skill.id)
+
+            pregranted_skill_ids.value = alreadyProficient
+            
+            selected_skill_ids.value = alreadyProficient.length ? [] : []
+        } catch (e) {
+            console.error(e)
+        } finally {
+            loading_class.value = false
+        }
+    }
+
+    //--- Selección de skills de clase ---
+   const skill_limit = computed(() => class_detail.value?.numberSkills ?? 0)
+
+    function isPregranted(skillId) {
+        return pregranted_skill_ids.value.includes(skillId)
+    }
+
+    function isSkillSelected(skillId) {
+        return isPregranted(skillId) || selected_skill_ids.value.includes(skillId)
+    }
+
+    function canToggleOn() {
+        return selected_skill_ids.value.length < skill_limit.value
+    }
+
+    function toggleSkill(skillId) {
+        if (isPregranted(skillId)) return 
+        if (selected_skill_ids.value.includes(skillId)) {
+            selected_skill_ids.value = selected_skill_ids.value.filter(id => id !== skillId)
+        } else if (canToggleOn()) {
+            selected_skill_ids.value = [...selected_skill_ids.value, skillId]
+        }
+    }
+
+    const skills_are_valid = computed(() => selected_skill_ids.value.length === skill_limit.value)
+
+    async function saveClassSkills() {
+        if (!skills_are_valid.value) {
+            skills_error.value = `Debes elegir exactamente ${skill_limit.value} competencias nuevas`
+            return false
+        }
+
+        saving_skills.value = true
+        skills_error.value = ''
+        try {
+            const eligibleIds = new Set((class_detail.value?.skills ?? []).map(s => s.id))
+
+            const nonClassSkills = (character.value?.skills ?? [])
+                .filter(cs => !eligibleIds.has(cs.skill.id))
+                .map(cs => ({ skillId: cs.skill.id, proficient: cs.proficient, expertise: cs.expertise }))
+
+            const classSkills = (class_detail.value?.skills ?? []).map(s => ({
+                skillId: s.id,
+                proficient: isPregranted(s.id) || selected_skill_ids.value.includes(s.id),
+                expertise: false
+            }))
+
+            const merged = [...nonClassSkills, ...classSkills]
+
+            const res = await fetch(`${API_BASE}/characters/${props.characterId}/skills`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${props.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(merged)
+            })
+            if (!res.ok) {
+                skills_error.value = 'Error al guardar las competencias'
+                return false
+            }
+            await fetchCharacter()
+            return true
+        } catch (e) {
+            console.error(e)
+            skills_error.value = 'Error de conexión'
+            return false
+        } finally {
+            saving_skills.value = false
         }
     }
 
@@ -68,7 +176,13 @@
         saving.value = true
         error.value = ''
         try {
-            // 1) Guardamos maxHp/currentHp calculados
+            // 1) Guardamos las skills de clase elegidas
+            const skillsOk = await saveClassSkills()
+            if (!skillsOk) {
+                error.value = skills_error.value || 'Error al guardar las competencias'
+                return
+            }
+            // 2) Guardamos maxHp/currentHp calculados
             const patchRes = await fetch(`${API_BASE}/characters/${props.characterId}`, {
                 method: 'PATCH',
                 headers: {
@@ -85,7 +199,7 @@
                 return
             }
 
-            // 2) Finalizamos (el backend sube nivel 0->1 y marca status)
+            // 3) Finalizamos (el backend sube nivel 0->1 y marca status)
             const finalizeRes = await fetch(`${API_BASE}/characters/${props.characterId}/finalize`, {
                 method: 'PATCH',
                 headers: {
@@ -97,7 +211,7 @@
                 return
             }
 
-            // 3) Volvemos al listado de personajes
+            // 4) Volvemos al listado de personajes
             emit('navigate', 'characters')
         } catch (e) {
             console.error(e)
@@ -143,6 +257,19 @@
                     <span>({{ formatModifier(modifierOf(ab.ability)) }})</span>
                 </div>
             </div>
+
+            <div v-if="class_detail" class="finalize_class_skills">
+                <h2>Competencias de Clase ({{ selected_skill_ids.length }} / {{ skill_limit }})</h2>
+                <span v-if="skills_error" class="finalize_skills_error">{{ skills_error }}</span>
+                <div class="finalize_skill_list">
+                    <label v-for="s in class_detail.skills" :key="s.id" class="finalize_skill_row">
+                        <input type="checkbox" :checked="isSkillSelected(s.id)" :disabled="isPregranted(s.id) || (!isSkillSelected(s.id) && !canToggleOn())" @change="toggleSkill(s.id)"/>
+                            {{ s.skill }} <em>({{ s.ability }})</em>
+                            <span v-if="isPregranted(s.id)" class="finalize_skill_from_background">(ya adquirida por trasfondo)</span>
+                        </label>
+                    </div>
+                </div>
+            
 
             <div class="finalize_hp_preview">
                 <h2>Vida (calculada)</h2>

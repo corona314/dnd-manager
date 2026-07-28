@@ -91,12 +91,54 @@
                 error.value = 'Error al guardar la clase'
                 return
             }
+            //Patch temporal para llenar skills por el momento
+            await initializeClassSkills()
             await fetchCharacter()
         } catch (e) {
             console.error(e)
             error.value = 'Error de conexión'
         } finally {
             saving.value = false
+        }
+    }
+
+    async function initializeClassSkills() {
+        let fullSkillList = []
+        try {
+            const res = await fetch(`${API_BASE}/classes/2`, {
+                headers: { Authorization: `Bearer ${props.token}` }
+            })
+            const bardDetail = await res.json()
+            fullSkillList = bardDetail.skills ?? []
+        } catch (e) {
+            console.error('Error obteniendo el listado completo de skills desde Bardo', e)
+            return
+        }
+
+        const existing = (character.value?.skills ?? []).map(s => ({
+            skillId: s.skill.id,
+            proficient: s.proficient,
+            expertise: s.expertise
+        }))
+
+        const merged = [...existing]
+        fullSkillList.forEach(s => {
+            if (!merged.find(m => m.skillId === s.id)) {
+                merged.push({ skillId: s.id, proficient: false, expertise: false })
+            }
+        })
+
+        try {
+            await fetch(`${API_BASE}/characters/${props.characterId}/skills`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${props.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(merged)
+            })
+        } catch (e) {
+            console.error(e)
         }
     }
 

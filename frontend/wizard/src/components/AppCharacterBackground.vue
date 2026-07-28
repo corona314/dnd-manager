@@ -91,12 +91,51 @@
                 error.value = 'Error al guardar el trasfondo'
                 return
             }
+            await applyBackgroundSkills()
             await fetchCharacter()
         } catch (e) {
             console.error(e)
             error.value = 'Error de conexión'
         } finally {
             saving.value = false
+        }
+    }
+
+    async function applyBackgroundSkills() {
+        const grantedSkills = viewed_background.value?.skills ?? [] 
+        if (!grantedSkills.length) return
+
+        const existing = (character.value?.skills ?? []).map(s => ({
+            skillId: s.skill.id,
+            proficient: s.proficient,
+            expertise: s.expertise
+        }))
+
+        const merged = [...existing]
+        grantedSkills.forEach(gs => {
+            const found = merged.find(m => m.skillId === gs.id)
+            if (found) {
+                found.proficient = true
+            } else {
+                merged.push({ skillId: gs.id, proficient: true, expertise: false })
+            }
+        })
+
+        try {
+            const res = await fetch(`${API_BASE}/characters/${props.characterId}/skills`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${props.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(merged)
+            })
+            if (!res.ok) {
+                error.value = 'Error al guardar las competencias del trasfondo'
+            }
+        } catch (e) {
+            console.error(e)
+            error.value = 'Error de conexión al guardar competencias'
         }
     }
 

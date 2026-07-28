@@ -21,10 +21,11 @@
   import AppCharacterFinalize from './components/AppCharacterFinalize.vue';
 
   import { ref, onMounted } from 'vue'
+import AppCharacterView from './components/AppCharacterView.vue';
 
   const authToken = ref(localStorage.getItem('dnd_token') || '')
-  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackground' | 'characterAbility' | 'characterFinalize'
-  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackground: 'characterSpecie', characterAbilities: 'characterBackground', characterFinalize: 'characterAbilities'}
+  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackground' | 'characterAbility' | 'characterFinalize' | 'characterView'
+  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackground: 'characterSpecie', characterAbilities: 'characterBackground', characterFinalize: 'characterAbilities', characterView: 'characters'}
   const selectedClassId = ref(null)
   const selectedSubclassId = ref(null)
   const selectedSpecieId = ref(null)
@@ -125,6 +126,7 @@
         <AppCharacterBackground v-if="currentPage === 'characterBackground'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterBackground>
         <AppCharacterAbilities v-if="currentPage === 'characterAbilities'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterAbilities>
         <AppCharacterFinalize v-if="currentPage === 'characterFinalize'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterFinalize>
+        <AppCharacterView v-if="currentPage === 'characterView'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterView>
       </div>
     </div>
   </transition>

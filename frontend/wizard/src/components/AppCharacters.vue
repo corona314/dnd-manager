@@ -64,6 +64,10 @@ async function goToEditCharacter(id) {
     }
 }
 
+async function goToViewCharacter(id) {  
+    emit('navigate', { page: 'characterView', characterId: id })
+}
+
 onMounted(() => fetchCharacters())
 </script>
 
@@ -81,7 +85,7 @@ onMounted(() => fetchCharacters())
                 <button @click="deleteCharacter(c.id)">🗑️</button>
                 <button v-if="c.status === 'DRAFT'" @click="goToEditCharacter(c.id)">Editar</button>
                 <button v-if="c.status === 'FINAL'">Level Up</button>
-                <button v-if="c.status === 'FINAL'">View Details</button>
+                <button v-if="c.status === 'FINAL'" @click="goToViewCharacter(c.id)">View Details</button>
             </div>
             <div v-if="!characters.length" class="characters_empty">
                 No tienes personajes todavía.
