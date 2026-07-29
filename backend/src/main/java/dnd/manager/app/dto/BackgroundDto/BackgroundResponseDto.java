@@ -12,5 +12,7 @@ public record BackgroundResponseDto(
     List<String> abilities,
     List<FeatDto> feats,
     List<SkillDto> skills,
-    List<ItemSummaryDto> tools
+    List<ItemSummaryDto> tools,
+    List<BackgroundItemDto> items,
+    List<BackgroundStartingMoneyDto> startingMoney
 ) {}

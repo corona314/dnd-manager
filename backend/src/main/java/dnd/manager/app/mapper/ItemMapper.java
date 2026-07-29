@@ -2,6 +2,10 @@ package dnd.manager.app.mapper;
 
 import org.springframework.stereotype.Component;
 
+import dnd.manager.app.dto.BackgroundDto.BackgroundItemDto;
+import dnd.manager.app.dto.BackgroundDto.BackgroundStartingMoneyDto;
+import dnd.manager.app.dto.ClassDto.ClassItemDto;
+import dnd.manager.app.dto.ClassDto.ClassStartingMoneyDto;
 import dnd.manager.app.dto.ItemDto.ItemFeatureDto;
 import dnd.manager.app.dto.ItemDto.ItemResponseDto;
 import dnd.manager.app.dto.ItemDto.ItemSummaryDto;
@@ -14,6 +18,10 @@ import dnd.manager.app.dto.ItemDto.WeaponDto.WeaponDamageDto;
 import dnd.manager.app.dto.ItemDto.WeaponDto.WeaponResponseDto;
 import dnd.manager.app.dto.ItemDto.WeaponDto.WeaponSummaryDto;
 import dnd.manager.app.dto.ItemDto.WeaponDto.WeaponWeaponPropertyDto;
+import dnd.manager.app.model.BackgroundEntities.BackgroundItem;
+import dnd.manager.app.model.BackgroundEntities.BackgroundStartingMoney;
+import dnd.manager.app.model.ClassEntities.ClassItem;
+import dnd.manager.app.model.ClassEntities.ClassStartingMoney;
 import dnd.manager.app.model.FeatureEntities.Feature;
 import dnd.manager.app.model.ItemEntities.Item;
 import dnd.manager.app.model.ItemEntities.ArmorEntities.Armor;
@@ -162,5 +170,35 @@ public class ItemMapper {
         );
     }
 
+    public BackgroundItemDto toBackgroundItemDto(BackgroundItem bi) {
+        return new BackgroundItemDto(
+            toSummaryDto(bi.getItem()),
+            bi.getQuantity(),
+            bi.getOptionGroup(),
+            bi.getOptional()
+        );
+    }
 
+    public BackgroundStartingMoneyDto toBackgroundStartingMoneyDto(BackgroundStartingMoney bsm) {
+        return new BackgroundStartingMoneyDto(
+            bsm.getAmount(),
+            bsm.getOptionGroup()
+        );
+    }
+    
+    public ClassItemDto toClassItemDto(ClassItem bi) {
+        return new ClassItemDto(
+            toSummaryDto(bi.getItem()),
+            bi.getQuantity(),
+            bi.getOptionGroup(),
+            bi.getOptional()
+        );
+    }
+
+    public ClassStartingMoneyDto toClassStartingMoneyDto(ClassStartingMoney bsm) {
+        return new ClassStartingMoneyDto(
+            bsm.getAmount(),
+            bsm.getOptionGroup()
+        );
+    }
 }

@@ -53,4 +53,10 @@ public class Background {
     )
     private List<Item> tools;
 
+    @OneToMany(mappedBy = "background", fetch = FetchType.LAZY)
+    private List<BackgroundItem> items;
+
+    @OneToMany(mappedBy = "background", fetch = FetchType.LAZY)
+    private List<BackgroundStartingMoney> startingMoney;
+
 }

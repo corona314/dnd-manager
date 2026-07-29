@@ -15,6 +15,8 @@ public record ClassResponseDto (
     List<SpellSummaryDto> spells,
     List<ClassArmorTypeDto> armorTypes,
     Boolean shield,
-    List<SubclassSummaryDto> subclasses
+    List<SubclassSummaryDto> subclasses,
+    List<ClassItemDto> items,
+    List<ClassStartingMoneyDto> startingMoney
 
 ){}

@@ -39,7 +39,9 @@ public class BackgroundMapper {
             e.getBackgroundAbilities().stream().map(BackgroundAbility::getAbility).map(Ability::getCode).toList(),
             e.getBackgroundFeats().stream().map(BackgroundFeat::getFeat).map(featMapper::toDto).toList(),
             e.getBackgroundSkills().stream().map(BackgroundSkill::getSkill).map(skillMapper::toDto).toList(),
-            e.getTools().stream().map(t -> itemMapper.toSummaryDto(t)).toList()
+            e.getTools().stream().map(t -> itemMapper.toSummaryDto(t)).toList(),
+            e.getItems().stream().map(i -> itemMapper.toBackgroundItemDto(i)).toList(),
+            e.getStartingMoney().stream().map(m -> itemMapper.toBackgroundStartingMoneyDto(m)).toList()
         );
     }
 

@@ -177,6 +177,36 @@ INSERT INTO `background_feat` VALUES (2,2),(1,14),(3,14),(4,15);
 UNLOCK TABLES;
 
 --
+-- Table structure for table `background_item`
+--
+
+DROP TABLE IF EXISTS `background_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `background_item` (
+  `background_id` int NOT NULL,
+  `item_id` int NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `option_group` char(1) NOT NULL DEFAULT 'A',
+  `optional` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`background_id`,`item_id`,`option_group`),
+  KEY `bi_item` (`item_id`),
+  CONSTRAINT `bi_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`),
+  CONSTRAINT `bi_item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `background_item`
+--
+
+LOCK TABLES `background_item` WRITE;
+/*!40000 ALTER TABLE `background_item` DISABLE KEYS */;
+INSERT INTO `background_item` VALUES (1,18,1,'A',0),(1,26,1,'A',0),(1,139,10,'A',0),(1,161,1,'A',0),(2,43,1,'A',0),(2,49,1,'A',0),(2,50,2,'A',0),(2,153,2,'A',0),(2,189,1,'A',0),(3,18,1,'A',0),(3,26,1,'A',0),(3,139,8,'A',0),(3,155,1,'A',0),(3,161,1,'A',0),(4,6,1,'A',0),(4,43,1,'A',0),(4,66,1,'A',1),(4,67,1,'A',1),(4,68,1,'A',1),(4,69,1,'A',1),(4,80,1,'A',0),(4,156,1,'A',0),(4,173,1,'A',0),(4,181,1,'A',0);
+/*!40000 ALTER TABLE `background_item` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `background_skill`
 --
 
@@ -201,6 +231,32 @@ LOCK TABLES `background_skill` WRITE;
 /*!40000 ALTER TABLE `background_skill` DISABLE KEYS */;
 INSERT INTO `background_skill` VALUES (4,1),(2,3),(2,4),(3,5),(3,6),(1,9),(1,11),(4,16);
 /*!40000 ALTER TABLE `background_skill` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `background_starting_money`
+--
+
+DROP TABLE IF EXISTS `background_starting_money`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `background_starting_money` (
+  `background_id` int NOT NULL,
+  `option_group` char(1) NOT NULL DEFAULT 'A',
+  `amount` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`background_id`,`option_group`),
+  CONSTRAINT `bsm_background` FOREIGN KEY (`background_id`) REFERENCES `background` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `background_starting_money`
+--
+
+LOCK TABLES `background_starting_money` WRITE;
+/*!40000 ALTER TABLE `background_starting_money` DISABLE KEYS */;
+INSERT INTO `background_starting_money` VALUES (1,'A',800),(1,'B',5000),(2,'A',1600),(2,'B',5000),(3,'A',800),(3,'B',5000),(4,'A',1400),(4,'B',5000);
+/*!40000 ALTER TABLE `background_starting_money` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1551,4 +1607,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-29 12:31:55
+-- Dump completed on 2026-07-29 12:58:33

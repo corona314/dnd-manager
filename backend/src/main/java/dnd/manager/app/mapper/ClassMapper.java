@@ -30,13 +30,15 @@ public class ClassMapper {
     private final SpellMapper spellMapper;
     private final SkillMapper skillMapper;
     private final SubclassRepository subclassRepository;
+    private final ItemMapper itemMapper;
 
 
-    ClassMapper(FeatureMapper featureMapper, SpellMapper spellMapper, dnd.manager.app.repository.SubclassRepositories.SubclassRepository subclassRepository, SkillMapper skillMapper) {
+    ClassMapper(FeatureMapper featureMapper, SpellMapper spellMapper, dnd.manager.app.repository.SubclassRepositories.SubclassRepository subclassRepository, SkillMapper skillMapper, ItemMapper itemMapper) {
         this.featureMapper = featureMapper;
         this.spellMapper = spellMapper;
         this.skillMapper = skillMapper;
         this.subclassRepository = subclassRepository;
+        this.itemMapper = itemMapper;
     }
 
     public ClassSummaryDto toSummaryDto(ClassEntity e) {
@@ -58,7 +60,9 @@ public class ClassMapper {
             e.getSpells().stream().sorted(Comparator.comparingInt((ClassSpell cs) -> cs.getSpell().getLevel())).map(cs -> spellMapper.toSummaryDto(cs.getSpell())).toList(),
             e.getArmorTypes().stream().map(this::toClassArmorTypeDto).toList(),
             e.getShield(),
-            subclassRepository.findByClassEntityId(e.getId()).stream().map(this::subclassToSummaryDto).toList()
+            subclassRepository.findByClassEntityId(e.getId()).stream().map(this::subclassToSummaryDto).toList(),
+            e.getItems().stream().map(itemMapper::toClassItemDto).toList(),
+            e.getStartingMoney().stream().map(itemMapper::toClassStartingMoneyDto).toList()
         );
     }
 
