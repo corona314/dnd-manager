@@ -357,7 +357,7 @@ CREATE TABLE `character` (
 
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
-INSERT INTO `character` VALUES (3,1,'Alfonso',0,0,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-12 21:10:43','2026-07-25 14:50:40',NULL,'DRAFT'),(4,1,'Alfonso',4,12,40,0,0,23,3,3,4,30,0,'2026-07-12 21:12:09','2026-07-25 17:04:06',NULL,'DRAFT'),(5,1,'Vaelora',0,0,60,0,0,NULL,1,NULL,NULL,50,NULL,'2026-07-24 10:48:37','2026-07-25 14:50:40',NULL,'DRAFT'),(6,1,'Pedro',1,13,13,0,0,NULL,1,NULL,NULL,NULL,NULL,'2026-07-25 17:15:34','2026-07-25 17:16:25','2026-07-25 17:16:25','FINAL'),(7,1,'jj',0,0,0,0,0,24,5,NULL,NULL,35,0,'2026-07-25 23:49:42','2026-07-25 23:49:58',NULL,'DRAFT');
+INSERT INTO `character` VALUES (3,1,'Alfonso',0,0,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-12 21:10:43','2026-07-25 14:50:40',NULL,'DRAFT'),(4,1,'Alfonso',4,12,40,0,0,23,3,3,4,30,0,'2026-07-12 21:12:09','2026-07-25 17:04:06',NULL,'DRAFT'),(5,1,'Vaelora',0,0,60,0,0,NULL,1,NULL,NULL,50,NULL,'2026-07-24 10:48:37','2026-07-25 14:50:40',NULL,'DRAFT'),(6,1,'Pedro',1,13,13,0,0,NULL,1,NULL,NULL,NULL,NULL,'2026-07-25 17:15:34','2026-07-25 17:16:25','2026-07-25 17:16:25','FINAL'),(7,1,'jj',0,0,0,2600,0,24,5,NULL,NULL,35,0,'2026-07-25 23:49:42','2026-07-26 22:39:34',NULL,'DRAFT');
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -386,7 +386,7 @@ CREATE TABLE `character_ability` (
 
 LOCK TABLES `character_ability` WRITE;
 /*!40000 ALTER TABLE `character_ability` DISABLE KEYS */;
-INSERT INTO `character_ability` VALUES (4,1,14),(4,2,12),(4,3,12),(4,4,12),(4,5,12),(4,6,12),(6,1,11),(6,2,14),(6,3,13),(6,4,11),(6,5,15),(6,6,8),(7,1,12),(7,2,13),(7,3,8),(7,4,8),(7,5,15),(7,6,15);
+INSERT INTO `character_ability` VALUES (4,1,14),(4,2,12),(4,3,12),(4,4,12),(4,5,12),(4,6,12),(6,1,11),(6,2,14),(6,3,13),(6,4,11),(6,5,15),(6,6,8),(7,1,14),(7,2,12),(7,3,12),(7,4,12),(7,5,12),(7,6,12);
 /*!40000 ALTER TABLE `character_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -446,7 +446,7 @@ CREATE TABLE `character_item` (
 
 LOCK TABLES `character_item` WRITE;
 /*!40000 ALTER TABLE `character_item` DISABLE KEYS */;
-INSERT INTO `character_item` VALUES (4,6,2,0,0),(4,21,3,0,0);
+INSERT INTO `character_item` VALUES (4,6,2,0,0),(4,21,3,0,0),(7,49,2,0,0),(7,324,2,1,1);
 /*!40000 ALTER TABLE `character_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -530,7 +530,7 @@ CREATE TABLE `character_skill` (
 
 LOCK TABLES `character_skill` WRITE;
 /*!40000 ALTER TABLE `character_skill` DISABLE KEYS */;
-INSERT INTO `character_skill` VALUES (4,1,1,0),(4,2,1,1),(4,3,0,0),(4,4,0,0),(4,5,0,0),(4,6,0,0),(4,7,0,0),(4,8,0,0),(4,9,1,1),(4,10,0,0),(4,11,0,0),(4,12,0,0),(4,13,0,0),(4,14,0,0),(4,15,0,0),(4,16,0,0),(4,17,0,0),(4,18,0,0),(5,1,1,0),(5,2,1,1),(5,3,0,0),(5,4,0,0),(5,5,0,0),(5,6,0,0),(5,7,0,0),(5,8,0,0),(5,9,1,1),(5,10,0,0),(5,11,0,0),(5,12,0,0),(5,13,0,0),(5,14,0,0),(5,15,0,0),(5,16,0,0),(5,17,0,0),(5,18,0,0);
+INSERT INTO `character_skill` VALUES (4,1,1,0),(4,2,1,1),(4,3,0,0),(4,4,0,0),(4,5,0,0),(4,6,0,0),(4,7,0,0),(4,8,0,0),(4,9,1,1),(4,10,0,0),(4,11,0,0),(4,12,0,0),(4,13,0,0),(4,14,0,0),(4,15,0,0),(4,16,0,0),(4,17,0,0),(4,18,0,0),(5,1,1,0),(5,2,1,1),(5,3,0,0),(5,4,0,0),(5,5,0,0),(5,6,0,0),(5,7,0,0),(5,8,0,0),(5,9,1,1),(5,10,0,0),(5,11,0,0),(5,12,0,0),(5,13,0,0),(5,14,0,0),(5,15,0,0),(5,16,0,0),(5,17,0,0),(5,18,0,0),(7,1,1,0),(7,2,1,1),(7,3,0,0),(7,4,1,1),(7,5,0,0),(7,6,0,0);
 /*!40000 ALTER TABLE `character_skill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -552,7 +552,7 @@ CREATE TABLE `character_spell` (
   KEY `character_spell_spell` (`spell_id`),
   CONSTRAINT `character_spell_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
   CONSTRAINT `character_spell_spell` FOREIGN KEY (`spell_id`) REFERENCES `spell` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -561,7 +561,7 @@ CREATE TABLE `character_spell` (
 
 LOCK TABLES `character_spell` WRITE;
 /*!40000 ALTER TABLE `character_spell` DISABLE KEYS */;
-INSERT INTO `character_spell` VALUES (1,4,21,0,0);
+INSERT INTO `character_spell` VALUES (1,4,21,0,0),(2,7,22,0,0);
 /*!40000 ALTER TABLE `character_spell` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -808,6 +808,7 @@ CREATE TABLE `class_starting_money` (
 
 LOCK TABLES `class_starting_money` WRITE;
 /*!40000 ALTER TABLE `class_starting_money` DISABLE KEYS */;
+INSERT INTO `class_starting_money` VALUES (1,'A',1500),(1,'B',7500),(2,'A',1900),(2,'B',9000),(3,'A',700),(3,'B',1100),(4,'A',900),(4,'B',5000),(5,'A',400),(5,'B',1100),(5,'C',15500),(6,'A',1100),(6,'B',5000),(7,'A',900),(7,'B',15000),(8,'A',700),(8,'B',15000),(9,'A',800),(9,'B',10000),(10,'A',2800),(10,'B',5000),(11,'A',1500),(11,'B',10000),(12,'A',500),(12,'B',5500);
 /*!40000 ALTER TABLE `class_starting_money` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1550,4 +1551,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-26 16:25:19
+-- Dump completed on 2026-07-29 12:31:55

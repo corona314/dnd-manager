@@ -1,6 +1,5 @@
 package dnd.manager.app.model.ClassEntities;
 
-import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,12 +13,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "class_feature")
+@Table(name = "class_starting_money")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(ClassFeatureId.class)
-public class ClassFeature {
+@IdClass(ClassStartingMoneyId.class)
+public class ClassStartingMoney {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,11 +26,9 @@ public class ClassFeature {
     private ClassEntity classEntity;
     
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "feature_id", insertable = false, updatable = false)
-    private Feature feature;
+    @JoinColumn(name = "option_group", insertable = false, updatable = false)
+    private String optionGroup;
     
-    @Column(name = "level", nullable = false)
-    private Integer level;
-
+    @Column(name = "amount", nullable = false)
+    private Integer amount;
 }
