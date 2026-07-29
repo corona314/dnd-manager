@@ -68,6 +68,10 @@ async function goToViewCharacter(id) {
     emit('navigate', { page: 'characterView', characterId: id })
 }
 
+async function goToLevelUpCharacter(id) {  
+    emit('navigate', { page: 'characterLevelUp', characterId: id })
+}
+
 onMounted(() => fetchCharacters())
 </script>
 
@@ -84,7 +88,7 @@ onMounted(() => fetchCharacters())
                 <span>{{ c.speciesName === null ? 'no hay especie' : c.speciesName}}</span>
                 <button @click="deleteCharacter(c.id)">🗑️</button>
                 <button v-if="c.status === 'DRAFT'" @click="goToEditCharacter(c.id)">Editar</button>
-                <button v-if="c.status === 'FINAL'">Level Up</button>
+                <button v-if="c.status === 'FINAL'" @click="goToLevelUpCharacter(c.id)">Level Up</button>
                 <button v-if="c.status === 'FINAL'" @click="goToViewCharacter(c.id)">View Details</button>
             </div>
             <div v-if="!characters.length" class="characters_empty">

@@ -105,13 +105,13 @@
     async function initializeClassSkills() {
         let fullSkillList = []
         try {
-            const res = await fetch(`${API_BASE}/classes/2`, {
+            const res = await fetch(`${API_BASE}/skills`, {
                 headers: { Authorization: `Bearer ${props.token}` }
             })
-            const bardDetail = await res.json()
-            fullSkillList = bardDetail.skills ?? []
+            const skillList = await res.json()
+            fullSkillList = skillList.content ?? []
         } catch (e) {
-            console.error('Error obteniendo el listado completo de skills desde Bardo', e)
+            console.error('Error obteniendo el listado completo de skills', e)
             return
         }
 

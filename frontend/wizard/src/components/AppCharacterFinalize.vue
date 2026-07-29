@@ -53,7 +53,6 @@
 
             pregranted_skill_ids.value = alreadyProficient
             
-            selected_skill_ids.value = alreadyProficient.length ? [] : []
         } catch (e) {
             console.error(e)
         } finally {
