@@ -4,6 +4,14 @@
     import Slider from 'primevue/slider';
     import { ref, onMounted, computed } from 'vue'
     import { marked } from 'marked';
+    import AttackIcon from './icons/AttackIcon.vue';
+    import DefenseIcon from './icons/DefenseIcon.vue';
+    import CastingTimeIcon from './icons/CastingTimeIcon.vue';
+    import RangeIcon from './icons/RangeIcon.vue';
+    import DurationIcon from './icons/DurationIcon.vue';
+    import MaterialIcon from './icons/MaterialIcon.vue';
+
+
     const props = defineProps({ token: String })
     const API_BASE = 'http://localhost:8080/api'
 
@@ -21,13 +29,31 @@
     const filter_ritual = ref(null)
     const filter_concentration = ref(null)
     const school_open = ref(false)
+    
     //Constantes de ordenacion
-    const sort_fields = ref([
-        { field: 'name',   label: 'Nombre',  dir: 'asc', active: false },
-        { field: 'level',  label: 'Nivel',   dir: 'asc', active: false },
-        { field: 'school', label: 'Escuela', dir: 'asc', active: false },
-    ])
-    const sort_order = ref([]) 
+    const sort_labels = {
+        name: 'Name',
+        level: 'Level',
+        school: 'School'
+    }
+
+    const sort_field = ref('name')
+    const sort_direction = ref('asc')
+    const sort_open = ref(false)
+
+    function setSortField(field) {
+        sort_field.value = field
+        sort_open.value = false
+        applyFilters()
+    }
+
+    function toggleSortDirection() {
+        sort_direction.value =
+            sort_direction.value === 'asc' ? 'desc' : 'asc'
+
+        applyFilters()
+    }    
+    
     //Constantes de la lista de conjuros
     const spells = ref([])
     const loading = ref(false)
@@ -60,38 +86,66 @@
     //Metodos
     async function fetchSpells(page = 0) {
         loading.value = true
-        try{
+        try {
             const params = new URLSearchParams({ page, size: 20 })
-            for (const field of sort_order.value) {
-                const s = sort_fields.value.find(x => x.field === field)
-                params.append('sort', `${s.field},${s.dir}`)
+            
+            params.append(
+                'sort',
+                `${sort_field.value},${sort_direction.value}`
+            )
+
+            if (sort_field.value === 'level') {
+                params.append('sort', 'name,asc')
             }
+
+            if (sort_field.value === 'school') {
+                params.append('sort', 'level,asc')
+                params.append('sort', 'name,asc')
+            }
+
             if (filter_name.value) {
                 params.append('name', filter_name.value)
-            } 
+            }
+
             if (filter_level.value[0] !== null) {
                 params.append('levelMin', filter_level.value[0])
             }
+
             if (filter_level.value[1] !== null) {
                 params.append('levelMax', filter_level.value[1])
             }
+
             for (const schoolId of filter_school.value) {
                 params.append('schoolId', schoolId)
             }
+
             for (const component in filter_components.value) {
                 const val = filter_components.value[component]
-                if (val === true)  params.append('components', component)
-                if (val === false) params.append('components', `!${component}`)
-            }
-            if(filter_ritual){
-                if (filter_ritual.value === true)  params.append('ritual', '1')
-                if (filter_ritual.value === false) params.append('ritual', '0')
-            }
-            if(filter_concentration){
-                if (filter_concentration.value === true)  params.append('concentration', '1')
-                if (filter_concentration.value === false) params.append('concentration', '0')
+
+                if (val === true) {
+                    params.append('components', component)
+                }
+
+                if (val === false) {
+                    params.append('components', `!${component}`)
+                }
             }
 
+            if (filter_ritual.value === true) {
+                params.append('ritual', '1')
+            }
+
+            if (filter_ritual.value === false) {
+                params.append('ritual', '0')
+            }
+
+            if (filter_concentration.value === true) {
+                params.append('concentration', '1')
+            }
+
+            if (filter_concentration.value === false) {
+                params.append('concentration', '0')
+            }
             const res = await fetch(`${API_BASE}/spells?${params}`, {
             headers: { Authorization: `Bearer ${props.token}` }
             })
@@ -242,63 +296,116 @@
         <!--Filtros de selección-->
         <div class="filters">
             <div class="name">
-                <input class="name_input" type="text" placeholder="Buscar conjuro..." v-model="filter_name" @keyup.enter="applyFilters"/>
+                <input class="name_input" type="text" placeholder="Search spell..." v-model="filter_name" @keyup.enter="applyFilters"/>
                 <button class="search_button" @click="applyFilters">🔍</button>
             </div>
             <div class="level">
                 <span class="level_label">
-                    {{ filter_level[0] === 0 ? 'Truco (0)' : `${filter_level[0]}` }}
+                    {{ filter_level[0] === 0 ? 'Cantrip (0)' : `${filter_level[0]}` }}
                     --
-                    {{ filter_level[1] === 0 ? 'Truco (0)' : `${filter_level[1]}` }}
+                    {{ filter_level[1] === 0 ? 'Cantrip (0)' : `${filter_level[1]}` }}
                 </span>
                 <Slider class="level_slider" v-model="filter_level" :min="0" :max="9" :step="1" range @slideend="applyFilters" @update:modelValue="sliderOrder"/>
             </div>
-            <div class="school_filter">
-                <div class="school_dropdown_btn" @click="school_open = !school_open"> Escuelas <i>-</i> </div>
-                <div v-if="school_open" class="school_dropdown_menu">
-                    <div v-for="(name, id) in Schools" :key="id" class="school_option" :class="{ selected: filter_school.includes(+id) }" @click="toggleSchool(+id)">
-                        {{ name }}
+
+            <div class="sort_filter">
+                <span class="sort_title">Order by:</span>
+
+                <div class="sort_dropdown">
+                    <div class="dropdown_btn" @click="sort_open = !sort_open">
+                        {{ sort_labels[sort_field] }}
+                        <i>-</i>
+                    </div>
+
+                    <div v-if="sort_open" class="dropdown_menu">
+                        <div
+                            v-for="(label, field) in sort_labels"
+                            :key="field"
+                            class="dropdown_option"
+                            :class="{ selected: sort_field === field }"
+                            @click="setSortField(field)"
+                        >
+                            {{ label }}
+                        </div>
                     </div>
                 </div>
+
+                <button
+                    class="sort_direction"
+                    @click="toggleSortDirection"
+                    :title="sort_direction === 'asc' ? 'Ascendente' : 'Descendente'"
+                >
+                    {{ sort_direction === 'asc' ? '▲' : '▼' }}
+                </button>
             </div>
-            <div class="sort_filter">
-                <div v-for="(s, index) in sort_fields" :key="s.field" class="sort_chip" :class="{ 'sort_chip--active': s.active }">
-                    <span class="sort_priority" v-if="s.active">{{ sortPriority(s.field) }}</span>
-                    <span class="sort_label" @click="toggleSort(index)">{{ s.label }}</span>
-                    <span class="sort_dir_btn" @click="toggleSortDir(index)">
-                        {{ s.dir === 'asc' ? '▲' : '▼' }}
+
+            <div class="filter_group components_group">
+                <span
+                    v-for="comp in Components"
+                    :key="comp"
+                    class="tristate"
+                    @click="cycleComponent(comp)"
+                    :class="{
+                        'tristate--active': filter_components[comp] === true,
+                        'tristate--inactive': filter_components[comp] === false
+                    }"
+                >
+                    {{ comp }}
+                </span>
+            </div>
+
+            <div class="filter_group special_group">
+                <span
+                    class="tristate"
+                    @click="cycleRitual"
+                    :class="{
+                        'tristate--active': filter_ritual === true,
+                        'tristate--inactive': filter_ritual === false
+                    }"
+                    title="Ritual"
+                >
+                R
+                </span>
+
+                <span
+                    class="tristate"
+                    @click="cycleConcentration"
+                    :class="{
+                        'tristate--active': filter_concentration === true,
+                        'tristate--inactive': filter_concentration === false
+                    }"
+                    title="Concentración"
+                >
+                C
+                </span>
+            </div>
+            
+            <div class="school_filter_group">
+                <div class="school_filter">
+                    <div class="dropdown_btn" @click="school_open = !school_open">
+                        Schools <i>-</i>
+                    </div>
+
+                    <div v-if="school_open" class="dropdown_menu">
+                        <div
+                            v-for="(name, id) in Schools"
+                            :key="id"
+                            class="dropdown_option"
+                            :class="{ selected: filter_school.includes(+id) }"
+                            @click="toggleSchool(+id)"
+                        >
+                            {{ name }}
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="filter_school.length" class="school_chips">
+                    <span v-for="id in filter_school" :key="id"class="school_chip">
+                        {{ Schools[id] }}
+                        <span class="school_chip_remove" @click.stop="toggleSchool(id)">✕</span>
                     </span>
                 </div>
             </div>
-            <div class="components" v-for="comp in Components" :key="comp">
-                <span class="tristate" @click="cycleComponent(comp)" :class="{'tristate--active': filter_components[comp] === true, 'tristate--inactive': filter_components[comp] === false}">
-                    <span v-if="filter_components[comp] === null">{{ comp }}</span>
-                    <span v-else-if="filter_components[comp] === true">{{ comp }}</span>
-                    <span v-else>{{ comp }}</span>
-                </span>
-            </div>
-            <div class="ritual" >
-                <span class="tristate" @click="cycleRitual" :class="{'tristate--active': filter_ritual === true, 'tristate--inactive': filter_ritual === false}" :title="'Ritual'">
-                    <span v-if="filter_ritual === null">R</span>
-                    <span v-else-if="filter_ritual === true">R</span>
-                    <span v-else>R</span>
-                </span>
-            </div>
-            <div class="concentration" >
-                <span class="tristate" @click="cycleConcentration" :class="{'tristate--active': filter_concentration === true, 'tristate--inactive': filter_concentration === false}" :title="'Concentration'">
-                    <span v-if="filter_concentration === null">C</span>
-                    <span v-else-if="filter_concentration === true">C</span>
-                    <span v-else>C</span>
-                </span>
-            </div>
-        </div>
-
-        <!--Escuelas seleccionadas-->
-        <div v-if="filter_school.length" class="school_chips">
-            <span v-for="id in filter_school" :key="id" class="school_chip">
-                {{ Schools[id] }}
-                <span class="school_chip_remove" @click="toggleSchool(id)">✕</span>
-            </span>
         </div>
 
         <!--Tarjetas de los conjuros-->
@@ -313,18 +420,23 @@
                     color: `var(${Damage_Text[spell.damageTypes[0]?.damageType] || '--text'})`
                 }"
                 :class="{ 'spell_card--expanded': expanded_id === spell.id }"
+                v-no-double-select
                 @click="expandSpell(spell)"
             >
                 <div class="spell_card_base">
                     <span class="spell_name"> {{ spell.name }} </span>
-                    <span class="spell_attackroll">{{spell.attackRoll === true ? '⚔️' : ''}}</span>
-                    <span class="spell_savingthrow">{{spell.savingThrowAbility === null ? ' ' : '🛡️'}}</span>
+                    <span v-if="spell.attackRoll" class="spell_attackroll">
+                        <AttackIcon />
+                    </span>
+                    <span v-if="spell.savingThrowAbility" class="spell_savingthrow">
+                        <DefenseIcon />
+                    </span>
 
                     <span class="spell_component_v">{{ spell.components.includes('V') ? 'V' : '📀' }}</span>
                     <span class="spell_component_s">{{ spell.components.includes('S') ? 'S' : '📉' }}</span>
                     <span class="spell_component_m">{{ spell.components.includes('M') ? 'M' : '🏥' }}</span>
 
-                    <span class="spell_level"> {{ spell.level === 0 ? 'Truco' : `Nv. ${spell.level}` }} </span>
+                    <span class="spell_level"> {{ spell.level === 0 ? 'Cantrip' : `Lvl. ${spell.level}` }} </span>
 
                     <span class="spell_school"> {{ spell.school }} </span>        
 
@@ -337,12 +449,14 @@
                 <div v-if="expanded_id === spell.id" class="spell_card_expanded" @click.stop>
                     <div v-if="expanded_loading">Cargando...</div>
                     <div v-else class="spell_card_expanded_content">
-                        <div class="spell_details">
-                            <span>🕛: {{ expanded_spell.castingTime }}</span>
-                            <span>🔛: {{ expanded_spell.range }}</span>
-                            <span>⏳: {{ expanded_spell.duration }}</span>
-                            <span v-if="expanded_spell.material">📦: {{ expanded_spell.material }}</span>
-                        </div>
+                    <div class="spell_details">
+                        <span><CastingTimeIcon class="spell_detail_icon" /> {{ expanded_spell.castingTime }}</span>
+                        <span><RangeIcon class="spell_detail_icon" /> {{ expanded_spell.range }}</span>
+                        <span><DurationIcon class="spell_detail_icon" /> {{ expanded_spell.duration }}</span>
+                        <span v-if="expanded_spell.material">
+                            <MaterialIcon class="spell_detail_icon" /> {{ expanded_spell.material }}
+                        </span>
+                    </div>
                         <p class="spell_desc" v-html="renderDescription(expanded_spell.description)"></p>
 
                         <div v-if="expanded_spell.upcasts.length && expanded_spell.upcasts[0].upcastType === 'SLOT'" class="upcast_section">

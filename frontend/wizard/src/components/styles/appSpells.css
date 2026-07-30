@@ -13,18 +13,76 @@ body {
     background-color: var(--background);
 }
 /*Cabecera-Filtrado*/ 
-.filters{
+.filters {
     display: flex;
-    flex-wrap: wrap;      
+    flex-wrap: wrap;
     width: 75%;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    gap: 12px;
-    margin: 30px 0px 20px 0px;
+    gap: 26px;
+    margin: 30px 0 20px 0;
 }
-.name, .name_input, .search_button{
+
+.name {
     display: flex;
+    align-items: center;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--default);
+    overflow: hidden;
 }
+
+.name_input {
+    height: 100%;
+    width: 180px;
+    padding: 0 10px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+}
+
+.name_input::placeholder {
+    color: var(--text-secondary);
+}
+
+.name_input:focus {
+    outline: none;
+}
+
+.search_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 9px;
+    border: none;
+    border-left: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.search_button:hover {
+    background: var(--surface-hover-strong);
+}
+
+
+.component_filters,
+.special_filters {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.special_filters {
+    padding-left: 10px;
+    margin-left: 2px;
+    border-left: 1px solid var(--separator-lines);
+}
+
 .name_input{
     height: 26px;
     border-radius: 0;
@@ -57,20 +115,36 @@ body {
     --p-slider-range-background: var(--element-foreground); 
 }
 
-.school_filter {
-    position: relative;        
+.school_filter_group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
-.school_dropdown_btn {
+.school_filter {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.school_chips {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.dropdown_btn {
     cursor: pointer;
     padding: 4px 10px;
     border: 1px solid var(--border);
     border-radius: 4px;
     background: var(--default);
+    color: var(--text);
     user-select: none;
 }
 
-.school_dropdown_menu {
+.dropdown_menu {
     position: absolute;
     top: 100%;
     z-index: 10;
@@ -81,32 +155,51 @@ body {
     min-width: 160px;
 }
 
-.school_option {
+.dropdown_option {
     padding: 4px 8px;
     cursor: pointer;
     border-radius: 3px;
     user-select: none;
 }
-.school_option:hover {
+
+.dropdown_option:hover {
     background: var(--surface-hover-strong);
 }
-.school_option.selected {
+
+.dropdown_option.selected {
     background: var(--accent-bg);
     border: 1px solid var(--accent-border);
 }
 
+.sort_dropdown {
+    position: relative;
+}
+
+.sort_direction {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--default);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.sort_direction:hover {
+    background: var(--surface-hover-strong);
+}
 .school_chips {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
+    flex-wrap: wrap;
     gap: 6px;
-    width: 75%;
-    min-height: 20px;
-    margin-bottom: 20px;   
-    padding: 10px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--surface);
 }
 
 .school_chip {
@@ -144,12 +237,16 @@ body {
     border-radius: 4px;
     padding: 2px 6px;
     background: var(--default);
+    color: var(--text);
     opacity: 0.55;
+    cursor: pointer;
+    font-family: inherit;
 }
 .sort_chip--active {
     opacity: 1;
     border-color: var(--element-foreground);
     background: var(--element-background);
+    color: var(--text);
 }
 .sort_priority {
     font-size: 0.7rem;
@@ -235,6 +332,8 @@ body {
 
 .spell_card--expanded {
     height: auto;
+    border: 3px solid var(--accent);
+
 }
 .spell_card_expanded {
     margin-top: 10px;
@@ -271,7 +370,14 @@ body {
 .spell_details {
     display: flex;
     gap: 16px;
+    align-items: center;
     font-weight: bold;
+}
+
+.spell_detail_icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
 }
 
 /*TOP LEFT*/ 
@@ -353,6 +459,7 @@ body {
     flex-wrap: wrap;
 }
 .upcast_button {
+    color: var(--text);
     width: 26px;
     height: 26px;
     display: flex;
@@ -366,7 +473,7 @@ body {
     background: var(--default);
 }
 .upcast_button--active {
-    background-color: var(--upcast-active-bg);
+    background-color: var(--upcast-active-border);
     border-color: var(--upcast-active-border);
     color: var(--default);
 }
@@ -382,4 +489,30 @@ body {
     flex-wrap: wrap;
     font-size: 13px;
 }
-/*Selector de pagina*/
+
+
+/*SVG*/
+
+.spell_attackroll {
+    position: absolute;
+    top: 0;
+    left: 200px;
+}
+
+.spell_attackroll svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.spell_savingthrow {
+    position: absolute;
+    top: 1;
+    left: 200px;
+}
+
+.spell_savingthrow svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}

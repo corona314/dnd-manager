@@ -27,8 +27,8 @@
     --accent-strong: #4B3B5C;
     --accent-strong-border: #2E2340;
     --accent-text: var(--text-on-accent);
-    --active: var(--accent);
-    --inactive: var(--surface-secondary);
+    --active: rgba(158, 219, 112, 0.431);
+    --inactive: rgba(219, 112, 112, 0.431);
     --background-card: var(--surface);
     --default: var(--surface);
     --element-background: var(--surface);
@@ -115,8 +115,8 @@
         --accent-strong: #A996C0;
         --accent-strong-border: #C6B8DA;
         --accent-text: var(--text-on-accent);
-        --active: var(--accent);
-        --inactive: var(--surface-secondary);
+        --active: rgba(158, 219, 112, 0.431);
+        --inactive: rgba(219, 112, 112, 0.431);
         --background-card: var(--surface);
         --default: var(--surface);
         --element-background: var(--surface);
