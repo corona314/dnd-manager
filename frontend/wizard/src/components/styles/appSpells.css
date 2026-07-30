@@ -287,6 +287,16 @@ body {
     user-select: none;
     background-color: var(--default);
 }
+.tristate svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+.tristate :deep(svg) {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
 .tristate--active {
     background-color: var(--active);
     border-color: var(--border);
@@ -515,4 +525,36 @@ body {
     width: 18px;
     height: 18px;
     display: block;
+}
+
+.spell_ritual {
+    position: absolute;
+    top: 1;
+    right: 40px;
+}
+
+.spell_ritual svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.spell_ritual--active svg {
+    color: var(--danger);
+}
+
+.spell_concentration {
+    position: absolute;
+    top: 1;
+    right: 0;
+}
+
+.spell_concentration svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.spell_concentration--active {
+    color: var(--accent);
 }
