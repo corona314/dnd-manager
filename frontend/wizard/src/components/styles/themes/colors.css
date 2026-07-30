@@ -40,9 +40,9 @@
     --separator-lines: var(--divider-subtle);
     --separador: var(--divider);
     --success-bg: #E6EFDB;
-    --success-border: #4B7A3F;
+    --success: #4B7A3F;
     --danger-bg: #F6E1DB;
-    --danger-border: #A8422A;
+    --danger: #A8422A;
     --property-bg: var(--surface-secondary);
     --property-border: var(--border-subtle);
     --overlay-weak: rgba(0, 0, 0, 0.08);
@@ -128,9 +128,9 @@
         --separator-lines: var(--divider-subtle);
         --separador: var(--divider);
         --success-bg: #1F3320;
-        --success-border: #6D9A63;
+        --success: #6D9A63;
         --danger-bg: #3A211D;
-        --danger-border: #D6795F;
+        --danger: #D6795F;
         --property-bg: var(--surface-secondary);
         --property-border: var(--border-subtle);
         --overlay-weak: rgba(255, 255, 255, 0.08);

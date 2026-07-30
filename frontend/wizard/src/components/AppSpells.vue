@@ -10,6 +10,10 @@
     import RangeIcon from './icons/RangeIcon.vue';
     import DurationIcon from './icons/DurationIcon.vue';
     import MaterialIcon from './icons/MaterialIcon.vue';
+    import RitualIcon from './icons/RitualIcon.vue';
+    import NoRitualIcon from './icons/NoRitualIcon.vue';
+    import ConcentrationIcon from './icons/ConcentrationIcon.vue';
+    import NoConcentrationIcon from './icons/NoConcentrationIcon.vue';
 
 
     const props = defineProps({ token: String })
@@ -193,6 +197,19 @@
         applyFilters()
     }
 
+    function reverseComponent(comp) {
+        const current = filter_components.value[comp]
+
+        if (current === null) {
+            filter_components.value[comp] = false
+        } else if (current === false) {
+            filter_components.value[comp] = true
+        } else {
+            filter_components.value[comp] = null
+        }
+        applyFilters()
+    }
+
     async function expandSpell(spell) {
         if (expanded_id.value === spell.id) {
             expanded_spell.value = null
@@ -221,31 +238,30 @@
         else filter_school.value.splice(i, 1)
         applyFilters()
     }
-    //Metodos Ordenación
-    function toggleSort(index) {
-        const s = sort_fields.value[index]
-        if (s.active) {
-            s.active = false
-            sort_order.value = sort_order.value.filter(f => f !== s.field)
-        } else {
-            s.active = true
-            sort_order.value.push(s.field)
-        }
+
+    function previousTristate(value) {
+        if (value === null) return false
+        if (value === false) return true
+        return null
+    }
+
+    function previousComponent(comp) {
+        filter_components.value[comp] = previousTristate(
+            filter_components.value[comp]
+        )
         applyFilters()
     }
 
-    function toggleSortDir(index) {
-        const s = sort_fields.value[index]
-        s.dir = s.dir === 'asc' ? 'desc' : 'asc'
-        sort_order.value = sort_order.value.filter(f => f !== s.field)
-        sort_order.value.unshift(s.field)
-        if (!s.active) s.active = true
+    function previousRitual() {
+        filter_ritual.value = previousTristate(filter_ritual.value)
         applyFilters()
     }
 
-    function sortPriority(field) {
-        const i = sort_order.value.indexOf(field)
-        return i === -1 ? null : i + 1
+    function previousConcentration() {
+        filter_concentration.value = previousTristate(
+            filter_concentration.value
+        )
+        applyFilters()
     }
 
     function sliderOrder(value){
@@ -345,6 +361,7 @@
                     :key="comp"
                     class="tristate"
                     @click="cycleComponent(comp)"
+                    @contextmenu.prevent="previousComponent(comp)"
                     :class="{
                         'tristate--active': filter_components[comp] === true,
                         'tristate--inactive': filter_components[comp] === false
@@ -358,6 +375,7 @@
                 <span
                     class="tristate"
                     @click="cycleRitual"
+                    @contextmenu.prevent="previousRitual"
                     :class="{
                         'tristate--active': filter_ritual === true,
                         'tristate--inactive': filter_ritual === false
@@ -370,6 +388,7 @@
                 <span
                     class="tristate"
                     @click="cycleConcentration"
+                    @contextmenu.prevent="previousConcentration"
                     :class="{
                         'tristate--active': filter_concentration === true,
                         'tristate--inactive': filter_concentration === false
@@ -379,7 +398,7 @@
                 C
                 </span>
             </div>
-            
+
             <div class="school_filter_group">
                 <div class="school_filter">
                     <div class="dropdown_btn" @click="school_open = !school_open">
@@ -438,16 +457,26 @@
 
                     <span class="spell_level"> {{ spell.level === 0 ? 'Cantrip' : `Lvl. ${spell.level}` }} </span>
 
-                    <span class="spell_school"> {{ spell.school }} </span>        
+                    <span class="spell_school"> {{ spell.school }} </span>
 
-                    <span class="spell_ritual" v-if="spell.ritual === true">R</span>
-                    <span class="spell_ritual" v-else>🌂</span>
+                    <span
+                        class="spell_ritual"
+                        :class="{ 'spell_ritual--active': spell.ritual }"
+                    >
+                        <RitualIcon v-if="spell.ritual" />
+                        <NoRitualIcon v-else />
+                    </span>
 
-                    <span class="spell_concentration" v-if="spell.concentration === true">C</span>
-                    <span class="spell_concentration" v-else>🔨</span>
+                    <span
+                        class="spell_concentration"
+                        :class="{ 'spell_concentration--active': spell.concentration }"
+                    >
+                        <ConcentrationIcon v-if="spell.concentration" />
+                        <NoConcentrationIcon v-else />
+                    </span>
                 </div>
                 <div v-if="expanded_id === spell.id" class="spell_card_expanded" @click.stop>
-                    <div v-if="expanded_loading">Cargando...</div>
+                    <div v-if="expanded_loading">Loading...</div>
                     <div v-else class="spell_card_expanded_content">
                     <div class="spell_details">
                         <span><CastingTimeIcon class="spell_detail_icon" /> {{ expanded_spell.castingTime }}</span>
