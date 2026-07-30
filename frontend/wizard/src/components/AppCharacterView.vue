@@ -80,6 +80,11 @@
                 <span>{{ character.background?.name }}</span>
             </div>
 
+            <div v-if="character?.subclass !== null" class="view_section">
+                <span class="view_label">Subclass:</span>
+                <span>{{ character.subclass?.name }}</span>
+            </div>
+
             <div class="view_abilities">
                 <h2>Abilities</h2>
                 <div v-for="ab in character.abilities" :key="ab.ability" class="view_ability_row">

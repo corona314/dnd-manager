@@ -25,6 +25,10 @@
         }
     }
 
+    async function goToSubclassList(){
+        emit('navigate', {page: 'characterSubclass', characterId: props.characterId})
+    }
+
     onMounted(() => {
         fetchCharacter()
     })
@@ -58,6 +62,10 @@
     async function levelUpCharacter(){
         if (calculated_max_hp.value === null) {
             error.value = 'No se puede calcular la vida: falta clase asignada'
+            return
+        }
+        if(character.level === 2 && character.subclass === null){
+            error.value = 'Subclass needed to proceed'
             return
         }
 
@@ -137,6 +145,7 @@
             </div>
         </div>
 
+        <button v-if="character?.level === 2" class="character_subclass_btn" @click="goToSubclassList()">Subclass</button>
         <button class="character_level_up_save_btn" @click="levelUpCharacter" :disabled="saving || calculated_max_hp === null || character.level >= 20">
             {{ saving ? 'Finalizando...' : 'Level Up' }}
         </button>

@@ -23,10 +23,11 @@
   import { ref, onMounted } from 'vue'
 import AppCharacterView from './components/AppCharacterView.vue';
 import AppCharacterLevelUp from './components/AppCharacterLevelUp.vue';
+import AppCharacterSubclass from './components/AppCharacterSubclass.vue';
 
   const authToken = ref(localStorage.getItem('dnd_token') || '')
-  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackground' | 'characterAbility' | 'characterFinalize' | 'characterView' | 'characterLevelUp'
-  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackground: 'characterSpecie', characterAbilities: 'characterBackground', characterFinalize: 'characterAbilities', characterView: 'characters', characterLevelUp: 'characters'}
+  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackground' | 'characterAbility' | 'characterFinalize' | 'characterView' | 'characterLevelUp' | 'characterSubclass'
+  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackground: 'characterSpecie', characterAbilities: 'characterBackground', characterFinalize: 'characterAbilities', characterView: 'characters', characterLevelUp: 'characters', characterSubclass: 'characterLevelUp'}
   const selectedClassId = ref(null)
   const selectedSubclassId = ref(null)
   const selectedSpecieId = ref(null)
@@ -129,6 +130,7 @@ import AppCharacterLevelUp from './components/AppCharacterLevelUp.vue';
         <AppCharacterFinalize v-if="currentPage === 'characterFinalize'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterFinalize>
         <AppCharacterView v-if="currentPage === 'characterView'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterView>
         <AppCharacterLevelUp v-if="currentPage === 'characterLevelUp'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterLevelUp>
+        <AppCharacterSubclass v-if="currentPage === 'characterSubclass'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSubclass>
       </div>
     </div>
   </transition>
