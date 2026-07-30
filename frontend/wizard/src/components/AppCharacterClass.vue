@@ -142,6 +142,15 @@
         }
     }
 
+    function featuresByLevel() {
+        if (!viewed_class.value?.features) return []
+        const levels = [...new Set(viewed_class.value.features.map(f => f.level))].sort((a, b) => a - b)
+        return levels.map(level => ({
+            level,
+            features:viewed_class.value.features.filter(f => f.level === level)
+        }))
+    }
+
     function goBackToCharacters() {
         emit('navigate', 'characters')
     }
@@ -190,6 +199,38 @@
                 <span v-for="p in viewed_class.savingThrows" :key="p.ability" class="comp_class_saving_throws_chip">
                     {{ p.ability }}
                 </span>
+            </div>
+            <div v-if="viewed_class.armorTypes?.length" class="class_armor_types">
+                <span class="class_section_label">Armor Training</span>
+                <span v-for="a in viewed_class.armorTypes" :key="a.armorType" class="class_armor_chip">
+                    {{ a.armorType}}
+                </span> 
+            </div>
+            <div v-else class="class_armor_types">
+                <span class="class_section_label">Armor Training</span>
+                <span class="class_armor_chip">
+                    None
+                </span> 
+            </div>
+
+            <div v-if="viewed_class.skills?.length" class="comp_class_skills">
+                <h3>Skill Proficiencies({{viewed_class.numberSkills}} to pick)</h3>
+                <div v-for="skill in viewed_class.skills" :key="skill.skill.id" class="view_skill_row">
+                    <span>{{ skill.skill }}</span>
+                    <span>({{ skill.ability }})</span>
+                </div>
+            </div>
+
+            <div v-if="viewed_class.features?.length" class="class_features_section">
+                <h3>Feats by level:</h3>
+                <div v-for="group in featuresByLevel()" :key="group.level" class="class_feature_level_group">
+                    <h4 class="class_feature_level_title">Nivel {{ group.level }}</h4>
+                    <div v-for="f in group.features" :key="f.feature.id" class="class_feature_row">
+                        <div class="class_feature_header" @click="toggleFeature(f.feature.id)">
+                            <span class="class_feature_name">{{ f.feature.name }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <button class="class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classEntity?.id === viewed_id">

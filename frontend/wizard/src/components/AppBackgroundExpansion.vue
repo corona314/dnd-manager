@@ -58,32 +58,32 @@
                 </span>
             </div>
             <div v-if="background.tools?.length" class="background_tools">
-                    <span class="background_section_label">Tools (Choose 1):</span>
-                    <span v-for="t in background.tools" :key="t.id" class="background_tool_chip" :title="`${t.weight} lb · ${t.rarity}`">
-                        {{ t.name }}
-                    </span>
-                </div>
+                <span class="background_section_label">Tools (Choose 1):</span>
+                <span v-for="t in background.tools" :key="t.id" class="background_tool_chip" :title="`${t.weight} lb · ${t.rarity}`">
+                    {{ t.name }}
+                </span>
+            </div>
 
-                <div v-if="background.feats?.length" class="background_feats_section">
-                    <h2>Feats</h2>
-                    <div v-for="f in background.feats" :key="f.id" class="background_feat_row">
-                        <div class="background_feat_header" @click="toggleFeat(f.id)">
-                            <span class="background_feat_name">
-                                {{ f.name }}
-                                <span v-if="f.repeatable" class="background_feat_repeatable">(repetible)</span>
-                            </span>
-                            <button class="background_feat_toggle_btn" :class="{ 'background_feat_toggle_btn--open': expanded_feats.has(f.id) }">
-                                {{ expanded_feats.has(f.id) ? '−' : '+' }}
-                            </button>
-                        </div>
-                        <div v-if="expanded_feats.has(f.id)" class="background_feat_description">
-                            <p v-if="f.prerequisite" class="background_feat_prerequisite">
-                                Prerrequisito: {{ f.prerequisite }}
-                            </p>
-                            <div v-html="renderDescription(f.description)"></div>
-                        </div>
+            <div v-if="background.feats?.length" class="background_feats_section">
+                <h2>Feats</h2>
+                <div v-for="f in background.feats" :key="f.id" class="background_feat_row">
+                    <div class="background_feat_header" @click="toggleFeat(f.id)">
+                        <span class="background_feat_name">
+                            {{ f.name }}
+                            <span v-if="f.repeatable" class="background_feat_repeatable">(repetible)</span>
+                        </span>
+                        <button class="background_feat_toggle_btn" :class="{ 'background_feat_toggle_btn--open': expanded_feats.has(f.id) }">
+                            {{ expanded_feats.has(f.id) ? '−' : '+' }}
+                        </button>
+                    </div>
+                    <div v-if="expanded_feats.has(f.id)" class="background_feat_description">
+                        <p v-if="f.prerequisite" class="background_feat_prerequisite">
+                            Prerrequisito: {{ f.prerequisite }}
+                        </p>
+                        <div v-html="renderDescription(f.description)"></div>
                     </div>
                 </div>
+            </div>
         </div>
     </div>
     

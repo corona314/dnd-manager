@@ -182,6 +182,18 @@
                 <div></div>
                 <span class="background_details_description">{{ viewed_background.description }}</span>
             </div>
+            <div v-if="viewed_background.skills?.length" class="background_skills">
+                <span class="background_section_label">Skills:</span>
+                <span v-for="s in viewed_background.skills" :key="s.skill" class="background_skill_chip">
+                    {{ s.skill }} ({{ s.ability }})
+                </span>
+            </div>
+            <div v-if="viewed_background.tools?.length" class="background_tools">
+                <span class="background_section_label">Tools (Choose 1):</span>
+                <span v-for="t in viewed_background.tools" :key="t.id" class="background_tool_chip" :title="`${t.weight} lb · ${t.rarity}`">
+                    {{ t.name }}
+                </span>
+            </div>
 
             <button class="background_details_select_btn" @click="selectBackground(viewed_id)" :disabled="saving || character?.background?.id === viewed_id">
                 {{ saving ? 'Guardando...' : (character?.background?.id === viewed_id ? 'Trasfondo actual' : `Elegir ${viewed_background.name}`) }}

@@ -63,25 +63,25 @@
 
         <div v-else-if="character" class="character_view_summary">
             <h1>{{ character.name }}</h1>
-            <span class="view_level">Nivel actual: {{ character.level }}</span>
+            <span class="view_level">Current Level: {{ character.level }}</span>
 
             <div class="view_section">
-                <span class="view_label">Especie:</span>
+                <span class="view_label">Specie:</span>
                 <span>{{ character.species?.name}}</span>
             </div>
 
             <div class="view_section">
-                <span class="view_label">Clase:</span>
+                <span class="view_label">Class:</span>
                 <span>{{ character.classEntity?.name }} ({{ character.classEntity?.hitPointDie}})</span>
             </div>
 
             <div class="view_section">
-                <span class="view_label">Trasfondo:</span>
+                <span class="view_label">Background:</span>
                 <span>{{ character.background?.name }}</span>
             </div>
 
             <div class="view_abilities">
-                <h2>Características</h2>
+                <h2>Abilities</h2>
                 <div v-for="ab in character.abilities" :key="ab.ability" class="view_ability_row">
                     <span>{{ ab.ability }}</span>
                     <span>{{ ab.baseValue }}</span>
@@ -90,7 +90,7 @@
             </div>
 
             <div class="view_skills">
-                <h2>Habilidades</h2>
+                <h2>Skills</h2>
                 <div v-for="s in character.skills" :key="s.skill.id" class="view_skill_row">
                     <span>{{ s.skill.skill }}</span>
                     <span>{{ s.skill.ability }}</span>

@@ -142,6 +142,17 @@
                 <span class="specie_details_name">{{ viewed_specie.name }}</span>
             </div>
 
+            <span class="specie_card_expanded_walk">Movement: {{ viewed_specie.walkSpeed }}ft</span>
+            <span v-if="viewed_specie.flySpeed !== 0" class="specie_card_expanded_fly">Fly movement: {{ viewed_specie.flySpeed }}ft</span>
+            
+            <div v-if="viewed_specie.features?.length" class="specie_features">
+                <h3>Feats:</h3>
+                <div v-for="f in viewed_specie.features" :key="f.id" class="specie_feature_row">
+                    <div class="specie_feature_header" @click="toggleFeature(f.id)">
+                        <span class="specie_feature_name">{{ f.name }}</span>
+                    </div>
+                </div>                
+            </div>
             <button class="specie_details_select_btn" @click="selectSpecie(viewed_id)" :disabled="saving || character?.species?.id === viewed_id">
                 {{ saving ? 'Guardando...' : (character?.species?.id === viewed_id ? 'Especie actual' : `Elegir ${viewed_specie.name}`) }}
             </button>
