@@ -267,7 +267,7 @@
             {{ saving ? 'Guardando...' : 'Guardar características' }}
         </button>
 
-        <button class="character_ability_forward" @click="emit('navigate', {page: 'characterFinalize', characterId: props.characterId})">Continue Creation</button>
+        <button class="character_ability_forward" @click="emit('navigate', {page: 'characterEquipment', characterId: props.characterId})">Continue Creation</button>
         <button class="character_ability_back" @click="goBackToCharacters">Volver a mis personajes</button>
     </div>
 </template>
