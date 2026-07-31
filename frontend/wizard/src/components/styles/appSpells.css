@@ -291,6 +291,8 @@ body {
     width: 18px;
     height: 18px;
     display: block;
+    color: var(--accent)
+
 }
 .tristate :deep(svg) {
     width: 18px;
@@ -557,4 +559,57 @@ body {
 
 .spell_concentration--active {
     color: var(--accent);
+}
+
+.spell_pages {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin: 25px 0 35px 0;
+}
+
+.page_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--default);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.1rem;
+    line-height: 1;
+    transition:
+        background-color 0.15s,
+        border-color 0.15s,
+        color 0.15s;
+}
+
+.page_button:hover:not(:disabled) {
+    background-color: var(--surface-hover-strong);
+    border-color: var(--element-foreground);
+}
+
+.page_button:active:not(:disabled) {
+    background-color: var(--element-background);
+}
+
+.page_button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.page_info {
+    min-width: 110px;
+    padding: 0 12px;
+    text-align: center;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: bold;
+    user-select: none;
 }

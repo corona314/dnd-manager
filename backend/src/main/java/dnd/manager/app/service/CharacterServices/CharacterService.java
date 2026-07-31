@@ -176,7 +176,7 @@ public class CharacterService {
                 skill.setCharacter(entity);
                 skill.setSkill(skillRepository.findById(dto.skillId())
                     .orElseThrow(() -> new RuntimeException("Skill with id " + dto.skillId() + " not found")));
-                skill.setProficient(dto.proficient());
+                skill.setProficiency(dto.proficient());
                 skill.setExpertise(dto.expertise());
                 return skill;
             }

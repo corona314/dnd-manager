@@ -92,7 +92,7 @@ public class CharacterMapper {
     private CharacterSkillResponseDto toSkillResponseDto(CharacterSkill skill) {
         return new CharacterSkillResponseDto(
             skillMapper.toDto(skill.getSkill()),
-            skill.getProficient(),
+            skill.getProficiency(),
             skill.getExpertise()
         );
     }

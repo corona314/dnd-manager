@@ -32,8 +32,8 @@ public class CharacterSkill {
     @JoinColumn(name = "skill_id", nullable = false)
     private Skill skill;    
 
-    @Column(name = "proficient", nullable = false)
-    private Boolean proficient;
+    @Column(name = "proficiency", nullable = false)
+    private Boolean proficiency;
 
     @Column(name = "expertise", nullable = false)
     private Boolean expertise;

@@ -404,7 +404,7 @@ CREATE TABLE `character` (
   CONSTRAINT `fk_character_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
   CONSTRAINT `fk_character_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
   CONSTRAINT `fk_character_subclass` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -413,7 +413,7 @@ CREATE TABLE `character` (
 
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
-INSERT INTO `character` VALUES (3,1,'Alfonso',0,0,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-12 21:10:43','2026-07-25 14:50:40',NULL,'DRAFT'),(4,1,'Alfonso',4,12,40,0,0,23,3,3,4,30,0,'2026-07-12 21:12:09','2026-07-25 17:04:06',NULL,'DRAFT'),(5,1,'Vaelora',0,0,60,0,0,NULL,1,NULL,NULL,50,NULL,'2026-07-24 10:48:37','2026-07-25 14:50:40',NULL,'DRAFT'),(6,1,'Pedro',1,13,13,0,0,NULL,1,NULL,NULL,NULL,NULL,'2026-07-25 17:15:34','2026-07-25 17:16:25','2026-07-25 17:16:25','FINAL'),(7,1,'jj',0,0,0,2600,0,24,5,NULL,NULL,35,0,'2026-07-25 23:49:42','2026-07-26 22:39:34',NULL,'DRAFT');
+INSERT INTO `character` VALUES (3,1,'Alfonso',1,11,11,0,0,25,3,NULL,4,30,0,'2026-07-12 21:10:43','2026-07-30 14:33:33','2026-07-30 14:33:33','FINAL'),(4,1,'Alfonso',4,12,40,0,0,23,3,3,4,30,0,'2026-07-12 21:12:09','2026-07-25 17:04:06',NULL,'DRAFT'),(5,1,'Vaelora',0,0,60,0,0,NULL,1,NULL,NULL,50,NULL,'2026-07-24 10:48:37','2026-07-25 14:50:40',NULL,'DRAFT'),(6,1,'Pedro',4,52,52,0,0,NULL,1,NULL,NULL,NULL,NULL,'2026-07-25 17:15:34','2026-07-30 14:32:35','2026-07-30 14:32:35','FINAL'),(7,1,'jj',0,0,0,2600,0,24,5,NULL,NULL,35,0,'2026-07-25 23:49:42','2026-07-26 22:39:34',NULL,'DRAFT'),(8,1,'Daniel',1,9,9,0,0,26,9,NULL,2,30,0,'2026-07-30 22:01:57','2026-07-30 22:03:29','2026-07-30 22:03:29','FINAL'),(9,1,'ll',0,0,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-31 11:31:46','2026-07-31 11:31:46',NULL,'DRAFT');
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -442,7 +442,7 @@ CREATE TABLE `character_ability` (
 
 LOCK TABLES `character_ability` WRITE;
 /*!40000 ALTER TABLE `character_ability` DISABLE KEYS */;
-INSERT INTO `character_ability` VALUES (4,1,14),(4,2,12),(4,3,12),(4,4,12),(4,5,12),(4,6,12),(6,1,11),(6,2,14),(6,3,13),(6,4,11),(6,5,15),(6,6,8),(7,1,14),(7,2,12),(7,3,12),(7,4,12),(7,5,12),(7,6,12);
+INSERT INTO `character_ability` VALUES (3,1,11),(3,2,12),(3,3,16),(3,4,12),(3,5,8),(3,6,15),(4,1,14),(4,2,12),(4,3,12),(4,4,12),(4,5,12),(4,6,12),(6,1,11),(6,2,14),(6,3,13),(6,4,11),(6,5,15),(6,6,8),(7,1,14),(7,2,12),(7,3,12),(7,4,12),(7,5,12),(7,6,12),(8,1,14),(8,2,16),(8,3,12),(8,4,14),(8,5,10),(8,6,9);
 /*!40000 ALTER TABLE `character_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -570,7 +570,7 @@ DROP TABLE IF EXISTS `character_skill`;
 CREATE TABLE `character_skill` (
   `character_id` int NOT NULL,
   `skill_id` int NOT NULL,
-  `proficient` tinyint(1) NOT NULL DEFAULT '0',
+  `proficiency` tinyint(1) NOT NULL DEFAULT '0',
   `expertise` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`character_id`,`skill_id`),
   KEY `character_id` (`character_id`),
@@ -586,7 +586,7 @@ CREATE TABLE `character_skill` (
 
 LOCK TABLES `character_skill` WRITE;
 /*!40000 ALTER TABLE `character_skill` DISABLE KEYS */;
-INSERT INTO `character_skill` VALUES (4,1,1,0),(4,2,1,1),(4,3,0,0),(4,4,0,0),(4,5,0,0),(4,6,0,0),(4,7,0,0),(4,8,0,0),(4,9,1,1),(4,10,0,0),(4,11,0,0),(4,12,0,0),(4,13,0,0),(4,14,0,0),(4,15,0,0),(4,16,0,0),(4,17,0,0),(4,18,0,0),(5,1,1,0),(5,2,1,1),(5,3,0,0),(5,4,0,0),(5,5,0,0),(5,6,0,0),(5,7,0,0),(5,8,0,0),(5,9,1,1),(5,10,0,0),(5,11,0,0),(5,12,0,0),(5,13,0,0),(5,14,0,0),(5,15,0,0),(5,16,0,0),(5,17,0,0),(5,18,0,0),(7,1,1,0),(7,2,1,1),(7,3,0,0),(7,4,1,1),(7,5,0,0),(7,6,0,0);
+INSERT INTO `character_skill` VALUES (3,1,1,0),(3,2,0,0),(3,3,0,0),(3,4,0,0),(3,5,0,0),(3,6,0,0),(3,7,0,0),(3,8,0,0),(3,9,1,0),(3,10,0,0),(3,11,0,0),(3,12,0,0),(3,13,0,0),(3,14,0,0),(3,15,0,0),(3,16,1,0),(3,17,0,0),(3,18,1,0),(4,1,1,0),(4,2,1,1),(4,3,0,0),(4,4,0,0),(4,5,0,0),(4,6,0,0),(4,7,0,0),(4,8,0,0),(4,9,1,1),(4,10,0,0),(4,11,0,0),(4,12,0,0),(4,13,0,0),(4,14,0,0),(4,15,0,0),(4,16,0,0),(4,17,0,0),(4,18,0,0),(5,1,1,0),(5,2,1,1),(5,3,0,0),(5,4,0,0),(5,5,0,0),(5,6,0,0),(5,7,0,0),(5,8,0,0),(5,9,1,1),(5,10,0,0),(5,11,0,0),(5,12,0,0),(5,13,0,0),(5,14,0,0),(5,15,0,0),(5,16,0,0),(5,17,0,0),(5,18,0,0),(7,1,1,0),(7,2,1,1),(7,3,0,0),(7,4,1,1),(7,5,0,0),(7,6,0,0),(8,1,0,0),(8,2,1,0),(8,3,1,0),(8,4,1,0),(8,5,0,0),(8,6,0,0),(8,7,1,0),(8,8,0,0),(8,9,0,0),(8,10,0,0),(8,11,0,0),(8,12,0,0),(8,13,0,0),(8,14,0,0),(8,15,0,0),(8,16,1,0),(8,17,0,0),(8,18,1,0);
 /*!40000 ALTER TABLE `character_skill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1607,4 +1607,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-29 12:58:33
+-- Dump completed on 2026-07-31 11:47:15
