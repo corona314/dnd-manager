@@ -330,7 +330,17 @@ body {
     position: relative; 
     height: 60px; 
     cursor: pointer;
-    transition: height 0.2s;
+    transition: height 0.2s, transform 0.15s ease, 
+                border-color 0.15s ease, background 0.15s ease;
+}
+.spell_card:hover {
+    transform: translateX(4px);
+    filter: brightness(1.08);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.spell_card:hover .spell_name {
+    filter: brightness(1.18);
 }
 .spell_card_base{
     display: flex;

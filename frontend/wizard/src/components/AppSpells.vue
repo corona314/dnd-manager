@@ -197,19 +197,6 @@
         applyFilters()
     }
 
-    function reverseComponent(comp) {
-        const current = filter_components.value[comp]
-
-        if (current === null) {
-            filter_components.value[comp] = false
-        } else if (current === false) {
-            filter_components.value[comp] = true
-        } else {
-            filter_components.value[comp] = null
-        }
-        applyFilters()
-    }
-
     async function expandSpell(spell) {
         if (expanded_id.value === spell.id) {
             expanded_spell.value = null
