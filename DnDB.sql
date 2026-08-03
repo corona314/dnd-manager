@@ -757,6 +757,33 @@ INSERT INTO `class_item` VALUES (1,60,1,'A',0),(1,73,1,'A',0),(1,79,4,'A',0),(2,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `class_resource`
+--
+
+DROP TABLE IF EXISTS `class_resource`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `class_resource` (
+  `class_id` int NOT NULL,
+  `name` varchar(60) NOT NULL,
+  `level` int NOT NULL,
+  `value` int DEFAULT NULL,
+  PRIMARY KEY (`class_id`,`name`,`level`),
+  CONSTRAINT `class_resource_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `class_resource`
+--
+
+LOCK TABLES `class_resource` WRITE;
+/*!40000 ALTER TABLE `class_resource` DISABLE KEYS */;
+INSERT INTO `class_resource` VALUES (1,'Rage',1,2),(1,'Rage',2,2),(1,'Rage',3,3),(1,'Rage',4,3),(1,'Rage',5,3),(1,'Rage',6,4),(1,'Rage',7,4),(1,'Rage',8,4),(1,'Rage',9,4),(1,'Rage',10,4),(1,'Rage',11,5),(1,'Rage',12,5),(1,'Rage',13,5),(1,'Rage',14,5),(1,'Rage',15,5),(1,'Rage',16,6),(1,'Rage',17,6),(1,'Rage',18,6),(1,'Rage',19,6),(1,'Rage',20,6),(1,'Rage Damage',1,2),(1,'Rage Damage',2,2),(1,'Rage Damage',3,2),(1,'Rage Damage',4,2),(1,'Rage Damage',5,2),(1,'Rage Damage',6,2),(1,'Rage Damage',7,2),(1,'Rage Damage',8,3),(1,'Rage Damage',9,3),(1,'Rage Damage',10,3),(1,'Rage Damage',11,3),(1,'Rage Damage',12,3),(1,'Rage Damage',13,3),(1,'Rage Damage',14,3),(1,'Rage Damage',15,4),(1,'Rage Damage',16,4),(1,'Rage Damage',17,4),(1,'Rage Damage',18,4),(1,'Rage Damage',19,4),(1,'Rage Damage',20,4),(1,'Weapon Mastery',1,2),(1,'Weapon Mastery',2,2),(1,'Weapon Mastery',3,2),(1,'Weapon Mastery',4,3),(1,'Weapon Mastery',5,3),(1,'Weapon Mastery',6,3),(1,'Weapon Mastery',7,3),(1,'Weapon Mastery',8,3),(1,'Weapon Mastery',9,4),(1,'Weapon Mastery',10,4),(1,'Weapon Mastery',11,4),(1,'Weapon Mastery',12,4),(1,'Weapon Mastery',13,4),(1,'Weapon Mastery',14,4),(1,'Weapon Mastery',15,4),(1,'Weapon Mastery',16,4),(1,'Weapon Mastery',17,4),(1,'Weapon Mastery',18,4),(1,'Weapon Mastery',19,4),(1,'Weapon Mastery',20,4);
+/*!40000 ALTER TABLE `class_resource` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `class_saving_throw`
 --
 
@@ -1048,7 +1075,7 @@ CREATE TABLE `feature_type` (
 
 LOCK TABLES `feature_type` WRITE;
 /*!40000 ALTER TABLE `feature_type` DISABLE KEYS */;
-INSERT INTO `feature_type` VALUES (5,'background'),(2,'class'),(4,'feat'),(7,'general'),(6,'item'),(1,'racial'),(3,'subclass');
+INSERT INTO `feature_type` VALUES (2,'class'),(7,'feature'),(6,'item'),(1,'racial'),(3,'subclass');
 /*!40000 ALTER TABLE `feature_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1630,4 +1657,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-02 22:42:42
+-- Dump completed on 2026-08-03 19:53:34
