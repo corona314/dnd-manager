@@ -36,7 +36,7 @@ public class SubclassService {
     }
 
     public SubclassResponseDto findByIdDto(Long id) {
-        return classMapper.subclassToResponseDto(findById(id));
+        return classMapper.toSubclassResponseDto(findById(id));
     }
 
     // Subclases de una clase concreta — útil para el select del front
@@ -46,7 +46,7 @@ public class SubclassService {
 
     public List<SubclassSummaryDto> findByClassDto(Long classId) {
         return findByClass(classId).stream()
-                .map(classMapper::subclassToSummaryDto)
+                .map(classMapper::toSubclassSummaryDto)
                 .toList();
     }
 
