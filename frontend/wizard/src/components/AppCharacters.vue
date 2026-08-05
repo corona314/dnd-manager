@@ -46,6 +46,7 @@ function determineResumeStep(character) {
     if (!character.species) return 'characterSpecie'
     if (!character.background) return 'characterBackground'
     if (!character.abilities?.length) return 'characterAbilities'
+    if (!character.items?.length) return 'characterEquipment'
     if (character.status !== 'FINAL') return 'characterFinalize'
     return 'characterClass'
 }

@@ -43,12 +43,16 @@
 
     const con_modifier = computed(() => modifierOf('CON'))
 
+    function rollHitDie(sides) {
+        return Math.floor(Math.random() * sides) + 1
+    }
+
     const calculated_max_hp = computed(() => {
         if (hit_die_max.value === null) return null
-        // Mínimo 1 HP, por si el mod de CON fuera muy negativo
-        return character.value?.maxHp + Math.max(1, hit_die_max.value + con_modifier.value)
+        const roll = rollHitDie(hit_die_max.value)
+        return character.value?.maxHp + Math.max(1, roll + con_modifier.value)
     })
-
+    
     //--- Cálculo de modificador de característica ---
     function abilityValue(code) {
         return character.value?.abilities?.find(a => a.ability === code)?.baseValue ?? 10

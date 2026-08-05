@@ -114,13 +114,15 @@
     })
 
     const class_money = computed(() => {
-        if (class_choice.value !== 'B') return 0
-        return moneyOf(class_detail.value, 'B')
+        if (class_choice.value === 'A') return moneyOf(class_detail.value, 'A')
+       if (class_choice.value === 'B') return moneyOf(class_detail.value, 'B')
+       return 0
     })
 
     const background_money = computed(() => {
-        if (background_choice.value !== 'B') return 0
-        return moneyOf(background_detail.value, 'B')
+        if (background_choice.value === 'A') return moneyOf(background_detail.value, 'A')
+        if (background_choice.value === 'B') return moneyOf(background_detail.value, 'B')
+        return 0
     })
 
     const total_money = computed(() => class_money.value + background_money.value)
@@ -291,6 +293,9 @@
                 <div v-for="entry in class_fixed_items" :key="entry.item.id" class="equipment_item_row">
                     {{ entry.quantity }}x {{ entry.item.name }}
                 </div>
+                <div v-if="moneyOf(class_detail, 'A') > 0" class="equipment_item_row">
+                    {{ (moneyOf(class_detail, 'A') / 100).toFixed(2) }} po
+                </div>
                 <div v-if="class_optional_items.length" class="equipment_optional_list">
                     <span class="equipment_optional_label">Opcionales:</span>
                     <label v-for="entry in class_optional_items" :key="entry.item.id" class="equipment_optional_row">
@@ -322,6 +327,9 @@
             <div v-if="background_choice === 'A'" class="equipment_items_preview">
                 <div v-for="entry in background_fixed_items" :key="entry.item.id" class="equipment_item_row">
                     {{ entry.quantity }}x {{ entry.item.name }}
+                </div>
+                <div v-if="moneyOf(background_detail, 'A') > 0" class="equipment_item_row">
+                    {{ (moneyOf(background_detail, 'A') / 100).toFixed(2) }} po
                 </div>
                 <div v-if="background_optional_items.length" class="equipment_optional_list">
                     <span class="equipment_optional_label">Opcionales:</span>
