@@ -61,4 +61,6 @@ public class ClassEntity {
     @OneToMany(mappedBy = "classEntity", fetch = FetchType.LAZY)
     private List<ClassStartingMoney> startingMoney;
 
+    @OneToMany(mappedBy = "classEntity")
+    private List<ClassResource> resources;
 }

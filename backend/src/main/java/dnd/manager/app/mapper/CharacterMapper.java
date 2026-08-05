@@ -61,7 +61,7 @@ public class CharacterMapper {
             e.getFlySpeed(),
             e.getSpecies() == null ? null : speciesMapper.toSummaryDto(e.getSpecies()),
             e.getClassEntity() == null ? null : classMapper.toSummaryDto(e.getClassEntity()),
-            e.getSubclass() == null ? null : classMapper.subclassToSummaryDto(e.getSubclass()),
+            e.getSubclass() == null ? null : classMapper.toSubclassSummaryDto(e.getSubclass()),
             e.getBackground() == null ? null : backgroundMapper.toSummaryDto(e.getBackground()),
             e.getAbilities() != null ? e.getAbilities().stream().map(this::toStatDto).toList() : List.of(),
             e.getSkills() != null ? e.getSkills().stream().map(this::toSkillResponseDto).toList() : List.of(),
@@ -92,7 +92,7 @@ public class CharacterMapper {
     private CharacterSkillResponseDto toSkillResponseDto(CharacterSkill skill) {
         return new CharacterSkillResponseDto(
             skillMapper.toDto(skill.getSkill()),
-            skill.getProficient(),
+            skill.getProficiency(),
             skill.getExpertise()
         );
     }

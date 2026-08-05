@@ -72,10 +72,10 @@
 
 
     const Damage_Text = {
-        Fire: '--text-on-dark',
-        Cold: '--text-on-dark',
+        Fire: '--text-on-light',
+        Cold: '--text-on-light',
         Lightning: '--text-on-light',
-        Poison: '--text-on-dark',
+        Poison: '--text-on-light',
         Acid: '--text-on-light',
         Necrotic: '--text-on-dark',
         Radiant: '--text-on-light',
@@ -194,19 +194,6 @@
         if (val === null) filter_components.value[comp] = true
         else if (val === true) filter_components.value[comp] = false
         else filter_components.value[comp] = null
-        applyFilters()
-    }
-
-    function reverseComponent(comp) {
-        const current = filter_components.value[comp]
-
-        if (current === null) {
-            filter_components.value[comp] = false
-        } else if (current === false) {
-            filter_components.value[comp] = true
-        } else {
-            filter_components.value[comp] = null
-        }
         applyFilters()
     }
 
@@ -382,7 +369,7 @@
                     }"
                     title="Ritual"
                 >
-                R
+                <RitualIcon />
                 </span>
 
                 <span
@@ -395,7 +382,7 @@
                     }"
                     title="Concentración"
                 >
-                C
+                <ConcentrationIcon />
                 </span>
             </div>
 
@@ -520,14 +507,46 @@
 
         <!--Selector de página-->
         <div class="spell_pages">
-            <button @click="goToPage(0)" :disabled="current_page === 0">««</button>
-            <button @click="goToPage(current_page - 1)" :disabled="current_page === 0">‹</button>
+            <button
+                class="page_button page_button--first"
+                @click="goToPage(0)"
+                :disabled="current_page === 0"
+                title="Primera página"
+            >
+                «
+            </button>
 
-            <span>Página {{ current_page + 1 }} de {{total_pages}}</span>
+            <button
+                class="page_button"
+                @click="goToPage(current_page - 1)"
+                :disabled="current_page === 0"
+                title="Página anterior"
+            >
+                ‹
+            </button>
 
-            <button @click="goToPage(current_page + 1)" :disabled="current_page >= total_pages - 1">›</button>
-            <button @click="goToPage(total_pages - 1)" :disabled="current_page >= total_pages - 1">»»</button>
-        </div>
+            <span class="page_info">
+                Page {{ current_page + 1 }} / {{ total_pages }}
+            </span>
+
+            <button
+                class="page_button"
+                @click="goToPage(current_page + 1)"
+                :disabled="current_page >= total_pages - 1"
+                title="Página siguiente"
+            >
+                ›
+            </button>
+
+            <button
+                class="page_button page_button--last"
+                @click="goToPage(total_pages - 1)"
+                :disabled="current_page >= total_pages - 1"
+                title="Última página"
+            >
+                »
+            </button>
+        </div>    
     </div>
 </template>
 

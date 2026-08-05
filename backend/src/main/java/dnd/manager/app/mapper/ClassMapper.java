@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import dnd.manager.app.dto.ClassDto.ClassArmorTypeDto;
 import dnd.manager.app.dto.ClassDto.ClassFeatureDto;
+import dnd.manager.app.dto.ClassDto.ClassResourceDto;
 import dnd.manager.app.dto.ClassDto.ClassResponseDto;
 import dnd.manager.app.dto.ClassDto.ClassSavingThrowDto;
 import dnd.manager.app.dto.ClassDto.ClassSummaryDto;
@@ -17,6 +18,7 @@ import dnd.manager.app.dto.ClassDto.SubclassSummaryDto;
 import dnd.manager.app.model.ClassEntities.ClassArmorType;
 import dnd.manager.app.model.ClassEntities.ClassEntity;
 import dnd.manager.app.model.ClassEntities.ClassFeature;
+import dnd.manager.app.model.ClassEntities.ClassResource;
 import dnd.manager.app.model.ClassEntities.ClassSavingThrow;
 import dnd.manager.app.model.ClassEntities.ClassSkill;
 import dnd.manager.app.model.ClassEntities.ClassSpell;
@@ -60,9 +62,10 @@ public class ClassMapper {
             e.getSpells().stream().sorted(Comparator.comparingInt((ClassSpell cs) -> cs.getSpell().getLevel())).map(cs -> spellMapper.toSummaryDto(cs.getSpell())).toList(),
             e.getArmorTypes().stream().map(this::toClassArmorTypeDto).toList(),
             e.getShield(),
-            subclassRepository.findByClassEntityId(e.getId()).stream().map(this::subclassToSummaryDto).toList(),
+            subclassRepository.findByClassEntityId(e.getId()).stream().map(this::toSubclassSummaryDto).toList(),
             e.getItems().stream().map(itemMapper::toClassItemDto).toList(),
-            e.getStartingMoney().stream().map(itemMapper::toClassStartingMoneyDto).toList()
+            e.getStartingMoney().stream().map(itemMapper::toClassStartingMoneyDto).toList(),
+            e.getResources().stream().map(this::toClassResourceDto).toList()
         );
     }
 
@@ -85,14 +88,14 @@ public class ClassMapper {
         );
     }
 
-    public SubclassSummaryDto subclassToSummaryDto(Subclass e) {
+    public SubclassSummaryDto toSubclassSummaryDto(Subclass e) {
         return new SubclassSummaryDto(
             e.getId(),
             e.getName()
         );
     }
 
-    public SubclassResponseDto subclassToResponseDto(Subclass e) {
+    public SubclassResponseDto toSubclassResponseDto(Subclass e) {
         return new SubclassResponseDto(
             e.getName(),
             e.getSubclassFeatures() == null ? List.of() : e.getSubclassFeatures().stream()
@@ -107,6 +110,14 @@ public class ClassMapper {
                     spellMapper.toSummaryDto(ss.getSpell())
                 ))
                 .toList()
+        );
+    }
+
+    public ClassResourceDto toClassResourceDto(ClassResource e) {
+        return new ClassResourceDto(
+            e.getName(),
+            e.getLevel(),
+            e.getValue()
         );
     }
 }

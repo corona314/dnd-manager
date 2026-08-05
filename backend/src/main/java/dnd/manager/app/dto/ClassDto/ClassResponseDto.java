@@ -17,6 +17,6 @@ public record ClassResponseDto (
     Boolean shield,
     List<SubclassSummaryDto> subclasses,
     List<ClassItemDto> items,
-    List<ClassStartingMoneyDto> startingMoney
-
+    List<ClassStartingMoneyDto> startingMoney,
+    List<ClassResourceDto> resources
 ){}
