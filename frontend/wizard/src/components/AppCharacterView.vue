@@ -99,8 +99,8 @@
                 <div v-for="s in character.skills" :key="s.skill.id" class="view_skill_row">
                     <span>{{ s.skill.skill }}</span>
                     <span>{{ s.skill.ability }}</span>
-                    <span v-if="s.proficient===true">*</span>
-                    <span>({{ skillModifier(modifierOf(s.skill.ability), s.proficient, s.expertise) }})</span>
+                    <span v-if="s.proficiency===true">*</span>
+                    <span>({{ skillModifier(modifierOf(s.skill.ability), s.proficiency, s.expertise) }})</span>
                 </div>
             </div>
 

@@ -107,7 +107,7 @@
 
         const existing = (character.value?.skills ?? []).map(s => ({
             skillId: s.skill.id,
-            proficient: s.proficient,
+            proficiency: s.proficiency,
             expertise: s.expertise
         }))
 
@@ -115,9 +115,9 @@
         grantedSkills.forEach(gs => {
             const found = merged.find(m => m.skillId === gs.id)
             if (found) {
-                found.proficient = true
+                found.proficiency = true
             } else {
-                merged.push({ skillId: gs.id, proficient: true, expertise: false })
+                merged.push({ skillId: gs.id, proficiency: true, expertise: false })
             }
         })
 

@@ -48,7 +48,7 @@
             const eligibleIds = new Set((class_detail.value?.skills ?? []).map(s => s.id))
 
             const alreadyProficient = (character.value?.skills ?? [])
-                .filter(cs => cs.proficient && eligibleIds.has(cs.skill.id))
+                .filter(cs => cs.proficiency && eligibleIds.has(cs.skill.id))
                 .map(cs => cs.skill.id)
 
             pregranted_skill_ids.value = alreadyProficient
@@ -99,11 +99,11 @@
 
             const nonClassSkills = (character.value?.skills ?? [])
                 .filter(cs => !eligibleIds.has(cs.skill.id))
-                .map(cs => ({ skillId: cs.skill.id, proficient: cs.proficient, expertise: cs.expertise }))
+                .map(cs => ({ skillId: cs.skill.id, proficiency: cs.proficiency, expertise: cs.expertise }))
 
             const classSkills = (class_detail.value?.skills ?? []).map(s => ({
                 skillId: s.id,
-                proficient: isPregranted(s.id) || selected_skill_ids.value.includes(s.id),
+                proficiency: isPregranted(s.id) || selected_skill_ids.value.includes(s.id),
                 expertise: false
             }))
 
