@@ -33,7 +33,7 @@ public class ClassResource{
     @Column(name = "level", nullable = false)
     private Integer level;
 
-    @Column(name = "value", nullable = false)
-    private Integer value;
+    @Column(name = "value", nullable = false, length = 10)
+    private String value;
 
 }
