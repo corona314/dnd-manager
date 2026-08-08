@@ -285,6 +285,47 @@
         return null
     }
 
+    function getSpellCardBackground(spell) {
+        const types = (spell.damageTypes ?? [])
+            .map(d => d.damageType)
+            .filter(Boolean)
+
+        if (types.length === 0) {
+            return `var(--surface)`
+        }
+
+        const colors = types.map(
+            t => `var(${Damage_Colors[t] || '--surface'})`
+        )
+
+        if (colors.length === 1) {
+            return colors[0]
+        }
+
+        const stops = colors.map((color, i) => {
+            const position = (i / (colors.length - 1)) * 100
+            return `${color} ${position}%`
+        }).join(', ')
+
+        return `linear-gradient(45deg, ${stops})`
+    }
+    function getSpellCardTextColor(spell) {
+        const types = (spell.damageTypes ?? [])
+            .map(d => d.damageType)
+            .filter(Boolean)
+
+        if (types.length === 0) return `var(--text)`
+
+        let darkVotes = 0
+        let lightVotes = 0
+        for (const t of types) {
+            if (Damage_Text[t] === '--text-on-dark') darkVotes++
+            else lightVotes++
+        }
+
+        return darkVotes > lightVotes ? `var(--text-on-dark)` : `var(--text-on-light)`
+    }
+
     function renderDescription(text) {
         if (!text) return ''
         const fixed = text
@@ -422,9 +463,9 @@
                 :key="spell.id"
                 class="spell_card"
                 :style="{
-                    backgroundColor: `var(${Damage_Colors[spell.damageTypes[0]?.damageType] || '--surface'})`,
-                    color: `var(${Damage_Text[spell.damageTypes[0]?.damageType] || '--text'})`
-                }"
+                    background: getSpellCardBackground(spell),
+                    color: getSpellCardTextColor(spell)
+                }"                
                 :class="{ 'spell_card--expanded': expanded_id === spell.id }"
                 v-no-double-select
                 @click="expandSpell(spell)"
