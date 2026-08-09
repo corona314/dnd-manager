@@ -33,7 +33,7 @@ public class CharacterFeat {
     @JoinColumn(name = "feat_id", nullable = false)
     private Feat feat;
 
-    // 'background', 'level', 'asi', etc.
+    // 'background', 'level', etc.
     @Column(name = "source", length = 30)
     private String source;
 

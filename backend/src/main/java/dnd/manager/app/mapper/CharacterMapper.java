@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
+import dnd.manager.app.dto.CharacterDto.CharacterFeatResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterItemResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillResponseDto;
@@ -27,14 +28,16 @@ public class CharacterMapper {
     private final ItemMapper itemMapper;
     private final SkillMapper skillMapper;
     private final SpellMapper spellMapper;
+    private final FeatMapper featMapper;
 
-    public CharacterMapper(SpeciesMapper speciesMapper, ClassMapper classMapper, BackgroundMapper backgroundMapper, ItemMapper itemMapper, SkillMapper skillMapper, SpellMapper spellMapper) {
+    public CharacterMapper(SpeciesMapper speciesMapper, ClassMapper classMapper, BackgroundMapper backgroundMapper, ItemMapper itemMapper, SkillMapper skillMapper, SpellMapper spellMapper, FeatMapper featMapper) {
         this.speciesMapper = speciesMapper;
         this.classMapper = classMapper;
         this.backgroundMapper = backgroundMapper;
         this.itemMapper = itemMapper;
         this.skillMapper = skillMapper;
         this.spellMapper = spellMapper;
+        this.featMapper = featMapper;
     }
 
     public CharacterSummaryDto toSummaryDto(CharacterEntity e) {
@@ -67,6 +70,7 @@ public class CharacterMapper {
             e.getSkills() != null ? e.getSkills().stream().map(this::toSkillResponseDto).toList() : List.of(),
             e.getItems() != null ? e.getItems().stream().map(this::toItemResponseDto).toList() : List.of(),
             e.getSpells() != null ? e.getSpells().stream().map(this::toSpellResponseDto).toList() : List.of(),
+            e.getFeats() != null ? e.getFeats().stream().map(cf -> new CharacterFeatResponseDto(featMapper.toDto(cf.getFeat()), cf.getSource(), cf.getSourceLevel())).toList() : List.of(),
             e.getStatus(),
             e.getCreatedAt(),
             e.getUpdatedAt(),

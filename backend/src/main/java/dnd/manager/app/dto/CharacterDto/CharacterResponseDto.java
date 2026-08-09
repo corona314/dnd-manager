@@ -30,6 +30,7 @@ public record CharacterResponseDto(
     List<CharacterSkillResponseDto> skills,
     List<CharacterItemResponseDto> items,
     List<CharacterSpellResponseDto> spells,
+    List<CharacterFeatResponseDto> feats,
     CharacterStatus status,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,

@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
+import dnd.manager.app.dto.CharacterDto.CharacterFeatDto;
 import dnd.manager.app.dto.CharacterDto.CharacterItemDto;
 import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
@@ -21,8 +22,10 @@ import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterItem;
 import dnd.manager.app.model.CharacterEntities.CharacterSkill;
 import dnd.manager.app.model.CharacterEntities.CharacterAbility;
+import dnd.manager.app.model.CharacterEntities.CharacterFeat;
 import dnd.manager.app.model.CharacterEntities.CharacterSpell;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
+import dnd.manager.app.model.Feat;
 import dnd.manager.app.model.ItemEntities.Item;
 import dnd.manager.app.repository.AbilityRepository;
 import dnd.manager.app.repository.UserRepository;
@@ -30,7 +33,9 @@ import dnd.manager.app.repository.BackgroundRepositories.BackgroundRepository;
 import dnd.manager.app.repository.CharacterRepositories.CharacterRepository;
 import dnd.manager.app.repository.CharacterRepositories.CharacterSpellRepository;
 import dnd.manager.app.repository.ClassRepositories.ClassRepository;
+import dnd.manager.app.repository.FeatRepositories.FeatRepository;
 import dnd.manager.app.repository.ItemRepositories.ItemRepository;
+import dnd.manager.app.repository.CharacterRepositories.CharacterFeatRepository;
 import dnd.manager.app.repository.SkillRepositories.SkillRepository;
 import dnd.manager.app.repository.SpeciesRepositories.SpeciesRepository;
 import dnd.manager.app.repository.SpellRepositories.SpellRepository;
@@ -52,6 +57,8 @@ public class CharacterService {
     private final SubclassRepository subclassRepository;
     private final BackgroundRepository backgroundRepository;
     private final CharacterSpellRepository characterSpellRepository;
+    private final CharacterFeatRepository characterFeatRepository;
+    private final FeatRepository featRepository;
     private final SpellRepository spellRepository;
 
     public CharacterService(
@@ -66,6 +73,8 @@ public class CharacterService {
         SubclassRepository subclassRepository,
         BackgroundRepository backgroundRepository,
         CharacterSpellRepository characterSpellRepository,
+        CharacterFeatRepository characterFeatRepository,
+        FeatRepository featRepository,
         SpellRepository spellRepository
     ) {
         this.repository = repository;
@@ -79,6 +88,8 @@ public class CharacterService {
         this.subclassRepository = subclassRepository;
         this.backgroundRepository = backgroundRepository;
         this.characterSpellRepository = characterSpellRepository;
+        this.characterFeatRepository = characterFeatRepository;
+        this.featRepository = featRepository;
         this.spellRepository = spellRepository;
     }
 
@@ -321,6 +332,58 @@ public class CharacterService {
             cs.setAlwaysPrepared(dto != null && dto.alwaysPrepared() != null ? dto.alwaysPrepared() : false);
             character.getSpells().add(cs);
             characterSpellRepository.save(cs);
+        }
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+    @Transactional
+    public CharacterResponseDto addFeat(Long userId, Long characterId, Long featId, CharacterFeatDto dto) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        Feat feat = featRepository.findById(featId)
+            .orElseThrow(() -> new EntityNotFoundException("Feat not found"));
+
+        if (character.getFeats() == null) {
+            character.setFeats(new ArrayList<>());
+        }
+
+        if (character.getFeats().stream().anyMatch(cf -> cf.getFeat().getId().equals(featId)) && (feat.getRepeatable() == null || !feat.getRepeatable())) {
+            throw new RuntimeException("Character already has this feat and it is not repeatable");
+        }
+        CharacterFeat characterFeat = new CharacterFeat();
+        characterFeat.setCharacter(character);
+        characterFeat.setFeat(feat);
+        characterFeat.setSource(dto != null && dto.source() != null ? dto.source() : "manual");
+        characterFeat.setSourceLevel(dto != null && dto.sourceLevel() != null ? dto.sourceLevel() : character.getLevel());
+        character.getFeats().add(characterFeat);
+        characterFeatRepository.save(characterFeat);
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+    @Transactional
+    public CharacterResponseDto removeFeat(Long userId, Long characterId, Long featId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        if (character.getFeats() != null) {
+            character.getFeats().stream()
+                .filter(cf -> cf.getFeat() != null && cf.getFeat().getId().equals(featId))
+                .sorted((a, b) -> {
+                    Integer aLevel = a.getSourceLevel();
+                    Integer bLevel = b.getSourceLevel();
+                    if (aLevel == null && bLevel == null) return 0;
+                    if (aLevel == null) return 1;
+                    if (bLevel == null) return -1;
+                    return bLevel.compareTo(aLevel);
+                })
+                .findFirst()
+                .ifPresent(cf -> {
+                    character.getFeats().remove(cf);
+                    characterFeatRepository.delete(cf);
+                });
         }
 
         return mapper.toResponseDto(repository.save(character));

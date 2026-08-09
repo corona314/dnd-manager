@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
+import dnd.manager.app.dto.CharacterDto.CharacterFeatDto;
 import dnd.manager.app.dto.CharacterDto.CharacterItemDto;
 import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
@@ -155,6 +156,27 @@ public class CharacterController {
     ) {
         return ResponseEntity.ok(service.removeSpell(user.getId(), id, spellId));
     }
+
+
+    @PostMapping("/{id}/feats/{featId}")
+    public ResponseEntity<CharacterResponseDto> addFeat(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long featId,
+        @RequestBody(required = false) CharacterFeatDto dto
+    ) {
+        return ResponseEntity.ok(service.addFeat(user.getId(), id, featId, dto));
+    }
+
+    @DeleteMapping("/{id}/feats/{featId}")
+    public ResponseEntity<CharacterResponseDto> removeFeat(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long featId
+    ) {
+        return ResponseEntity.ok(service.removeFeat(user.getId(), id, featId));
+    }
+
 
 
 
