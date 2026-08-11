@@ -13,8 +13,6 @@ public record CharacterPatchDto(
     Integer walkSpeed,
     Integer flySpeed,
     Long speciesId,
-    Long classId,
-    Long subclassId,
     Long backgroundId
 
 ) {}

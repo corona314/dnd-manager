@@ -20,25 +20,37 @@ import dnd.manager.app.mapper.CharacterMapper;
 import dnd.manager.app.model.User;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterItem;
+import dnd.manager.app.model.CharacterEntities.CharacterResource;
 import dnd.manager.app.model.CharacterEntities.CharacterSkill;
 import dnd.manager.app.model.CharacterEntities.CharacterAbility;
+import dnd.manager.app.model.CharacterEntities.CharacterClass;
 import dnd.manager.app.model.CharacterEntities.CharacterFeat;
+import dnd.manager.app.model.CharacterEntities.CharacterFeature;
 import dnd.manager.app.model.CharacterEntities.CharacterSpell;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
+import dnd.manager.app.model.ClassEntities.ClassEntity;
+import dnd.manager.app.model.ClassEntities.ClassFeature;
+import dnd.manager.app.model.ClassEntities.ClassResource;
+import dnd.manager.app.model.FeatureEntities.Feature;
 import dnd.manager.app.model.Feat;
 import dnd.manager.app.model.ItemEntities.Item;
+import dnd.manager.app.model.SubclassEntities.Subclass;
+import dnd.manager.app.model.SubclassEntities.SubclassFeature;
 import dnd.manager.app.repository.AbilityRepository;
 import dnd.manager.app.repository.UserRepository;
 import dnd.manager.app.repository.BackgroundRepositories.BackgroundRepository;
 import dnd.manager.app.repository.CharacterRepositories.CharacterRepository;
 import dnd.manager.app.repository.CharacterRepositories.CharacterSpellRepository;
+import dnd.manager.app.repository.ClassRepositories.ClassFeatureRepository;
 import dnd.manager.app.repository.ClassRepositories.ClassRepository;
+import dnd.manager.app.repository.ClassRepositories.ClassResourceRepository;
 import dnd.manager.app.repository.FeatRepositories.FeatRepository;
 import dnd.manager.app.repository.ItemRepositories.ItemRepository;
 import dnd.manager.app.repository.CharacterRepositories.CharacterFeatRepository;
 import dnd.manager.app.repository.SkillRepositories.SkillRepository;
 import dnd.manager.app.repository.SpeciesRepositories.SpeciesRepository;
 import dnd.manager.app.repository.SpellRepositories.SpellRepository;
+import dnd.manager.app.repository.SubclassRepositories.SubclassFeatureRepository;
 import dnd.manager.app.repository.SubclassRepositories.SubclassRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -53,13 +65,16 @@ public class CharacterService {
     private final ItemRepository itemRepository;
     private final CharacterMapper mapper;
     private final SpeciesRepository speciesRepository;
-    private final ClassRepository classRepository;
-    private final SubclassRepository subclassRepository;
     private final BackgroundRepository backgroundRepository;
     private final CharacterSpellRepository characterSpellRepository;
     private final CharacterFeatRepository characterFeatRepository;
     private final FeatRepository featRepository;
     private final SpellRepository spellRepository;
+    private final ClassRepository classRepository;
+    private final SubclassRepository subclassRepository;
+    private final ClassFeatureRepository classFeatureRepository;
+    private final SubclassFeatureRepository subclassFeatureRepository;
+    private final ClassResourceRepository classResourceRepository;
 
     public CharacterService(
         CharacterRepository repository,
@@ -69,13 +84,16 @@ public class CharacterService {
         ItemRepository itemRepository,
         CharacterMapper mapper, 
         SpeciesRepository speciesRepository, 
-        ClassRepository classRepository, 
-        SubclassRepository subclassRepository,
         BackgroundRepository backgroundRepository,
         CharacterSpellRepository characterSpellRepository,
         CharacterFeatRepository characterFeatRepository,
         FeatRepository featRepository,
-        SpellRepository spellRepository
+        SpellRepository spellRepository, 
+        ClassRepository classRepository, 
+        SubclassRepository subclassRepository, 
+        ClassFeatureRepository classFeatureRepository, 
+        SubclassFeatureRepository subclassFeatureRepository,
+        ClassResourceRepository classResourceRepository
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
@@ -84,13 +102,16 @@ public class CharacterService {
         this.itemRepository = itemRepository;
         this.mapper = mapper;
         this.speciesRepository = speciesRepository;
-        this.classRepository = classRepository;
-        this.subclassRepository = subclassRepository;
         this.backgroundRepository = backgroundRepository;
         this.characterSpellRepository = characterSpellRepository;
         this.characterFeatRepository = characterFeatRepository;
         this.featRepository = featRepository;
         this.spellRepository = spellRepository;
+        this.classRepository = classRepository;
+        this.subclassRepository = subclassRepository;
+        this.classFeatureRepository = classFeatureRepository;
+        this.subclassFeatureRepository = subclassFeatureRepository;
+        this.classResourceRepository = classResourceRepository;
     }
 
 
@@ -140,8 +161,6 @@ public class CharacterService {
         if (dto.walkSpeed() != null) entity.setWalkSpeed(dto.walkSpeed());
         if (dto.flySpeed() != null) entity.setFlySpeed(dto.flySpeed());
         if (dto.speciesId() != null) entity.setSpecies(speciesRepository.findById(dto.speciesId()).orElseThrow(() -> new RuntimeException("Species not found")));
-        if (dto.classId() != null) entity.setClassEntity(classRepository.findById(dto.classId()).orElseThrow(() -> new RuntimeException("Class not found")));
-        if (dto.subclassId() != null) entity.setSubclass(subclassRepository.findById(dto.subclassId()).orElseThrow(() -> new RuntimeException("Subclass not found")));
         if (dto.backgroundId() != null) entity.setBackground(backgroundRepository.findById(dto.backgroundId()).orElseThrow(() -> new RuntimeException("Background not found")));
         entity.setUpdatedAt(LocalDateTime.now());
 
@@ -154,6 +173,8 @@ public class CharacterService {
         repository.delete(entity);
     }
 
+
+    // Replaces
     @Transactional
     public CharacterResponseDto replaceAbilities(Long userId, Long id, List<CharacterAbilityDto> dtos) {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);
@@ -338,6 +359,43 @@ public class CharacterService {
     }
 
     @Transactional
+    public CharacterResponseDto updateSpell(Long userId, Long characterId, Long spellId, CharacterSpellDto dto) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        character.getSpells().stream()
+            .filter(cs -> cs.getSpell().getId().equals(spellId))
+            .findFirst()
+            .ifPresent(cs -> {
+                if (dto.prepared() != null) cs.setPrepared(dto.prepared());
+                if (dto.alwaysPrepared() != null) cs.setAlwaysPrepared(dto.alwaysPrepared());
+            });
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+    @Transactional
+    public CharacterResponseDto removeSpell(Long userId, Long characterId, Long spellId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        character.getSpells().stream()
+            .filter(cs -> cs.getSpell().getId().equals(spellId))
+            .findFirst()
+            .ifPresent(cs -> {
+                character.getSpells().remove(cs);
+                characterSpellRepository.delete(cs);
+            });
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+
+
+
+    // Feat management
+
+    @Transactional
     public CharacterResponseDto addFeat(Long userId, Long characterId, Long featId, CharacterFeatDto dto) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         if (character == null) throw new EntityNotFoundException("Character not found");
@@ -389,37 +447,249 @@ public class CharacterService {
         return mapper.toResponseDto(repository.save(character));
     }
 
-    @Transactional
-    public CharacterResponseDto updateSpell(Long userId, Long characterId, Long spellId, CharacterSpellDto dto) {
+
+
+    // Classes and Subclasses management
+
+    public CharacterResponseDto addClass(Long userId, Long characterId, Long classId) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         if (character == null) throw new EntityNotFoundException("Character not found");
 
-        character.getSpells().stream()
-            .filter(cs -> cs.getSpell().getId().equals(spellId))
-            .findFirst()
-            .ifPresent(cs -> {
-                if (dto.prepared() != null) cs.setPrepared(dto.prepared());
-                if (dto.alwaysPrepared() != null) cs.setAlwaysPrepared(dto.alwaysPrepared());
-            });
+        ClassEntity classEntity = classRepository.findById(classId)
+            .orElseThrow(() -> new EntityNotFoundException("Class not found"));
+
+        boolean hasClass = character.getClasses().stream()
+            .anyMatch(cc -> cc.getClassEntity().getId().equals(classId));
+        if (hasClass) {
+            throw new RuntimeException("Character already has this class");
+        }
+
+        CharacterClass characterClass = new CharacterClass();
+        characterClass.setCharacter(character);
+        characterClass.setClassEntity(classEntity);
+        characterClass.setLevel(1);
+        character.setLevel(character.getLevel() + 1);
+        
+        character.getClasses().add(characterClass);
+        addClassFeatures(character, classId, 1);
+        updateClassResources(character, classId, 1);
 
         return mapper.toResponseDto(repository.save(character));
     }
 
-    @Transactional
-    public CharacterResponseDto removeSpell(Long userId, Long characterId, Long spellId) {
+    public CharacterResponseDto addSubclass(Long userId, Long characterId, Long classId, Long subclassId) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         if (character == null) throw new EntityNotFoundException("Character not found");
 
-        character.getSpells().stream()
-            .filter(cs -> cs.getSpell().getId().equals(spellId))
+        classRepository.findById(classId)
+            .orElseThrow(() -> new EntityNotFoundException("Class not found"));
+
+        Subclass subclass = subclassRepository.findById(subclassId)
+            .orElseThrow(() -> new EntityNotFoundException("Subclass not found"));
+
+        CharacterClass characterClass = character.getClasses().stream()
+            .filter(cc -> cc.getClassEntity().getId().equals(classId))
             .findFirst()
-            .ifPresent(cs -> {
-                character.getSpells().remove(cs);
-                characterSpellRepository.delete(cs);
-            });
+            .orElseThrow(() -> new RuntimeException("Character does not have this class"));
+
+        if (characterClass.getSubclass() != null) {
+            throw new RuntimeException("Character already has a subclass for this class");
+        }
+
+        characterClass.setSubclass(subclass);
 
         return mapper.toResponseDto(repository.save(character));
     }
+
+    public CharacterResponseDto removeClass(Long userId, Long characterId, Long classId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        CharacterClass characterClass = character.getClasses().stream()
+            .filter(cc -> cc.getClassEntity().getId().equals(classId))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Character does not have this class"));
+
+        removeClassResources(character, classId);
+        character.getClasses().remove(characterClass);
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+
+    public CharacterResponseDto levelUpClass(Long userId, Long characterId, Long classId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        CharacterClass characterClass = character.getClasses().stream()
+            .filter(cc -> cc.getClassEntity().getId().equals(classId))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Character does not have this class"));
+
+        characterClass.setLevel(characterClass.getLevel() + 1);
+        character.setLevel(character.getLevel() + 1);
+        addClassFeatures(character, classId, characterClass.getLevel());
+        updateClassResources(character, classId, characterClass.getLevel());
+        
+        if (characterClass.getSubclass() != null) {
+            addSubclassFeatures(character, characterClass.getSubclass().getId(), characterClass.getLevel());
+        }
+
+        return mapper.toResponseDto(repository.save(character));
+
+    }
+
+    public CharacterResponseDto levelDownClass(Long userId, Long characterId, Long classId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        CharacterClass characterClass = character.getClasses().stream()
+            .filter(cc -> cc.getClassEntity().getId().equals(classId))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Character does not have this class"));
+
+        if (characterClass.getLevel() <= 1) {
+            removeClassFeatures(character, classId, 1);
+            return removeClass(userId, characterId, classId);
+        }
+
+        characterClass.setLevel(characterClass.getLevel() - 1);
+        character.setLevel(character.getLevel() - 1);
+        removeClassFeatures(character, classId, characterClass.getLevel() + 1);
+        updateClassResources(character, classId, characterClass.getLevel());
+        removeSubclassFeatures(character, characterClass.getSubclass() != null ? characterClass.getSubclass().getId() : null, characterClass.getLevel() + 1);
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+
+    // Helper methods to add and remove class features when leveling up or down
+    private void addClassFeatures(CharacterEntity character, Long classId, Integer level) {
+        List<ClassFeature> classFeatures =
+            classFeatureRepository.findByClassEntityIdAndLevel(classId, level);
+
+        for (ClassFeature classFeature : classFeatures) {
+
+            Feature feature = classFeature.getFeature();
+
+            boolean alreadyHasFeature = character.getFeatures().stream()
+                .anyMatch(cf ->
+                    cf.getFeature().getId().equals(feature.getId())
+                );
+
+            if (alreadyHasFeature) {
+                continue;
+            }
+
+            CharacterFeature characterFeature = new CharacterFeature();
+            characterFeature.setCharacter(character);
+            characterFeature.setFeature(feature);
+
+            character.getFeatures().add(characterFeature);
+        }
+    }
+
+    private void removeClassFeatures(CharacterEntity character, Long classId, Integer level) {
+        List<ClassFeature> classFeatures = classFeatureRepository.findByClassEntityIdAndLevel(classId, level );
+
+        for (ClassFeature classFeature : classFeatures) {
+
+            Long featureId = classFeature.getFeature().getId();
+            character.getFeatures().removeIf(cf -> cf.getFeature().getId().equals(featureId));
+        }
+    }
+
+    
+    // Helper methods to add and remove subclass features when leveling up or down
+    private void addSubclassFeatures(CharacterEntity character, Long subclassId, Integer level) {
+        List<SubclassFeature> subclassFeatures =
+            subclassFeatureRepository.findBySubclassIdAndLevel(subclassId, level);
+
+        for (SubclassFeature subclassFeature : subclassFeatures) {
+            Feature feature = subclassFeature.getFeature();
+
+            boolean alreadyHasFeature = character.getFeatures().stream()
+                .anyMatch(cf ->
+                    cf.getFeature().getId().equals(feature.getId())
+                );
+
+            if (alreadyHasFeature) {
+                continue;
+            }
+
+            CharacterFeature characterFeature = new CharacterFeature();
+            characterFeature.setCharacter(character);
+            characterFeature.setFeature(feature);
+
+            character.getFeatures().add(characterFeature);
+        }
+    }
+
+    private void removeSubclassFeatures(CharacterEntity character, Long subclassId, Integer level) {
+        List<SubclassFeature> subclassFeatures = subclassFeatureRepository.findBySubclassIdAndLevel(subclassId, level );
+
+        for (SubclassFeature subclassFeature : subclassFeatures) {
+            Long featureId = subclassFeature.getFeature().getId();
+            character.getFeatures().removeIf(cf -> cf.getFeature().getId().equals(featureId));
+        }
+    }
+
+
+
+    // Helper method to add and remove resources when leveling up or down
+
+    private void updateClassResources(CharacterEntity character, Long classId, Integer level) {
+        List<ClassResource> classResources = classResourceRepository.findByClassEntityIdAndLevel(classId, level);
+
+        for (ClassResource classResource : classResources) {
+
+            Integer maxValue = parseResourceValue(classResource.getValue());
+
+            CharacterResource characterResource = character.getResources().stream()
+                .filter(cr -> cr.getName().equals(classResource.getName()) && cr.getClassEntity().getId().equals(classId))
+                .findFirst()
+                .orElse(null);
+
+            if (characterResource == null) {
+                characterResource = new CharacterResource();
+
+                characterResource.setCharacter(character);
+                characterResource.setClassEntity(classResource.getClassEntity());
+                characterResource.setName(classResource.getName());
+                characterResource.setMaxValue(maxValue);
+                characterResource.setCurrentValue(maxValue);
+
+                character.getResources().add(characterResource);
+
+            } else {
+                characterResource.setMaxValue(maxValue);
+
+                if (characterResource.getCurrentValue() > maxValue) {
+                    characterResource.setCurrentValue(maxValue);
+                }
+            }
+        }
+    }
+
+    private void removeClassResources(CharacterEntity character, Long classId) {
+        character.getResources().removeIf(
+            resource ->
+                resource.getClassEntity().getId().equals(classId)
+        );
+    }
+
+    private Integer parseResourceValue(String value) {
+        if (value == null || value.isBlank()) {
+            return 0;
+        }
+
+        String number = value.replaceFirst("[^0-9].*$", "");
+
+        return number.isEmpty() ? 0 : Integer.parseInt(number);
+    }
+
+
 
     // Finalizar personaje
     public CharacterResponseDto finalize(Long userId, Long id) {
@@ -428,7 +698,6 @@ public class CharacterService {
         entity.setStatus(CharacterStatus.FINAL);
         entity.setUpdatedAt(LocalDateTime.now());
         entity.setFinalizedAt(LocalDateTime.now());
-        entity.setLevel(entity.getLevel()+1);
         return mapper.toResponseDto(repository.save(entity));
     }
 }

@@ -10,6 +10,5 @@ import dnd.manager.app.model.SubclassEntities.SubclassFeatureId;
 
 public interface SubclassFeatureRepository extends JpaRepository<SubclassFeature, SubclassFeatureId> {
 
-    List<SubclassFeature> findBySubclassIdAndLevelLessThanEqual(Long subclassId, Integer level);
-
+    List<SubclassFeature> findBySubclassIdAndLevel(Long subclassId, Integer level);
 }

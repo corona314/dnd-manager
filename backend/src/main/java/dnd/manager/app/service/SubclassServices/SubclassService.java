@@ -26,10 +26,6 @@ public class SubclassService {
         this.classMapper = classMapper;
     }
 
-    public List<Subclass> findAll() {
-        return subclassRepository.findAll();
-    }
-
     public Subclass findById(Long id) {
         return subclassRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Subclass not found with id: " + id));
@@ -60,6 +56,6 @@ public class SubclassService {
 
     // Features de subclase filtrados por nivel del personaje
     public List<?> findFeaturesBySubclassAndLevel(Long subclassId, Integer level) {
-        return subclassFeatureRepository.findBySubclassIdAndLevelLessThanEqual(subclassId, level);
+        return subclassFeatureRepository.findBySubclassIdAndLevel(subclassId, level);
     }
 }

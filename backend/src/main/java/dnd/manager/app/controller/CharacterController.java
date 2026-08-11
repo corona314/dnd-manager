@@ -39,28 +39,43 @@ public class CharacterController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<List<CharacterSummaryDto>> getMyCharacters(@AuthenticationPrincipal User user){
+    public ResponseEntity<List<CharacterSummaryDto>> getMyCharacters(
+        @AuthenticationPrincipal User user
+    ){
         return ResponseEntity.ok(service.findByUserId(user.getId()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CharacterResponseDto> getById(@AuthenticationPrincipal User user, @PathVariable Long id) {
+    public ResponseEntity<CharacterResponseDto> getById(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id
+    ) {
         return ResponseEntity.ok(service.findByUserIdAndId(user.getId(), id));
     }
     
     @PostMapping
-    public ResponseEntity<CharacterSummaryDto> create(@AuthenticationPrincipal User user, @RequestBody CharacterCreateDto dto) {
+    public ResponseEntity<CharacterSummaryDto> create(
+        @AuthenticationPrincipal User user, 
+        @RequestBody CharacterCreateDto dto
+    ) {
         
         return ResponseEntity.ok(service.create(user.getId(), dto));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CharacterResponseDto> patch(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody CharacterPatchDto dto) {
+    public ResponseEntity<CharacterResponseDto> patch(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id, 
+        @RequestBody CharacterPatchDto dto
+    ) {
         return ResponseEntity.ok(service.patch(user.getId(), id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@AuthenticationPrincipal User user, @PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id
+    ) {
         service.delete(user.getId(), id);
         return ResponseEntity.noContent().build();
     }    
@@ -77,11 +92,57 @@ public class CharacterController {
     }
 
     @PatchMapping("/{id}/skills")
-    public ResponseEntity<CharacterResponseDto> replaceSkills(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody List<CharacterSkillDto> dto) {
+    public ResponseEntity<CharacterResponseDto> replaceSkills(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id, 
+        @RequestBody List<CharacterSkillDto> dto
+    ) {
         return ResponseEntity.ok(service.replaceSkills(user.getId(), id, dto));
     }
 
 
+
+    // Classes
+
+    @PostMapping("/{id}/classes/{classId}")
+    public ResponseEntity<CharacterResponseDto> addClass(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id, 
+        @PathVariable Long classId
+    ) {
+        return ResponseEntity.ok(service.addClass(user.getId(), id, classId));
+    }
+
+    @DeleteMapping("/{id}/classes/{classId}")
+    public ResponseEntity<CharacterResponseDto> removeClass(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long classId
+    ) {
+        return ResponseEntity.ok(service.removeClass(user.getId(), id, classId));
+    }
+
+    //Level up and down a class
+    @PatchMapping("/{id}/classes/{classId}/level-up")
+    public ResponseEntity<CharacterResponseDto> levelUpClass(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long classId
+    ) {
+        return ResponseEntity.ok(service.levelUpClass(user.getId(), id, classId));
+    }
+
+    @PatchMapping("/{id}/classes/{classId}/level-down")
+    public ResponseEntity<CharacterResponseDto> levelDownClass(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long classId
+    ) {
+        return ResponseEntity.ok(service.levelDownClass(user.getId(), id, classId));
+    }
+
+
+    
     //Items
 
     @PostMapping("/{id}/items/{itemId}/buy")
@@ -158,6 +219,9 @@ public class CharacterController {
     }
 
 
+
+    // Feats
+
     @PostMapping("/{id}/feats/{featId}")
     public ResponseEntity<CharacterResponseDto> addFeat(
         @AuthenticationPrincipal User user,
@@ -180,7 +244,7 @@ public class CharacterController {
 
 
 
-
+    // Finalize
     @PatchMapping("/{id}/finalize")
     public ResponseEntity<CharacterResponseDto> finalize(@AuthenticationPrincipal User user, @PathVariable Long id){
         return ResponseEntity.ok(service.finalize(user.getId(), id));

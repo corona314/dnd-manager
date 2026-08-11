@@ -1,6 +1,7 @@
 package dnd.manager.app.dto.CharacterDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 
@@ -13,8 +14,8 @@ public record CharacterSummaryDto (
     Long id,
     String name,
     Integer level,
-    String className,
-    String speciesName,
+    List<String> classes,
+    String species,
     CharacterStatus status,
     LocalDateTime updatedAt
 

@@ -385,8 +385,6 @@ CREATE TABLE `character` (
   `money` int NOT NULL DEFAULT '0',
   `experience` int NOT NULL DEFAULT '0',
   `species_id` int DEFAULT NULL,
-  `class_id` int DEFAULT NULL,
-  `subclass_id` int DEFAULT NULL,
   `background_id` int DEFAULT NULL,
   `walk_speed` int DEFAULT '0',
   `fly_speed` int DEFAULT '0',
@@ -396,15 +394,11 @@ CREATE TABLE `character` (
   `status` enum('DRAFT','FINAL') DEFAULT 'DRAFT',
   PRIMARY KEY (`id`),
   KEY `fk_character_species` (`species_id`),
-  KEY `fk_character_class` (`class_id`),
-  KEY `fk_character_subclass` (`subclass_id`),
   KEY `character_user` (`user_id`),
   KEY `fk_character_background` (`background_id`),
   CONSTRAINT `character_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `fk_character_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
-  CONSTRAINT `fk_character_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
-  CONSTRAINT `fk_character_subclass` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
+  CONSTRAINT `fk_character_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -413,6 +407,7 @@ CREATE TABLE `character` (
 
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
+INSERT INTO `character` VALUES (10,1,'Gandalf',0,0,0,0,0,NULL,NULL,NULL,NULL,'2026-08-09 17:47:24','2026-08-09 17:47:24',NULL,'DRAFT');
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -445,6 +440,37 @@ LOCK TABLES `character_ability` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `character_class`
+--
+
+DROP TABLE IF EXISTS `character_class`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_class` (
+  `character_id` int NOT NULL,
+  `class_id` int NOT NULL,
+  `subclass_id` int DEFAULT NULL,
+  `level` int NOT NULL DEFAULT '1',
+  PRIMARY KEY (`character_id`,`class_id`),
+  KEY `character_class_class` (`class_id`),
+  KEY `character_class_subclass` (`subclass_id`),
+  CONSTRAINT `character_class_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
+  CONSTRAINT `character_class_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
+  CONSTRAINT `character_class_subclass` FOREIGN KEY (`subclass_id`) REFERENCES `subclass` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_class`
+--
+
+LOCK TABLES `character_class` WRITE;
+/*!40000 ALTER TABLE `character_class` DISABLE KEYS */;
+INSERT INTO `character_class` VALUES (10,10,NULL,1);
+/*!40000 ALTER TABLE `character_class` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `character_feat`
 --
 
@@ -462,7 +488,7 @@ CREATE TABLE `character_feat` (
   KEY `character_feat_feat` (`feat_id`),
   CONSTRAINT `character_feat_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
   CONSTRAINT `character_feat_feat` FOREIGN KEY (`feat_id`) REFERENCES `feat` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -471,7 +497,35 @@ CREATE TABLE `character_feat` (
 
 LOCK TABLES `character_feat` WRITE;
 /*!40000 ALTER TABLE `character_feat` DISABLE KEYS */;
+INSERT INTO `character_feat` VALUES (7,10,1,'level',4),(8,10,1,'level',8);
 /*!40000 ALTER TABLE `character_feat` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `character_feature`
+--
+
+DROP TABLE IF EXISTS `character_feature`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_feature` (
+  `character_id` int NOT NULL,
+  `feature_id` int NOT NULL,
+  PRIMARY KEY (`character_id`,`feature_id`),
+  KEY `character_feature_feature` (`feature_id`),
+  CONSTRAINT `character_feature_character` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
+  CONSTRAINT `character_feature_feature` FOREIGN KEY (`feature_id`) REFERENCES `feature` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_feature`
+--
+
+LOCK TABLES `character_feature` WRITE;
+/*!40000 ALTER TABLE `character_feature` DISABLE KEYS */;
+INSERT INTO `character_feature` VALUES (10,148),(10,275);
+/*!40000 ALTER TABLE `character_feature` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -511,13 +565,15 @@ DROP TABLE IF EXISTS `character_resource`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `character_resource` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `character_id` int NOT NULL,
   `name` varchar(45) NOT NULL,
+  `class_id` int NOT NULL,
   `current_value` int NOT NULL,
   `max_value` int NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`character_id`,`name`,`class_id`),
   KEY `character_id` (`character_id`),
+  KEY `character_resource_class` (`class_id`),
+  CONSTRAINT `character_resource_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
   CONSTRAINT `character_resource_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1658,4 +1714,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-08 20:01:00
+-- Dump completed on 2026-08-11 19:27:02

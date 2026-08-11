@@ -1,7 +1,6 @@
 package dnd.manager.app.model.CharacterEntities;
 
-import dnd.manager.app.model.ClassEntities.ClassEntity;
-import jakarta.persistence.Column;
+import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -14,31 +13,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "character_resource")
+@Table(name = "character_feature")
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(CharacterResourceId.class)
+@IdClass(CharacterFeatureId.class)
 
-public class CharacterResource {
+public class CharacterFeature {
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "character_id", nullable = false)
-    private CharacterEntity character;
-    
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id", nullable = false)
-    private ClassEntity classEntity;
-    
+    @JoinColumn(name = "character_id", nullable = false)
+    private CharacterEntity character;
+
     @Id
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Column(name = "current_value", nullable = false)
-    private Integer currentValue;
-
-    @Column(name = "max_value", nullable = false)
-    private Integer maxValue;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "feature_id", nullable = false)
+    private Feature feature;    
 }

@@ -5,9 +5,7 @@ import java.util.List;
 
 import dnd.manager.app.model.User;
 import dnd.manager.app.model.BackgroundEntities.Background;
-import dnd.manager.app.model.ClassEntities.ClassEntity;
 import dnd.manager.app.model.SpeciesEntities.Species;
-import dnd.manager.app.model.SubclassEntities.Subclass;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -62,14 +60,6 @@ public class CharacterEntity {
     @JoinColumn(name = "species_id")
     private Species species;
 
-    @ManyToOne
-    @JoinColumn(name = "class_id")
-    private ClassEntity classEntity;
-
-    @ManyToOne
-    @JoinColumn(name = "subclass_id")
-    private Subclass subclass;
-
     @Column(name = "walk_speed")
     private Integer walkSpeed;
 
@@ -95,7 +85,7 @@ public class CharacterEntity {
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterAbility> abilities;
 
-    @OneToMany(mappedBy = "character")
+    @OneToMany(mappedBy = "character", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterResource> resources;
 
     @ManyToOne
@@ -114,4 +104,9 @@ public class CharacterEntity {
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
     private List<CharacterSavingThrow> savingThrows;
 
+    @OneToMany(mappedBy = "character", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CharacterFeature> features;
+
+    @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CharacterClass> classes;
 }
