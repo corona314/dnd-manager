@@ -37,6 +37,9 @@ public class ClassEntity {
     @Column(name = "number_skills", nullable = false)
     private Integer numberSkills;
 
+    @Column(name = "number_tools", nullable = false)
+    private Integer numberTools;
+    
     @OneToMany(mappedBy = "classEntity")
     private List<ClassSavingThrow> savingThrows;
 

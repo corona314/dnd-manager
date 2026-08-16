@@ -36,6 +36,9 @@ public class Background {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "number_tools", nullable = false)
+    private Integer numberTools;
+
     @OneToMany(mappedBy = "background", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BackgroundSkill> backgroundSkills;
 
@@ -58,5 +61,6 @@ public class Background {
 
     @OneToMany(mappedBy = "background", fetch = FetchType.LAZY)
     private List<BackgroundStartingMoney> startingMoney;
+
 
 }

@@ -107,6 +107,7 @@ CREATE TABLE `background` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(60) NOT NULL,
   `description` text,
+  `number_tools` int NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `background_name_UNIQUE` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -118,7 +119,7 @@ CREATE TABLE `background` (
 
 LOCK TABLES `background` WRITE;
 /*!40000 ALTER TABLE `background` DISABLE KEYS */;
-INSERT INTO `background` VALUES (1,'Acolyte','You devoted part of your life to serving a temple, faith, or sacred tradition. You are familiar with religious rituals, spiritual teachings, and guiding the faithful.'),(2,'Criminal','You lived outside the law as a thief, smuggler, con artist, or member of a criminal organization. You know how to stay unnoticed and seize opportunities.'),(3,'Sage','You spent years studying the world and gathering knowledge. Ancient tomes, libraries, and forgotten lore are your domain, and you are always eager to learn more.'),(4,'Soldier','You served in an army, militia, or other organized force. Discipline, training, and battlefield experience have prepared you to face danger and fight alongside others.');
+INSERT INTO `background` VALUES (1,'Acolyte','You devoted part of your life to serving a temple, faith, or sacred tradition. You are familiar with religious rituals, spiritual teachings, and guiding the faithful.',1),(2,'Criminal','You lived outside the law as a thief, smuggler, con artist, or member of a criminal organization. You know how to stay unnoticed and seize opportunities.',1),(3,'Sage','You spent years studying the world and gathering knowledge. Ancient tomes, libraries, and forgotten lore are your domain, and you are always eager to learn more.',1),(4,'Soldier','You served in an army, militia, or other organized force. Discipline, training, and battlefield experience have prepared you to face danger and fight alongside others.',1);
 /*!40000 ALTER TABLE `background` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -407,7 +408,7 @@ CREATE TABLE `character` (
 
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
-INSERT INTO `character` VALUES (10,1,'Gandalf',0,0,0,0,0,NULL,NULL,NULL,NULL,'2026-08-09 17:47:24','2026-08-09 17:47:24',NULL,'DRAFT');
+INSERT INTO `character` VALUES (10,1,'Gandalf',1,0,0,0,0,NULL,NULL,NULL,NULL,'2026-08-09 17:47:24','2026-08-09 17:47:24',NULL,'DRAFT');
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -466,7 +467,6 @@ CREATE TABLE `character_class` (
 
 LOCK TABLES `character_class` WRITE;
 /*!40000 ALTER TABLE `character_class` DISABLE KEYS */;
-INSERT INTO `character_class` VALUES (10,10,NULL,1);
 /*!40000 ALTER TABLE `character_class` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -524,7 +524,6 @@ CREATE TABLE `character_feature` (
 
 LOCK TABLES `character_feature` WRITE;
 /*!40000 ALTER TABLE `character_feature` DISABLE KEYS */;
-INSERT INTO `character_feature` VALUES (10,148),(10,275);
 /*!40000 ALTER TABLE `character_feature` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -712,6 +711,7 @@ CREATE TABLE `class` (
   `hit_point_die` varchar(6) NOT NULL DEFAULT '1d6',
   `shield` tinyint NOT NULL DEFAULT '0',
   `number_skills` int NOT NULL,
+  `number_tools` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Class Catalog';
@@ -723,7 +723,7 @@ CREATE TABLE `class` (
 
 LOCK TABLES `class` WRITE;
 /*!40000 ALTER TABLE `class` DISABLE KEYS */;
-INSERT INTO `class` VALUES (1,'Barbarian','1d12',1,2),(2,'Bard','1d8',0,3),(3,'Cleric','1d8',1,2),(4,'Druid','1d8',1,2),(5,'Fighter','1d10',1,2),(6,'Monk','1d8',0,2),(7,'Paladin','1d10',1,2),(8,'Ranger','1d10',1,3),(9,'Rogue','1d8',0,4),(10,'Sorcerer','1d6',0,2),(11,'Warlock','1d8',0,2),(12,'Wizard','1d6',0,2);
+INSERT INTO `class` VALUES (1,'Barbarian','1d12',1,2,0),(2,'Bard','1d8',0,3,3),(3,'Cleric','1d8',1,2,0),(4,'Druid','1d8',1,2,1),(5,'Fighter','1d10',1,2,0),(6,'Monk','1d8',0,2,1),(7,'Paladin','1d10',1,2,0),(8,'Ranger','1d10',1,3,0),(9,'Rogue','1d8',0,4,1),(10,'Sorcerer','1d6',0,2,0),(11,'Warlock','1d8',0,2,0),(12,'Wizard','1d6',0,2,0);
 /*!40000 ALTER TABLE `class` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -944,6 +944,33 @@ LOCK TABLES `class_starting_money` WRITE;
 /*!40000 ALTER TABLE `class_starting_money` DISABLE KEYS */;
 INSERT INTO `class_starting_money` VALUES (1,'A',1500),(1,'B',7500),(2,'A',1900),(2,'B',9000),(3,'A',700),(3,'B',1100),(4,'A',900),(4,'B',5000),(5,'A',400),(5,'B',1100),(5,'C',15500),(6,'A',1100),(6,'B',5000),(7,'A',900),(7,'B',15000),(8,'A',700),(8,'B',15000),(9,'A',800),(9,'B',10000),(10,'A',2800),(10,'B',5000),(11,'A',1500),(11,'B',10000),(12,'A',500),(12,'B',5500);
 /*!40000 ALTER TABLE `class_starting_money` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `class_tool`
+--
+
+DROP TABLE IF EXISTS `class_tool`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `class_tool` (
+  `class_id` int NOT NULL,
+  `item_id` int NOT NULL,
+  PRIMARY KEY (`class_id`,`item_id`),
+  KEY `class_tool_tool` (`item_id`),
+  CONSTRAINT `class_tool_class` FOREIGN KEY (`class_id`) REFERENCES `class` (`id`),
+  CONSTRAINT `class_tool_tool` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `class_tool`
+--
+
+LOCK TABLES `class_tool` WRITE;
+/*!40000 ALTER TABLE `class_tool` DISABLE KEYS */;
+INSERT INTO `class_tool` VALUES (4,4),(4,21),(4,26),(4,30),(4,33),(4,45),(4,47),(4,71),(4,82),(4,95),(4,104),(4,115),(2,121),(6,121),(2,122),(6,122),(2,123),(6,123),(2,124),(6,124),(2,125),(6,125),(2,126),(6,126),(2,127),(6,127),(2,128),(6,128),(2,129),(6,129),(2,130),(6,130),(4,137),(4,152),(4,180),(9,189),(4,191),(4,201),(4,203);
+/*!40000 ALTER TABLE `class_tool` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1714,4 +1741,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-11 19:27:02
+-- Dump completed on 2026-08-16 18:20:12
