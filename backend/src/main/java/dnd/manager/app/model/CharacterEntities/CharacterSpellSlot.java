@@ -1,7 +1,6 @@
 package dnd.manager.app.model.CharacterEntities;
 
-import dnd.manager.app.model.ClassEntities.ClassEntity;
-import dnd.manager.app.model.SubclassEntities.Subclass;
+import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,15 +13,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
+@Table(name = "character_spell_slot")
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "character_class")
+@IdClass(CharacterSpellSlotId.class)
 
-@IdClass(CharacterClassId.class)
-public class CharacterClass {
+public class CharacterSpellSlot {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,14 +28,12 @@ public class CharacterClass {
     private CharacterEntity character;
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id", nullable = false)
-    private ClassEntity classEntity;
+    @Column(name = "spell_level", nullable = false)
+    private Integer spellLevel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subclass_id")
-    private Subclass subclass;
+    @Column(name = "current_slots", nullable = false)
+    private Integer currentSlots;
 
-    @Column(nullable = false)
-    private Integer level = 1;
+    @Column(name = "max_slots", nullable = false)
+    private Integer maxSlots;
 }

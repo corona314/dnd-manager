@@ -3,9 +3,12 @@ package dnd.manager.app.model.SubclassEntities;
 import java.util.List;
 
 import dnd.manager.app.model.ClassEntities.ClassEntity;
+import dnd.manager.app.model.ClassEntities.SpellcastingType;
 import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,6 +40,10 @@ public class Subclass {
     @ManyToOne
     @JoinColumn(name = "class_id")
     private ClassEntity classEntity;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "spellcasting_type", nullable = false)
+    private SpellcastingType spellcastingType;
 
     @ManyToMany
     @JoinTable(

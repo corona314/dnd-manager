@@ -109,4 +109,7 @@ public class CharacterEntity {
 
     @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterClass> classes;
+
+    @OneToMany(mappedBy = "character", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CharacterSpellSlot> spellSlots;
 }

@@ -27,13 +27,16 @@ import dnd.manager.app.model.CharacterEntities.CharacterClass;
 import dnd.manager.app.model.CharacterEntities.CharacterFeat;
 import dnd.manager.app.model.CharacterEntities.CharacterFeature;
 import dnd.manager.app.model.CharacterEntities.CharacterSpell;
+import dnd.manager.app.model.CharacterEntities.CharacterSpellSlot;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 import dnd.manager.app.model.ClassEntities.ClassEntity;
 import dnd.manager.app.model.ClassEntities.ClassFeature;
 import dnd.manager.app.model.ClassEntities.ClassResource;
+import dnd.manager.app.model.ClassEntities.SpellcastingType;
 import dnd.manager.app.model.FeatureEntities.Feature;
 import dnd.manager.app.model.Feat;
 import dnd.manager.app.model.ItemEntities.Item;
+import dnd.manager.app.model.SpellcastingSlotEntities.SpellcastingSlot;
 import dnd.manager.app.model.SubclassEntities.Subclass;
 import dnd.manager.app.model.SubclassEntities.SubclassFeature;
 import dnd.manager.app.repository.AbilityRepository;
@@ -50,6 +53,7 @@ import dnd.manager.app.repository.CharacterRepositories.CharacterFeatRepository;
 import dnd.manager.app.repository.SkillRepositories.SkillRepository;
 import dnd.manager.app.repository.SpeciesRepositories.SpeciesRepository;
 import dnd.manager.app.repository.SpellRepositories.SpellRepository;
+import dnd.manager.app.repository.SpellcastingSlotRepositories.SpellcastingSlotRepository;
 import dnd.manager.app.repository.SubclassRepositories.SubclassFeatureRepository;
 import dnd.manager.app.repository.SubclassRepositories.SubclassRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -75,6 +79,7 @@ public class CharacterService {
     private final ClassFeatureRepository classFeatureRepository;
     private final SubclassFeatureRepository subclassFeatureRepository;
     private final ClassResourceRepository classResourceRepository;
+    private final SpellcastingSlotRepository spellcastingSlotRepository;
 
     public CharacterService(
         CharacterRepository repository,
@@ -93,7 +98,8 @@ public class CharacterService {
         SubclassRepository subclassRepository, 
         ClassFeatureRepository classFeatureRepository, 
         SubclassFeatureRepository subclassFeatureRepository,
-        ClassResourceRepository classResourceRepository
+        ClassResourceRepository classResourceRepository, 
+        SpellcastingSlotRepository spellcastingSlotRepository
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
@@ -112,6 +118,7 @@ public class CharacterService {
         this.classFeatureRepository = classFeatureRepository;
         this.subclassFeatureRepository = subclassFeatureRepository;
         this.classResourceRepository = classResourceRepository;
+        this.spellcastingSlotRepository = spellcastingSlotRepository;
     }
 
 
@@ -468,11 +475,12 @@ public class CharacterService {
         characterClass.setCharacter(character);
         characterClass.setClassEntity(classEntity);
         characterClass.setLevel(1);
-        character.setLevel(character.getLevel() + 1);
+        character.setLevel(calculateLevelFromClasses(character.getClasses()));
         
         character.getClasses().add(characterClass);
         addClassFeatures(character, classId, 1);
         updateClassResources(character, classId, 1);
+        updateMulticlassSpellSlots(character);
 
         return mapper.toResponseDto(repository.save(character));
     }
@@ -501,6 +509,12 @@ public class CharacterService {
         return mapper.toResponseDto(repository.save(character));
     }
 
+    private int calculateLevelFromClasses(List<CharacterClass> classes) {
+        return classes.stream()
+            .mapToInt(CharacterClass::getLevel)
+            .sum();
+    }
+
     public CharacterResponseDto removeClass(Long userId, Long characterId, Long classId) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         if (character == null) throw new EntityNotFoundException("Character not found");
@@ -512,6 +526,7 @@ public class CharacterService {
 
         removeClassResources(character, classId);
         character.getClasses().remove(characterClass);
+        character.setLevel(calculateLevelFromClasses(character.getClasses()));
 
         return mapper.toResponseDto(repository.save(character));
     }
@@ -528,9 +543,10 @@ public class CharacterService {
             .orElseThrow(() -> new RuntimeException("Character does not have this class"));
 
         characterClass.setLevel(characterClass.getLevel() + 1);
-        character.setLevel(character.getLevel() + 1);
+        character.setLevel(calculateLevelFromClasses(character.getClasses()));
         addClassFeatures(character, classId, characterClass.getLevel());
         updateClassResources(character, classId, characterClass.getLevel());
+        updateMulticlassSpellSlots(character);
         
         if (characterClass.getSubclass() != null) {
             addSubclassFeatures(character, characterClass.getSubclass().getId(), characterClass.getLevel());
@@ -555,10 +571,11 @@ public class CharacterService {
         }
 
         characterClass.setLevel(characterClass.getLevel() - 1);
-        character.setLevel(character.getLevel() - 1);
+        character.setLevel(calculateLevelFromClasses(character.getClasses()));
         removeClassFeatures(character, classId, characterClass.getLevel() + 1);
         updateClassResources(character, classId, characterClass.getLevel());
         removeSubclassFeatures(character, characterClass.getSubclass() != null ? characterClass.getSubclass().getId() : null, characterClass.getLevel() + 1);
+        updateMulticlassSpellSlots(character);
 
         return mapper.toResponseDto(repository.save(character));
     }
@@ -638,7 +655,6 @@ public class CharacterService {
 
 
     // Helper method to add and remove resources when leveling up or down
-
     private void updateClassResources(CharacterEntity character, Long classId, Integer level) {
         List<ClassResource> classResources = classResourceRepository.findByClassEntityIdAndLevel(classId, level);
 
@@ -689,8 +705,50 @@ public class CharacterService {
         return number.isEmpty() ? 0 : Integer.parseInt(number);
     }
 
+    private void updateMulticlassSpellSlots(CharacterEntity character) {
+        int casterLevel = 0;
 
+        for (CharacterClass cc : character.getClasses()) {
+            int level = cc.getLevel();
 
+            SpellcastingType type = cc.getClassEntity().getSpellcastingType();
+
+            if (type == null && cc.getSubclass() != null) {
+                type = cc.getSubclass().getSpellcastingType();
+            }
+
+            if (type == null) {
+                continue;
+            }
+
+            switch (type) {
+                case FULL  -> casterLevel += level;
+                case HALF  -> casterLevel += level / 2;
+                case THIRD -> casterLevel += level / 3;
+                default -> {}
+            }
+        }
+
+        character.getSpellSlots().clear();
+
+        if (casterLevel == 0) {
+            return;
+        }
+
+        List<SpellcastingSlot> slots =
+            spellcastingSlotRepository.findByCasterLevel(casterLevel);
+
+        for (SpellcastingSlot slot : slots) {
+            CharacterSpellSlot spellSlot = new CharacterSpellSlot();
+
+            spellSlot.setCharacter(character);
+            spellSlot.setSpellLevel(slot.getSpellLevel());
+            spellSlot.setMaxSlots(slot.getSlots());
+            spellSlot.setCurrentSlots(slot.getSlots());
+
+            character.getSpellSlots().add(spellSlot);
+        }
+    }
     // Finalizar personaje
     public CharacterResponseDto finalize(Long userId, Long id) {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);

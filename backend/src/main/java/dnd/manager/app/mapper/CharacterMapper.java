@@ -13,6 +13,7 @@ import dnd.manager.app.dto.CharacterDto.CharacterSkillResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
 import dnd.manager.app.dto.CharacterDto.CharacterClassResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSpellResponseDto;
+import dnd.manager.app.dto.CharacterDto.CharacterSpellSlotResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterFeat;
@@ -20,6 +21,7 @@ import dnd.manager.app.model.CharacterEntities.CharacterItem;
 import dnd.manager.app.model.CharacterEntities.CharacterResource;
 import dnd.manager.app.model.CharacterEntities.CharacterSkill;
 import dnd.manager.app.model.CharacterEntities.CharacterSpell;
+import dnd.manager.app.model.CharacterEntities.CharacterSpellSlot;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 import dnd.manager.app.model.CharacterEntities.CharacterAbility;
 import dnd.manager.app.model.CharacterEntities.CharacterClass;
@@ -79,6 +81,7 @@ public class CharacterMapper {
             e.getSpells() != null ? e.getSpells().stream().map(this::toSpellResponseDto).toList() : List.of(),
             e.getFeats() != null ? e.getFeats().stream().map(this::toFeatResponseDto).toList() : List.of(),
             e.getResources() != null ? e.getResources().stream().map(this::toResourceDto).toList() : List.of(),
+            e.getSpellSlots() != null ? e.getSpellSlots().stream().map(this::toSpellSlotResponseDto).toList() : List.of(),
             e.getStatus(),
             e.getCreatedAt(),
             e.getUpdatedAt(),
@@ -147,6 +150,14 @@ public class CharacterMapper {
             classMapper.toSummaryDto(characterClass.getClassEntity()),
             characterClass.getSubclass() != null ? classMapper.toSubclassSummaryDto(characterClass.getSubclass()) : null,
             characterClass.getLevel()
+        );
+    }
+
+    private CharacterSpellSlotResponseDto toSpellSlotResponseDto(CharacterSpellSlot spellSlot) {
+        return new CharacterSpellSlotResponseDto(
+            spellSlot.getSpellLevel(),
+            spellSlot.getCurrentSlots(),
+            spellSlot.getMaxSlots()
         );
     }
 }
