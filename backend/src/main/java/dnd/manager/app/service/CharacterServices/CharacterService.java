@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
@@ -34,6 +35,7 @@ import dnd.manager.app.model.ClassEntities.ClassFeature;
 import dnd.manager.app.model.ClassEntities.ClassResource;
 import dnd.manager.app.model.ClassEntities.SpellcastingType;
 import dnd.manager.app.model.FeatureEntities.Feature;
+import dnd.manager.app.model.Ability;
 import dnd.manager.app.model.Feat;
 import dnd.manager.app.model.ItemEntities.Item;
 import dnd.manager.app.model.SpellcastingSlotEntities.SpellcastingSlot;
@@ -48,8 +50,10 @@ import dnd.manager.app.repository.ClassRepositories.ClassFeatureRepository;
 import dnd.manager.app.repository.ClassRepositories.ClassRepository;
 import dnd.manager.app.repository.ClassRepositories.ClassResourceRepository;
 import dnd.manager.app.repository.FeatRepositories.FeatRepository;
+import dnd.manager.app.repository.FeatureRepositories.FeatureRepository;
 import dnd.manager.app.repository.ItemRepositories.ItemRepository;
 import dnd.manager.app.repository.CharacterRepositories.CharacterFeatRepository;
+import dnd.manager.app.repository.CharacterRepositories.CharacterFeatureRepository;
 import dnd.manager.app.repository.SkillRepositories.SkillRepository;
 import dnd.manager.app.repository.SpeciesRepositories.SpeciesRepository;
 import dnd.manager.app.repository.SpellRepositories.SpellRepository;
@@ -80,7 +84,9 @@ public class CharacterService {
     private final SubclassFeatureRepository subclassFeatureRepository;
     private final ClassResourceRepository classResourceRepository;
     private final SpellcastingSlotRepository spellcastingSlotRepository;
-
+    private final FeatureRepository featureRepository;
+    private final CharacterFeatureRepository characterFeatureRepository;
+    
     public CharacterService(
         CharacterRepository repository,
         UserRepository userRepository,
@@ -99,7 +105,9 @@ public class CharacterService {
         ClassFeatureRepository classFeatureRepository, 
         SubclassFeatureRepository subclassFeatureRepository,
         ClassResourceRepository classResourceRepository, 
-        SpellcastingSlotRepository spellcastingSlotRepository
+        SpellcastingSlotRepository spellcastingSlotRepository,
+        FeatureRepository featureRepository, 
+        CharacterFeatureRepository characterFeatureRepository
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
@@ -119,6 +127,8 @@ public class CharacterService {
         this.subclassFeatureRepository = subclassFeatureRepository;
         this.classResourceRepository = classResourceRepository;
         this.spellcastingSlotRepository = spellcastingSlotRepository;
+        this.featureRepository = featureRepository;
+        this.characterFeatureRepository = characterFeatureRepository;
     }
 
 
@@ -227,7 +237,6 @@ public class CharacterService {
 
 
     //Item management
-
     @Transactional
     public CharacterResponseDto buyItem(Long userId, Long characterId, Long itemId, CharacterItemDto dto) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
@@ -427,7 +436,7 @@ public class CharacterService {
 
         return mapper.toResponseDto(repository.save(character));
     }
-
+    
     @Transactional
     public CharacterResponseDto removeFeat(Long userId, Long characterId, Long featId) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
@@ -456,6 +465,52 @@ public class CharacterService {
 
 
 
+    // Feature management
+
+    @Transactional
+    public CharacterResponseDto addFeature(Long userId, Long characterId, Long featureId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        Feature feature = featureRepository.findById(featureId)
+            .orElseThrow(() -> new EntityNotFoundException("Feature not found"));
+
+        if (character.getFeatures() == null) {
+            character.setFeatures(new ArrayList<>());
+        }
+
+        if (character.getFeatures().stream().anyMatch(cf -> cf.getFeature().getId().equals(featureId))) {
+            throw new RuntimeException("Character already has this feature");
+        }
+        CharacterFeature characterFeature = new CharacterFeature();
+        characterFeature.setCharacter(character);
+        characterFeature.setFeature(feature);
+        character.getFeatures().add(characterFeature);
+        characterFeatureRepository.save(characterFeature);
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+    @Transactional
+    public CharacterResponseDto removeFeature(Long userId, Long characterId, Long featureId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        if (character.getFeatures() != null) {
+            character.getFeatures().stream()
+                .filter(cf -> cf.getFeature() != null && cf.getFeature().getId().equals(featureId))
+                .findFirst()
+                .ifPresent(cf -> {
+                    character.getFeatures().remove(cf);
+                    characterFeatureRepository.delete(cf);
+                });
+        }
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+
+
     // Classes and Subclasses management
 
     public CharacterResponseDto addClass(Long userId, Long characterId, Long classId) {
@@ -475,9 +530,10 @@ public class CharacterService {
         characterClass.setCharacter(character);
         characterClass.setClassEntity(classEntity);
         characterClass.setLevel(1);
+        character.getClasses().add(characterClass);
+        
         character.setLevel(calculateLevelFromClasses(character.getClasses()));
         
-        character.getClasses().add(characterClass);
         addClassFeatures(character, classId, 1);
         updateClassResources(character, classId, 1);
         updateMulticlassSpellSlots(character);
@@ -531,7 +587,6 @@ public class CharacterService {
         return mapper.toResponseDto(repository.save(character));
     }
 
-
     public CharacterResponseDto levelUpClass(Long userId, Long characterId, Long classId) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         
@@ -581,6 +636,7 @@ public class CharacterService {
     }
 
 
+
     // Helper methods to add and remove class features when leveling up or down
     private void addClassFeatures(CharacterEntity character, Long classId, Integer level) {
         List<ClassFeature> classFeatures =
@@ -618,6 +674,7 @@ public class CharacterService {
     }
 
     
+
     // Helper methods to add and remove subclass features when leveling up or down
     private void addSubclassFeatures(CharacterEntity character, Long subclassId, Integer level) {
         List<SubclassFeature> subclassFeatures =
@@ -749,6 +806,8 @@ public class CharacterService {
             character.getSpellSlots().add(spellSlot);
         }
     }
+    
+    
     // Finalizar personaje
     public CharacterResponseDto finalize(Long userId, Long id) {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);

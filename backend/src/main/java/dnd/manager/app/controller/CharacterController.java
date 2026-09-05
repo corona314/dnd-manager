@@ -11,6 +11,7 @@ import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSpellDto;
+import dnd.manager.app.dto.FeatureDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.User;
@@ -81,7 +82,8 @@ public class CharacterController {
     }    
 
 
-    //Replaces
+    //Replaces: Abilities and Skills
+
     @PatchMapping("/{id}/abilities")
     public ResponseEntity<CharacterResponseDto> replaceAbilities(
         @AuthenticationPrincipal User user, 
@@ -240,6 +242,30 @@ public class CharacterController {
     ) {
         return ResponseEntity.ok(service.removeFeat(user.getId(), id, featId));
     }
+
+
+    // Features
+
+    @PostMapping("/{id}/features/{featureId}")
+    public ResponseEntity<CharacterResponseDto> addFeature(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long featureId
+    ) {
+        return ResponseEntity.ok(service.addFeature(user.getId(), id, featureId));
+    }
+
+    @DeleteMapping("/{id}/features/{featureId}")
+    public ResponseEntity<CharacterResponseDto> removeFeature(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long featureId
+    ) {
+        return ResponseEntity.ok(service.removeFeature(user.getId(), id, featureId));
+    }
+
+
+
 
 
 

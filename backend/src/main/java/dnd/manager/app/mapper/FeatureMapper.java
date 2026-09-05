@@ -21,6 +21,7 @@ public class FeatureMapper {
 
     private FeatureChoiceDto toFeatureChoiceDto (FeatureChoice e) {
         return new FeatureChoiceDto(
+            e.getChoice().getId(),
             e.getChoice().getName(),
             e.getChoice().getDescription(),
             e.getLevel(),
