@@ -27,8 +27,8 @@
             })
             character.value = await res.json()
 
-            if (character.value?.classEntity?.id) {
-                await fetchClassDetail(character.value.classEntity.id)
+            if (character.value?.classes?.[0]?.classEntity?.id) {
+                await fetchClassDetail(character.value.classes[0].classEntity.id)
             }
         } catch (e) {
             console.error(e)
@@ -99,11 +99,11 @@
 
             const nonClassSkills = (character.value?.skills ?? [])
                 .filter(cs => !eligibleIds.has(cs.skill.id))
-                .map(cs => ({ skillId: cs.skill.id, proficiency: cs.proficiency, expertise: cs.expertise }))
+                .map(cs => ({ skillId: cs.skill.id, proficient: cs.proficient, expertise: cs.expertise }))
 
             const classSkills = (class_detail.value?.skills ?? []).map(s => ({
                 skillId: s.id,
-                proficiency: isPregranted(s.id) || selected_skill_ids.value.includes(s.id),
+                proficient: isPregranted(s.id) || selected_skill_ids.value.includes(s.id),
                 expertise: false
             }))
 
@@ -147,7 +147,7 @@
 
     //--- Cálculo de HP máxima a nivel 1 (regla 2024: valor máximo del dado + mod CON) ---
     const hit_die_max = computed(() => {
-        const die = character.value?.classEntity?.hitPointDie // ej: "1d8"
+        const die = character.value?.classes?.[0]?.classEntity?.hitPointDie // ej: "1d8"
         if (!die) return null
         const match = die.match(/d(\d+)/i)
         return match ? parseInt(match[1], 10) : null
@@ -231,7 +231,7 @@
 
         <div v-else-if="character" class="character_finalize_summary">
             <h1>{{ character.name }}</h1>
-            <span class="finalize_level">Nivel actual: {{ character.level }} → 1</span>
+            <span class="finalize_level">Nivel actual: {{ character.level - 1 }} → 1</span>
 
             <div class="finalize_section">
                 <span class="finalize_label">Especie:</span>
@@ -240,7 +240,7 @@
 
             <div class="finalize_section">
                 <span class="finalize_label">Clase:</span>
-                <span>{{ character.classEntity?.name ?? 'Sin asignar' }} ({{ character.classEntity?.hitPointDie ?? '—' }})</span>
+                <span>{{ character.classes?.[0]?.classEntity?.name ?? 'Sin asignar' }} ({{ character.classes?.[0]?.classEntity?.hitPointDie ?? '—' }})</span>
             </div>
 
             <div class="finalize_section">
@@ -283,7 +283,7 @@
 
         <span v-if="error" class="character_finalize_error">{{ error }}</span>
 
-        <button class="character_finalize_save_btn" @click="finalizeCharacter" :disabled="saving || calculated_max_hp === null || character.level !== 0">
+        <button class="character_finalize_save_btn" @click="finalizeCharacter" :disabled="saving || calculated_max_hp === null || character.level !== 1">
             {{ saving ? 'Finalizando...' : 'Finalizar y Guardar' }}
         </button>
 

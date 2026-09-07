@@ -34,8 +34,8 @@
             })
             character.value = await res.json()
 
-            if (character.value?.classEntity?.id) {
-                await fetchClassDetail(character.value.classEntity.id)
+            if (character.value?.classes?.[0]?.classEntity?.id) {
+                await fetchClassDetail(character.value.classes[0].classEntity.id)
             }
             if (character.value?.background?.id) {
                 await fetchBackgroundDetail(character.value.background.id)
@@ -131,17 +131,17 @@
         return selected_optional_ids.value.includes(itemId)
     }
 
-    function toggleOptional(itemId) {
-        if (selected_optional_ids.value.includes(itemId)) {
-            selected_optional_ids.value = selected_optional_ids.value.filter(id => id !== itemId)
-        } else {
-            selected_optional_ids.value = [...selected_optional_ids.value, itemId]
-        }
+    function toggleOptional(itemId, sourceOptionalItems) {
+        const idsInGroup = sourceOptionalItems.map(entry => entry.item.id)
+        selected_optional_ids.value = [
+            ...selected_optional_ids.value.filter(id => !idsInGroup.includes(id)),
+            itemId
+        ]
     }
 
     //--- ¿Puede confirmar? Necesita haber elegido A/B para clase y trasfondo (si existen) ---
     const can_confirm = computed(() => {
-        if (character.value?.classEntity && !class_choice.value) return false
+        if (character.value?.classes?.[0]?.classEntity && !class_choice.value) return false
         if (character.value?.background && !background_choice.value) return false
         return true
     })
@@ -278,7 +278,7 @@
         <!--Equipo de Clase-->
         <div v-if="loading_class">Cargando equipo de clase...</div>
         <div v-else-if="class_detail" class="equipment_source_card">
-            <h2>Equipo de {{ character.classEntity.name }}</h2>
+            <h2>Equipo de {{ character.classes[0].classEntity.name }}</h2>
 
             <div class="equipment_choice_toggle">
                 <button :class="{ active: class_choice === 'A' }" @click="class_choice = 'A'">
@@ -299,7 +299,7 @@
                 <div v-if="class_optional_items.length" class="equipment_optional_list">
                     <span class="equipment_optional_label">Opcionales:</span>
                     <label v-for="entry in class_optional_items" :key="entry.item.id" class="equipment_optional_row">
-                        <input type="checkbox" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id)" />
+                        <input type="radio" name="class_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, class_optional_items)" />
                         {{ entry.quantity }}x {{ entry.item.name }}
                     </label>
                 </div>
@@ -334,7 +334,7 @@
                 <div v-if="background_optional_items.length" class="equipment_optional_list">
                     <span class="equipment_optional_label">Opcionales:</span>
                     <label v-for="entry in background_optional_items" :key="entry.item.id" class="equipment_optional_row">
-                        <input type="checkbox" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id)" />
+                        <input type="radio" name="background_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, background_optional_items)" />
                         {{ entry.quantity }}x {{ entry.item.name }}
                     </label>
                 </div>

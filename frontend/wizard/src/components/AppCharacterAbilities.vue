@@ -15,8 +15,12 @@
         { code: 'CHA', label: 'Charisma' },
     ]
 
+    //Metodos de seleción de puntos 
+    const SCORE_METHOD = { POINT_BUY: 'pointbuy', MANUAL: 'manual' }
+    const score_method = ref(SCORE_METHOD.POINT_BUY)
+
     // Coste Point Buy (27 puntos totales)
-    const POINT_COSTS = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 }
+    const POINT_COSTS = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9}
     const TOTAL_POINTS = 27
 
     //Constantes del personaje
@@ -46,13 +50,6 @@
             })
             character.value = await res.json()
 
-            // Si ya tiene abilities guardadas, precargamos como punto de partida
-            if (character.value?.abilities?.length) {
-                const map = {}
-                character.value.abilities.forEach(a => { map[a.ability] = a.baseValue })
-                base_scores.value = { ...base_scores.value, ...map }
-            }
-
             if (character.value?.background?.id) {
                 await fetchBackgroundDetail(character.value.background.id)
             }
@@ -60,6 +57,14 @@
             console.error(e)
         } finally {
             loading_character.value = false
+        }
+    }
+
+    function initializeAbilitiesFromCharacter() {
+        if (character.value?.abilities?.length) {
+            const map = {}
+            character.value.abilities.forEach(a => { map[a.ability] = a.baseValue })
+            base_scores.value = { ...base_scores.value, ...map }
         }
     }
 
@@ -158,7 +163,7 @@
 
     //--- Guardar ---
     async function saveAbilities() {
-        if (points_remaining.value !== 0) {
+        if (score_method.value === SCORE_METHOD.POINT_BUY && points_remaining.value !== 0) {
             error.value = 'Debes gastar exactamente los 27 puntos de Point Buy'
             return
         }
@@ -200,8 +205,9 @@
         emit('navigate', 'characters')
     }
 
-    onMounted(() => {
-        fetchCharacter()
+    onMounted(async () => {
+        await fetchCharacter()
+        initializeAbilitiesFromCharacter()
     })
 </script>
 

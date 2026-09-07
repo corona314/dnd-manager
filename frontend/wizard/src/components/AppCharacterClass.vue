@@ -79,13 +79,25 @@
         saving.value = true
         error.value = ''
         try {
-            const res = await fetch(`${API_BASE}/characters/${props.characterId}`, {
-                method: 'PATCH',
+            //Como en la creación solo puede haber una clase, si ya tiene una
+            //distinta a la elegida, primero la quitamos
+            const currentClass = character.value?.classes?.[0]
+            if (currentClass && currentClass.classEntity.id !== classId) {
+                const deleteRes = await fetch(`${API_BASE}/characters/${props.characterId}/classes/${currentClass.classEntity.id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${props.token}` }
+                })
+                if (!deleteRes.ok) {
+                    error.value = 'Error al quitar la clase anterior'
+                    return
+                }
+            }
+
+            const res = await fetch(`${API_BASE}/characters/${props.characterId}/classes/${classId}`, {
+                method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${props.token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ classId })
+                    Authorization: `Bearer ${props.token}`
+                }
             })
             if (!res.ok) {
                 error.value = 'Error al guardar la clase'
@@ -162,8 +174,8 @@
         <div v-if="loading_character">Cargando personaje...</div>
         <div v-else-if="character" class="character_class_header">
             <h1>{{ character.name }}</h1>
-            <span v-if="character.classEntity" class="character_class_current">
-                Current Class: {{ character.classEntity.name }}
+            <span v-if="character.classes?.length" class="character_class_current">
+                Current Class: {{ character.classes[0].classEntity.name }}
             </span>
             <span v-else class="character_class_current character_class_current--empty">
                 No Class assigned
@@ -180,7 +192,7 @@
             </div>
             <div v-if="class_open" class="class_dropdown_menu">
                 <div v-if="loading_classes" class="loading">Cargando...</div>
-                <div v-else v-for="class_data in classes_data" :key="class_data.name" class="class_option" :class="{ selected: character?.classEntity?.id === class_data.id }" @click="pickClassToView(class_data)">
+                <div v-else v-for="class_data in classes_data" :key="class_data.name" class="class_option" :class="{ selected: character?.classes?.[0]?.classEntity?.id === class_data.id }" @click="pickClassToView(class_data)">
                     {{ class_data.name }}
                 </div>
             </div>
@@ -233,11 +245,11 @@
                 </div>
             </div>
 
-            <button class="class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classEntity?.id === viewed_id">
-                {{ saving ? 'Guardando...' : (character?.classEntity?.id === viewed_id ? 'Clase actual' : `Elegir ${viewed_class.name}`) }}
+            <button class="class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classes?.[0]?.classEntity?.id === viewed_id">
+                {{ saving ? 'Guardando...' : (character?.classes?.[0]?.classEntity?.id === viewed_id ? 'Clase actual' : `Elegir ${viewed_class.name}`) }}
             </button>
         </div>
-        <button class="character_class_forward" @click="emit('navigate', {page: 'characterSpecie', characterId: props.characterId})" :disabled="character?.classEntity === null">Continue Creation</button>
+        <button class="character_class_forward" @click="emit('navigate', {page: 'characterSpecie', characterId: props.characterId})" :disabled="!character?.classes?.length">Continue Creation</button>
         <button class="character_class_back" @click="goBackToCharacters">Volver a mis personajes</button>
     </div>
 </template>
