@@ -32,7 +32,4 @@ public class CharacterTool {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
-    @Column(name = "proficient", nullable = false)
-    private Boolean proficient;
-
 }

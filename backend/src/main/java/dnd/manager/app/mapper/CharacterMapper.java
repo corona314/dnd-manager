@@ -15,6 +15,7 @@ import dnd.manager.app.dto.CharacterDto.CharacterClassResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSpellResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSpellSlotResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
+import dnd.manager.app.dto.ItemDto.ItemSummaryDto;
 import dnd.manager.app.model.CharacterEntities.CharacterEntity;
 import dnd.manager.app.model.CharacterEntities.CharacterFeat;
 import dnd.manager.app.model.CharacterEntities.CharacterItem;
@@ -23,6 +24,7 @@ import dnd.manager.app.model.CharacterEntities.CharacterSkill;
 import dnd.manager.app.model.CharacterEntities.CharacterSpell;
 import dnd.manager.app.model.CharacterEntities.CharacterSpellSlot;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
+import dnd.manager.app.model.CharacterEntities.CharacterTool;
 import dnd.manager.app.model.CharacterEntities.CharacterAbility;
 import dnd.manager.app.model.CharacterEntities.CharacterClass;
 
@@ -78,6 +80,7 @@ public class CharacterMapper {
             e.getSkills() != null ? e.getSkills().stream().map(this::toSkillResponseDto).toList() : List.of(),
             e.getFeatures() != null ? e.getFeatures().stream().map(cf -> featureMapper.toDto(cf.getFeature())).toList() : List.of(),
             e.getItems() != null ? e.getItems().stream().map(this::toItemResponseDto).toList() : List.of(),
+            e.getTools() != null ? e.getTools().stream().map(this::toItemSummaryDto).toList() : List.of(),
             e.getSpells() != null ? e.getSpells().stream().map(this::toSpellResponseDto).toList() : List.of(),
             e.getFeats() != null ? e.getFeats().stream().map(this::toFeatResponseDto).toList() : List.of(),
             e.getResources() != null ? e.getResources().stream().map(this::toResourceDto).toList() : List.of(),
@@ -135,6 +138,10 @@ public class CharacterMapper {
             item.getEquipped(), 
             item.getAttuned()
         );
+    }
+
+    private ItemSummaryDto toItemSummaryDto(CharacterTool tool){
+        return itemMapper.toSummaryDto(tool.getItem());
     }
 
     private CharacterSpellResponseDto toSpellResponseDto(CharacterSpell spell){

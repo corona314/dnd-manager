@@ -12,6 +12,7 @@ public class FeatureMapper {
 
     public FeatureDto toDto(Feature e) {
         return new FeatureDto(
+            e.getId(),
             e.getName(),
             e.getDescription(),
             e.getFeatureType() == null ? null : e.getFeatureType().getName(),

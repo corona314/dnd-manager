@@ -5,6 +5,7 @@ import java.util.List;
 
 import dnd.manager.app.dto.FeatureDto;
 import dnd.manager.app.dto.BackgroundDto.BackgroundSummaryDto;
+import dnd.manager.app.dto.ItemDto.ItemSummaryDto;
 import dnd.manager.app.dto.SpeciesDto.SpeciesSummaryDto;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
 
@@ -28,6 +29,7 @@ public record CharacterResponseDto(
     List<CharacterSkillResponseDto> skills,
     List<FeatureDto> features,
     List<CharacterItemResponseDto> items,
+    List<ItemSummaryDto> tools,
     List<CharacterSpellResponseDto> spells,
     List<CharacterFeatResponseDto> feats,
     List<CharacterResourceDto> resources,

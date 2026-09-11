@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import dnd.manager.app.dto.CharacterDto.CharacterCreateDto;
@@ -30,12 +29,12 @@ import dnd.manager.app.model.CharacterEntities.CharacterFeature;
 import dnd.manager.app.model.CharacterEntities.CharacterSpell;
 import dnd.manager.app.model.CharacterEntities.CharacterSpellSlot;
 import dnd.manager.app.model.CharacterEntities.CharacterStatus;
+import dnd.manager.app.model.CharacterEntities.CharacterTool;
 import dnd.manager.app.model.ClassEntities.ClassEntity;
 import dnd.manager.app.model.ClassEntities.ClassFeature;
 import dnd.manager.app.model.ClassEntities.ClassResource;
 import dnd.manager.app.model.ClassEntities.SpellcastingType;
 import dnd.manager.app.model.FeatureEntities.Feature;
-import dnd.manager.app.model.Ability;
 import dnd.manager.app.model.Feat;
 import dnd.manager.app.model.ItemEntities.Item;
 import dnd.manager.app.model.SpellcastingSlotEntities.SpellcastingSlot;
@@ -331,6 +330,43 @@ public class CharacterService {
                 } else {
                     ci.setQuantity(newQty);
                 }
+            });
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+
+    //Tool management
+    
+    public CharacterResponseDto addTool(Long userId, Long characterId, Long itemId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        Item item = itemRepository.findById(itemId)
+            .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+        Optional<CharacterTool> existing = character.getTools().stream()
+            .filter(ct -> ct.getItem().getId().equals(itemId))
+            .findFirst();
+
+        if (!existing.isPresent()) {
+            CharacterTool ct = new CharacterTool();
+            ct.setCharacter(character);
+            ct.setItem(item);
+            character.getTools().add(ct);
+        }
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+    public CharacterResponseDto removeTool(Long userId, Long characterId, Long itemId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        character.getTools().stream()
+            .filter(ct -> ct.getItem().getId().equals(itemId))
+            .findFirst()
+            .ifPresent(ct -> {
+                character.getTools().remove(ct);
             });
 
         return mapper.toResponseDto(repository.save(character));

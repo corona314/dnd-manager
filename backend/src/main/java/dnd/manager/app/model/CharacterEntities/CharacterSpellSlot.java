@@ -1,6 +1,5 @@
 package dnd.manager.app.model.CharacterEntities;
 
-import dnd.manager.app.model.FeatureEntities.Feature;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

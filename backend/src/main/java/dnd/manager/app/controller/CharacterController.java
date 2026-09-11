@@ -11,7 +11,6 @@ import dnd.manager.app.dto.CharacterDto.CharacterPatchDto;
 import dnd.manager.app.dto.CharacterDto.CharacterResponseDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSkillDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSpellDto;
-import dnd.manager.app.dto.FeatureDto;
 import dnd.manager.app.dto.CharacterDto.CharacterAbilityDto;
 import dnd.manager.app.dto.CharacterDto.CharacterSummaryDto;
 import dnd.manager.app.model.User;
@@ -185,6 +184,29 @@ public class CharacterController {
         @RequestParam(defaultValue = "1") Integer quantity
     ) {
         return ResponseEntity.ok(service.removeItem(user.getId(), id, itemId, quantity));
+
+    }
+
+
+
+    // Tools
+
+    @PostMapping("/{id}/tools/{itemId}")
+    public ResponseEntity<CharacterResponseDto> addTool(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id, 
+        @PathVariable Long itemId
+    ) {
+        return ResponseEntity.ok(service.addTool(user.getId(), id, itemId));
+    }
+
+    @DeleteMapping("/{id}/tools/{itemId}")
+    public ResponseEntity<CharacterResponseDto> removeTool(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long itemId
+    ) {
+        return ResponseEntity.ok(service.removeTool(user.getId(), id, itemId));
 
     }
 

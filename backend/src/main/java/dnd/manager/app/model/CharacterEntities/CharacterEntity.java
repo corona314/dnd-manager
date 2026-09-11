@@ -95,6 +95,9 @@ public class CharacterEntity {
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CharacterItem> items;
 
+    @OneToMany(mappedBy = "character", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CharacterTool> tools;
+
     @OneToMany(mappedBy = "character", fetch = FetchType.LAZY)
     private List<CharacterFeat> feats;
 
