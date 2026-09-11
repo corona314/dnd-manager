@@ -29,11 +29,11 @@
 
     onMounted(() => fetchSpecies())
 
-    function toggleFeature(id) {
-        if (expanded_features.value.has(id)) {
-            expanded_features.value.delete(id)
+    function toggleFeature(name) {
+        if (expanded_features.value.has(name)) {
+            expanded_features.value.delete(name)
         } else {
-            expanded_features.value.add(id)
+            expanded_features.value.add(name)
         }
     }
 
@@ -50,14 +50,14 @@
         <div v-else class="specie_info">
             <h1 class="specie_name">{{ specie.name }}</h1>
             <div v-if="specie.features?.length" class="specie_features">
-                <div v-for="f in specie.features" :key="f.id" class="specie_feature_row">
-                    <div class="specie_feature_header" @click="toggleFeature(f.id)">
+                <div v-for="f in specie.features" :key="f.name" class="specie_feature_row">
+                    <div class="specie_feature_header" @click="toggleFeature(f.name)">
                         <span class="specie_feature_name">{{ f.name }}</span>
-                        <button class="specie_feature_toggle_btn" :class="{ 'specie_feature_toggle_btn--open': expanded_features.has(f.id) }">
-                            {{ expanded_features.has(f.id) ? '−' : '+' }}
+                        <button class="specie_feature_toggle_btn" :class="{ 'specie_feature_toggle_btn--open': expanded_features.has(f.name) }">
+                            {{ expanded_features.has(f.name) ? '−' : '+' }}
                         </button>
                     </div>
-                    <div v-if="expanded_features.has(f.id)" class="specie_feature_description" v-html="renderDescription(f.description)"></div>
+                    <div v-if="expanded_features.has(f.name)" class="specie_feature_description" v-html="renderDescription(f.description)"></div>
                 </div>                
             </div>
         </div>

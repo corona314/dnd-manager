@@ -29,11 +29,11 @@
 
     onMounted(() => fetchClasses())
 
-    function toggleFeature(id) {
-        if (expanded_features.value.has(id)) {
-            expanded_features.value.delete(id)
+    function toggleFeature(name) {
+        if (expanded_features.value.has(name)) {
+            expanded_features.value.delete(name)
         } else {
-            expanded_features.value.add(id)
+            expanded_features.value.add(name)
         }
     }
 
@@ -94,14 +94,14 @@
                 <h2>Feats by level:</h2>
                 <div v-for="group in featuresByLevel()" :key="group.level" class="class_feature_level_group">
                     <h3 class="class_feature_level_title">Nivel {{ group.level }}</h3>
-                    <div v-for="f in group.features" :key="f.feature.id" class="class_feature_row">
-                        <div class="class_feature_header" @click="toggleFeature(f.feature.id)">
+                    <div v-for="f in group.features" :key="f.feature.name" class="class_feature_row">
+                        <div class="class_feature_header" @click="toggleFeature(f.feature.name)">
                             <span class="class_feature_name">{{ f.feature.name }}</span>
-                            <button class="class_feature_toggle_btn" :class="{ 'class_feature_toggle_btn--open': expanded_features.has(f.feature.id) }">
-                                {{ expanded_features.has(f.feature.id) ? '−' : '+' }}
+                            <button class="class_feature_toggle_btn" :class="{ 'class_feature_toggle_btn--open': expanded_features.has(f.feature.name) }">
+                                {{ expanded_features.has(f.feature.name) ? '−' : '+' }}
                             </button>
                         </div>
-                        <div v-if="expanded_features.has(f.feature.id)" class="class_feature_description" v-html="renderDescription(f.feature.description)"></div>
+                        <div v-if="expanded_features.has(f.feature.name)" class="class_feature_description" v-html="renderDescription(f.feature.description)"></div>
                     </div>
                 </div>
             </div>

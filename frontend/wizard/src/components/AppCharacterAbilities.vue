@@ -23,6 +23,10 @@
     const POINT_COSTS = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9}
     const TOTAL_POINTS = 27
 
+    //Selección manual de puntos
+    const MANUAL_MIN = 1
+    const MANUAL_MAX = 20
+
     //Constantes del personaje
     const character = ref(null)
     const loading_character = ref(false)
@@ -85,7 +89,7 @@
         }
     }
 
-    //--- Point Buy: coste actual gastado ---
+    // Point Buy: coste actual gastado 
     const points_spent = computed(() => {
         return Object.values(base_scores.value).reduce((sum, val) => sum + (POINT_COSTS[val] ?? 0), 0)
     })
@@ -103,6 +107,24 @@
         const current = base_scores.value[code]
         if (current <= 8) return
         base_scores.value[code] = current - 1
+    }
+
+    //Selección manual
+    function setManualScore(code, rawValue) {
+        let value = parseInt(rawValue, 10)
+        if (isNaN(value)) value = MANUAL_MIN
+        value = Math.min(MANUAL_MAX, Math.max(MANUAL_MIN, value))
+        base_scores.value[code] = value
+    }
+
+    function setScoreMethod(method) {
+        if (method === score_method.value) return
+        score_method.value = method
+        if (method === SCORE_METHOD.POINT_BUY) {
+            const reset = {}
+            ABILITY_DEFS.forEach(a => { reset[a.code] = 8 })
+            base_scores.value = reset
+        }
     }
 
     //--- Bonus de trasfondo (opciones elegibles) ---
@@ -218,27 +240,37 @@
             <h1>{{ character.name }}</h1>
         </div>
 
+        <div class="ability_method_selector">
+            <button :class="{ active: score_method === 'pointbuy' }" @click="setScoreMethod('pointbuy')">Point Buy</button>
+            <button :class="{ active: score_method === 'manual' }" @click="setScoreMethod('manual')">Asignación manual</button>
+        </div>
+
         <span v-if="error" class="character_ability_error">{{ error }}</span>
-
-        <h2>Point Buy</h2>
-        <span class="ability_points_remaining" :class="{ invalid: points_remaining !== 0 }">
-            Puntos restantes: {{ points_remaining }} / {{ TOTAL_POINTS }}
-        </span>
-
+        <!--Metodo de selección de puntos, ya sea compra de puntos, asignar-->
+        <template v-if="score_method === 'pointbuy'">
+            <h2>Point Buy</h2>
+            <span class="ability_points_remaining" :class="{ invalid: points_remaining !== 0 }">
+                Puntos restantes: {{ points_remaining }} / {{ TOTAL_POINTS }}
+            </span>
+        </template>
+        <template v-else-if="score_method === 'manual'">
+            <h2>Manual Selection</h2>
+        </template>
         <div class="ability_grid">
             <div v-for="ability in ABILITY_DEFS" :key="ability.code" class="ability_card">
                 <span class="ability_label">{{ ability.label }} ({{ ability.code }})</span>
 
-                <div class="ability_score_controls">
+                <div v-if="score_method === 'pointbuy'" class="ability_score_controls">
                     <button @click="decreaseScore(ability.code)" :disabled="base_scores[ability.code] <= 8">-</button>
                     <span class="ability_base_score">{{ base_scores[ability.code] }}</span>
                     <button @click="increaseScore(ability.code)" :disabled="base_scores[ability.code] >= 15">+</button>
                 </div>
-
+                <div v-else class="ability_score_controls">
+                    <input type="number" class="ability_manual_input" :min="MANUAL_MIN" :max="MANUAL_MAX" :value="base_scores[ability.code]" @change="setManualScore(ability.code, $event.target.value)"/>
+                </div>
                 <span v-if="bonusFor(ability.code) > 0" class="ability_bg_bonus">
                     + {{ bonusFor(ability.code) }} (trasfondo)
                 </span>
-
                 <span class="ability_final_score">
                     Total: {{ finalScore(ability.code) }}
                 </span>
