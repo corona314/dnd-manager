@@ -250,13 +250,23 @@
                 }
             }
 
-            emit('navigate', { page: 'characterFinalize', characterId: props.characterId })
+            emit('navigate', { page: 'characterSpells', characterId: props.characterId })
         } catch (e) {
             console.error(e)
             error.value = 'Error de conexión'
         } finally {
             saving.value = false
         }
+    }
+
+    function isItMagical() {
+        const isMagical = class_detail.value?.resources.some(resource => resource?.name === 'Cantrips' || resource?.name === 'Prepared Spells')
+        if(isMagical){
+            emit('navigate', {page: 'characterSpells', characterId: props.characterId})
+            return
+        }
+        
+        emit('navigate', {page: 'characterFinalize', characterId: props.characterId})   
     }
 
     function goBackToCharacters() {
@@ -353,7 +363,7 @@
         <button class="character_equipment_confirm_btn" @click="confirmEquipment" :disabled="saving || !can_confirm">
             {{ saving ? 'Guardando...' : 'Confirmar equipo' }}
         </button>
-        <button class="character_equipment_forward" @click="emit('navigate', {page: 'characterFinalize', characterId: props.characterId})">Continue Creation</button>
+        <button class="character_equipment_forward" @click="isItMagical">Continue Creation</button>
         <button class="character_equipment_back" @click="goBackToCharacters">Volver a mis personajes</button>
     </div>
 </template>

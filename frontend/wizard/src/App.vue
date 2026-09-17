@@ -19,17 +19,18 @@
   import AppCharacterBackground from './components/AppCharacterBackground.vue';
   import AppCharacterAbilities from './components/AppCharacterAbilities.vue';
   import AppCharacterFinalize from './components/AppCharacterFinalize.vue';
-
+  import AppCharacterView from './components/AppCharacterView.vue';
+  import AppCharacterLevelUp from './components/AppCharacterLevelUp.vue';
+  import AppCharacterSubclass from './components/AppCharacterSubclass.vue';
+  import AppCharacterEquipment from './components/AppCharacterEquipment.vue';
+  import AppCharacterSpells1 from './components/AppCharacterSpells1.vue';
 
   import { ref, onMounted } from 'vue'
-import AppCharacterView from './components/AppCharacterView.vue';
-import AppCharacterLevelUp from './components/AppCharacterLevelUp.vue';
-import AppCharacterSubclass from './components/AppCharacterSubclass.vue';
-import AppCharacterEquipment from './components/AppCharacterEquipment.vue';
+
 
   const authToken = ref(localStorage.getItem('dnd_token') || '')
-  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackground' | 'characterAbility' | 'characterFinalize' | 'characterView' | 'characterLevelUp' | 'characterSubclass' | 'characterEquipment'
-  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackground: 'characterSpecie', characterAbilities: 'characterBackground', characterFinalize: 'characterEquipment', characterView: 'characters', characterLevelUp: 'characters', characterSubclass: 'characterLevelUp', characterEquipment: 'characterAbilities'}
+  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackground' | 'characterAbility' | 'characterFinalize' | 'characterView' | 'characterLevelUp' | 'characterSubclass' | 'characterEquipment' | 'characterSpells'
+  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackground: 'characterSpecie', characterAbilities: 'characterBackground', characterFinalize: 'characterSpells', characterView: 'characters', characterLevelUp: 'characters', characterSubclass: 'characterLevelUp', characterEquipment: 'characterAbilities', characterSpells: 'characterEquipment'}
   const selectedClassId = ref(null)
   const selectedSubclassId = ref(null)
   const selectedSpecieId = ref(null)
@@ -134,6 +135,7 @@ import AppCharacterEquipment from './components/AppCharacterEquipment.vue';
         <AppCharacterLevelUp v-if="currentPage === 'characterLevelUp'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterLevelUp>
         <AppCharacterSubclass v-if="currentPage === 'characterSubclass'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSubclass>
         <AppCharacterEquipment v-if="currentPage === 'characterEquipment'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterEquipment>
+        <AppCharacterSpells1 v-if="currentPage === 'characterSpells'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSpells1>
       </div>
     </div>
   </transition>
