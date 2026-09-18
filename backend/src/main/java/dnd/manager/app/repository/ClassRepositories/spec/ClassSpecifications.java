@@ -8,7 +8,7 @@ import dnd.manager.app.model.ClassEntities.ClassEntity;
 
 public class ClassSpecifications {
 
-    public static Specification<ClassEntity> hasName(String name){
+    public static Specification<ClassEntity> hasClassName(String name){
         return (root, query, cb) ->
             name == null ? null : cb.like(cb.lower(root.get("name")), "%"+name.toLowerCase()+"%");
     }

@@ -32,6 +32,7 @@ public class SpellService {
     }
 
     public Page<SpellSummaryDto> findSpells(
+        Long classId,
         String name,
         Integer levelMin,
         Integer levelMax,
@@ -53,7 +54,8 @@ public class SpellService {
         .and(isRitual(ritual))
         .and(hasSavingThrowAbility(savingThrowAbility))
         .and(isAttackRoll(attackRoll))
-        .and(hasDamage(damageTypes));
+        .and(hasDamage(damageTypes))
+        .and(hasClass(classId));
         
         Page<Spell> spells = spellRepository.findAll(spec, pageable);
         

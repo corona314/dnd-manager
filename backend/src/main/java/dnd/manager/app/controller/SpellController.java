@@ -43,7 +43,7 @@ public class SpellController {
         @RequestParam(required = false) List<String> damageType,
         @PageableDefault(size = 20, page = 0) Pageable pageable
     ) {
-        return ResponseEntity.ok(service.findSpells(name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowAbility, attackRoll, damageType, pageable));
+        return ResponseEntity.ok(service.findSpells(null, name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowAbility, attackRoll, damageType, pageable));
     }
 
     @GetMapping("/{id}")

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.4.9, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.44, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: DnDB
+-- Host: localhost    Database: DnDB
 -- ------------------------------------------------------
--- Server version	8.4.9
+-- Server version	8.4.11
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -385,6 +385,7 @@ CREATE TABLE `character` (
   `max_hp` int NOT NULL DEFAULT '0',
   `money` int NOT NULL DEFAULT '0',
   `experience` int NOT NULL DEFAULT '0',
+  `max_spell_level` int NOT NULL DEFAULT '0',
   `species_id` int DEFAULT NULL,
   `background_id` int DEFAULT NULL,
   `walk_speed` int DEFAULT '0',
@@ -399,7 +400,7 @@ CREATE TABLE `character` (
   KEY `fk_character_background` (`background_id`),
   CONSTRAINT `character_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `fk_character_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Character info';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -408,7 +409,7 @@ CREATE TABLE `character` (
 
 LOCK TABLES `character` WRITE;
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
-INSERT INTO `character` VALUES (10,1,'Gandalf',2,0,0,0,0,NULL,NULL,NULL,NULL,'2026-08-09 17:47:24','2026-08-09 17:47:24',NULL,'DRAFT'),(11,1,'Alfonso',10,0,0,0,0,NULL,NULL,NULL,NULL,'2026-08-26 15:17:47','2026-08-26 15:17:47',NULL,'DRAFT');
+INSERT INTO `character` VALUES (10,1,'Gandalf',2,0,0,0,0,0,NULL,NULL,NULL,NULL,'2026-08-09 17:47:24','2026-08-09 17:47:24',NULL,'DRAFT'),(11,1,'Alfonso',10,0,0,0,0,0,NULL,NULL,NULL,NULL,'2026-08-26 15:17:47','2026-08-26 15:17:47',NULL,'DRAFT'),(12,1,'Iker',1,0,0,0,0,0,NULL,NULL,NULL,NULL,'2026-09-08 10:26:33','2026-09-08 10:26:33',NULL,'DRAFT');
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -467,7 +468,7 @@ CREATE TABLE `character_class` (
 
 LOCK TABLES `character_class` WRITE;
 /*!40000 ALTER TABLE `character_class` DISABLE KEYS */;
-INSERT INTO `character_class` VALUES (10,12,NULL,1),(11,7,NULL,7),(11,12,NULL,3);
+INSERT INTO `character_class` VALUES (10,12,NULL,1),(11,7,NULL,7),(11,12,NULL,3),(12,8,NULL,1);
 /*!40000 ALTER TABLE `character_class` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -525,7 +526,7 @@ CREATE TABLE `character_feature` (
 
 LOCK TABLES `character_feature` WRITE;
 /*!40000 ALTER TABLE `character_feature` DISABLE KEYS */;
-INSERT INTO `character_feature` VALUES (11,1),(11,6),(11,20),(11,34),(11,61),(11,96),(11,100),(11,102),(11,103),(11,104),(10,164),(11,164),(10,167),(11,167),(11,168),(11,172),(11,273),(10,276),(11,276);
+INSERT INTO `character_feature` VALUES (11,1),(11,6),(11,20),(12,20),(11,34),(11,61),(11,96),(11,100),(11,102),(11,103),(11,104),(12,114),(10,164),(11,164),(10,167),(11,167),(11,168),(11,172),(11,273),(12,274),(10,276),(11,276);
 /*!40000 ALTER TABLE `character_feature` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -585,7 +586,7 @@ CREATE TABLE `character_resource` (
 
 LOCK TABLES `character_resource` WRITE;
 /*!40000 ALTER TABLE `character_resource` DISABLE KEYS */;
-INSERT INTO `character_resource` VALUES (10,'Cantrips',12,3,3),(10,'Prepared Spells',12,4,4),(11,'Cantrips',12,3,3),(11,'Channel Divinity',7,2,2),(11,'Prepared Spells',7,2,7),(11,'Prepared Spells',12,4,6);
+INSERT INTO `character_resource` VALUES (10,'Cantrips',12,3,3),(10,'Prepared Spells',12,4,4),(11,'Cantrips',12,3,3),(11,'Channel Divinity',7,2,2),(11,'Prepared Spells',7,2,7),(11,'Prepared Spells',12,4,6),(12,'Favored Enemy',8,2,2),(12,'Prepared Spells',8,2,2);
 /*!40000 ALTER TABLE `character_resource` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -641,6 +642,7 @@ CREATE TABLE `character_skill` (
 
 LOCK TABLES `character_skill` WRITE;
 /*!40000 ALTER TABLE `character_skill` DISABLE KEYS */;
+INSERT INTO `character_skill` VALUES (12,1,0,0),(12,2,0,0),(12,3,0,0),(12,4,0,0),(12,5,0,0),(12,6,0,0),(12,7,0,0),(12,8,0,0),(12,9,0,0),(12,10,0,0),(12,11,0,0),(12,12,0,0),(12,13,0,0),(12,14,0,0),(12,15,0,0),(12,16,0,0),(12,17,0,0),(12,18,0,0);
 /*!40000 ALTER TABLE `character_skill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1798,4 +1800,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-26 15:48:12
+-- Dump completed on 2026-09-18  9:47:11

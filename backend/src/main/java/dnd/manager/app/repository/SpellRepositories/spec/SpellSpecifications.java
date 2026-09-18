@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
-
+import dnd.manager.app.model.ClassEntities.ClassEntity;
 import dnd.manager.app.model.SpellEntities.Spell;
 import dnd.manager.app.model.SpellEntities.SpellDamageType;
 import jakarta.persistence.criteria.Predicate;
@@ -94,4 +94,11 @@ public class SpellSpecifications {
         };
     }   
 
+    public static Specification<Spell> hasClass(Long classId) {
+        return (root, query, cb) -> {
+            if (classId == null) return null;
+            Join<Spell, ClassEntity> join = root.join("classes", JoinType.INNER);
+            return cb.equal(join.get("id"), classId);
+    };
+}
 }

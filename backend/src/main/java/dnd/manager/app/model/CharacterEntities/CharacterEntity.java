@@ -74,6 +74,10 @@ public class CharacterEntity {
     
     @Column(name = "finalized_at")
     private LocalDateTime finalizedAt;    
+
+    @Column (name = "max_spell_level")
+    private Integer maxSpellLevel;
+
     
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

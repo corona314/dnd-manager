@@ -34,6 +34,7 @@ public record CharacterResponseDto(
     List<CharacterFeatResponseDto> feats,
     List<CharacterResourceDto> resources,
     List<CharacterSpellSlotResponseDto> spellSlots,
+    Integer maxSpellLevel,
     CharacterStatus status,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,

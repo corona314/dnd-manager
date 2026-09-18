@@ -1,7 +1,6 @@
 package dnd.manager.app.model.CharacterEntities;
 
 import dnd.manager.app.model.ItemEntities.Item;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;

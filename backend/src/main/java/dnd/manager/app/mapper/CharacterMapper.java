@@ -85,6 +85,7 @@ public class CharacterMapper {
             e.getFeats() != null ? e.getFeats().stream().map(this::toFeatResponseDto).toList() : List.of(),
             e.getResources() != null ? e.getResources().stream().map(this::toResourceDto).toList() : List.of(),
             e.getSpellSlots() != null ? e.getSpellSlots().stream().map(this::toSpellSlotResponseDto).toList() : List.of(),
+            e.getMaxSpellLevel(),
             e.getStatus(),
             e.getCreatedAt(),
             e.getUpdatedAt(),

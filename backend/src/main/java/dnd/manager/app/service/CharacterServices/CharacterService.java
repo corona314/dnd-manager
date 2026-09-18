@@ -157,6 +157,7 @@ public class CharacterService {
         entity.setMaxHp(0);
         entity.setMoney(0);
         entity.setExperience(0);
+        entity.setMaxSpellLevel(0);
         entity.setStatus(CharacterStatus.DRAFT);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
@@ -841,6 +842,7 @@ public class CharacterService {
 
             character.getSpellSlots().add(spellSlot);
         }
+        character.setMaxSpellLevel(slots.stream().mapToInt(SpellcastingSlot::getSpellLevel).max().orElse(0));
     }
     
     

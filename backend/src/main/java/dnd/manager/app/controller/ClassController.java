@@ -8,6 +8,7 @@ import dnd.manager.app.dto.ClassDto.ClassResponseDto;
 import dnd.manager.app.dto.ClassDto.ClassSummaryDto;
 import dnd.manager.app.dto.ClassDto.SubclassResponseDto;
 import dnd.manager.app.dto.ClassDto.SubclassSummaryDto;
+import dnd.manager.app.dto.SpellDto.SpellSummaryDto;
 import dnd.manager.app.service.ClassServices.ClassService;
 
 import java.util.List;
@@ -54,6 +55,23 @@ public class ClassController {
     @GetMapping("/subclasses/{subclassId}")
     public ResponseEntity<SubclassResponseDto> subclass(@PathVariable Long subclassId) {
         return ResponseEntity.ok(service.findSubclassById(subclassId));
+    }
+
+    @GetMapping("/{classId}/spells")
+    public ResponseEntity<Page<SpellSummaryDto>> spells(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) Integer levelMin,
+        @RequestParam(required = false) Integer levelMax,
+        @RequestParam(required = false) List<Integer> schoolId,
+        @RequestParam(required = false) String components,
+        @RequestParam(required = false) Boolean concentration,
+        @RequestParam(required = false) Boolean ritual,
+        @RequestParam(required = false) String savingThrowAbility,
+        @RequestParam(required = false) Boolean attackRoll,
+        @RequestParam(required = false) List<String> damageType,
+        @PageableDefault(size = 20, page = 0) Pageable pageable
+    ) {
+        return ResponseEntity.ok(service.findSpells(name, levelMin, levelMax, schoolId, components, concentration, ritual, savingThrowAbility, attackRoll, damageType, pageable));
     }
 
 }
