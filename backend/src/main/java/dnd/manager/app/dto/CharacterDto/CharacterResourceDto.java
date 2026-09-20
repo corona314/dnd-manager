@@ -4,5 +4,7 @@ public record CharacterResourceDto(
     String name,
     String className,
     Integer currentValue,
-    Integer maxValue
+    Integer maxValue,
+    Integer increment,
+    String textValue
 ) {}

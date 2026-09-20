@@ -2,8 +2,12 @@ package dnd.manager.app.service.CharacterServices;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -572,7 +576,7 @@ public class CharacterService {
         character.setLevel(calculateLevelFromClasses(character.getClasses()));
         
         addClassFeatures(character, classId, 1);
-        updateClassResources(character, classId, 1);
+        updateClassResources(character, classId, 0, 1);
         updateMulticlassSpellSlots(character);
 
         return mapper.toResponseDto(repository.save(character));
@@ -620,6 +624,8 @@ public class CharacterService {
         removeClassResources(character, classId);
         character.getClasses().remove(characterClass);
         character.setLevel(calculateLevelFromClasses(character.getClasses()));
+        updateMulticlassSpellSlots(character);
+
 
         return mapper.toResponseDto(repository.save(character));
     }
@@ -637,7 +643,7 @@ public class CharacterService {
         characterClass.setLevel(characterClass.getLevel() + 1);
         character.setLevel(calculateLevelFromClasses(character.getClasses()));
         addClassFeatures(character, classId, characterClass.getLevel());
-        updateClassResources(character, classId, characterClass.getLevel());
+        updateClassResources(character, classId, characterClass.getLevel() - 1,characterClass.getLevel());
         updateMulticlassSpellSlots(character);
         
         if (characterClass.getSubclass() != null) {
@@ -665,7 +671,7 @@ public class CharacterService {
         characterClass.setLevel(characterClass.getLevel() - 1);
         character.setLevel(calculateLevelFromClasses(character.getClasses()));
         removeClassFeatures(character, classId, characterClass.getLevel() + 1);
-        updateClassResources(character, classId, characterClass.getLevel());
+        updateClassResources(character, classId, characterClass.getLevel() + 1, characterClass.getLevel());
         removeSubclassFeatures(character, characterClass.getSubclass() != null ? characterClass.getSubclass().getId() : null, characterClass.getLevel() + 1);
         updateMulticlassSpellSlots(character);
 
@@ -749,54 +755,95 @@ public class CharacterService {
 
 
     // Helper method to add and remove resources when leveling up or down
-    private void updateClassResources(CharacterEntity character, Long classId, Integer level) {
-        List<ClassResource> classResources = classResourceRepository.findByClassEntityIdAndLevel(classId, level);
+    private static final Pattern PURE_INTEGER = Pattern.compile("^[0-9]+$");
 
-        for (ClassResource classResource : classResources) {
+    private void updateClassResources(
+        CharacterEntity character,
+        Long classId,
+        Integer oldLevel,
+        Integer newLevel
+    ) {
+        List<ClassResource> allRows = classResourceRepository.findByClassEntityIdAndLevelLessThanEqual(classId, Math.max(oldLevel, newLevel));
 
-            Integer maxValue = parseResourceValue(classResource.getValue());
+        character.getResources().stream()
+            .filter(cr -> cr.getClassEntity() != null && cr.getClassEntity().getId().equals(classId))
+            .forEach(cr -> cr.setIncrement(0));
+
+        Map<String, List<ClassResource>> byName = allRows.stream()
+            .collect(Collectors.groupingBy(ClassResource::getName));
+
+        for (Map.Entry<String, List<ClassResource>> entry : byName.entrySet()) {
+            String name = entry.getKey();
+
+            List<ClassResource> rows = entry.getValue();
+            rows.sort(Comparator.comparing(ClassResource::getLevel));
+
+            ClassResource lastRow = rows.stream()
+                .filter(r -> r.getLevel() <= newLevel)
+                .max(Comparator.comparing(ClassResource::getLevel))
+                .orElse(null);
+
+            if (lastRow == null) {
+                continue;
+            }
 
             CharacterResource characterResource = character.getResources().stream()
-                .filter(cr -> cr.getName().equals(classResource.getName()) && cr.getClassEntity().getId().equals(classId))
+                .filter(cr -> cr.getClassEntity() != null && cr.getClassEntity().getId().equals(classId) && cr.getName().equals(name))
                 .findFirst()
                 .orElse(null);
 
             if (characterResource == null) {
                 characterResource = new CharacterResource();
-
                 characterResource.setCharacter(character);
-                characterResource.setClassEntity(classResource.getClassEntity());
-                characterResource.setName(classResource.getName());
-                characterResource.setMaxValue(maxValue);
-                characterResource.setCurrentValue(maxValue);
-
+                characterResource.setClassEntity(lastRow.getClassEntity());
+                characterResource.setName(name);
                 character.getResources().add(characterResource);
+            }
+
+            if (PURE_INTEGER.matcher(lastRow.getValue()).matches()) {
+                // Numeric resources:
+
+                int total = rows.stream()
+                    .filter(r -> r.getLevel() <= newLevel)
+                    .filter(r -> PURE_INTEGER.matcher(r.getValue()).matches())
+                    .mapToInt(r -> Integer.parseInt(r.getValue()))
+                    .sum();
+
+                int changedLevel = newLevel > oldLevel ? newLevel : oldLevel;
+
+                ClassResource levelRow = rows.stream()
+                    .filter(r -> r.getLevel().equals(changedLevel))
+                    .findFirst()
+                    .orElse(null);
+
+                int increment = levelRow != null ? Integer.parseInt(levelRow.getValue()) : 0;
+
+                if (newLevel < oldLevel) {
+                    increment = -increment;
+                }
+
+                characterResource.setIncrement(increment);
+                characterResource.setMaxValue(total);
+                characterResource.setCurrentValue(total);
+                characterResource.setTextValue(null);
 
             } else {
-                characterResource.setMaxValue(maxValue);
+                // Text resources:
 
-                if (characterResource.getCurrentValue() > maxValue) {
-                    characterResource.setCurrentValue(maxValue);
-                }
+                characterResource.setIncrement(null);
+                characterResource.setMaxValue(null);
+                characterResource.setCurrentValue(null);
+                characterResource.setTextValue(lastRow.getValue());
             }
         }
+
+        character.getResources().removeIf(cr -> cr.getClassEntity() != null && cr.getClassEntity().getId().equals(classId) 
+            && !byName.containsKey(cr.getName()));
     }
 
     private void removeClassResources(CharacterEntity character, Long classId) {
-        character.getResources().removeIf(
-            resource ->
-                resource.getClassEntity().getId().equals(classId)
-        );
-    }
-
-    private Integer parseResourceValue(String value) {
-        if (value == null || value.isBlank()) {
-            return 0;
-        }
-
-        String number = value.replaceFirst("[^0-9].*$", "");
-
-        return number.isEmpty() ? 0 : Integer.parseInt(number);
+        character.getResources().removeIf(resource -> resource.getClassEntity() != null 
+            && resource.getClassEntity().getId().equals(classId));
     }
 
     private void updateMulticlassSpellSlots(CharacterEntity character) {
@@ -817,7 +864,7 @@ public class CharacterService {
 
             switch (type) {
                 case FULL  -> casterLevel += level;
-                case HALF  -> casterLevel += level / 2;
+                case HALF  -> casterLevel += (level + 1) / 2;
                 case THIRD -> casterLevel += level / 3;
                 default -> {}
             }
