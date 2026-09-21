@@ -65,6 +65,9 @@ public class ClassEntity {
     private List<ClassSkill> skills;
 
     @OneToMany(mappedBy = "classEntity", fetch = FetchType.LAZY)
+    private List<ClassTool> tools;
+
+    @OneToMany(mappedBy = "classEntity", fetch = FetchType.LAZY)
     private List<ClassItem> items;
 
     @OneToMany(mappedBy = "classEntity", fetch = FetchType.LAZY)

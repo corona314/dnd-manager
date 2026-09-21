@@ -3,6 +3,7 @@ package dnd.manager.app.dto.ClassDto;
 import java.util.List;
 
 import dnd.manager.app.dto.SkillDto;
+import dnd.manager.app.dto.ItemDto.ItemSummaryDto;
 import dnd.manager.app.dto.SpellDto.SpellSummaryDto;
 
 public record ClassResponseDto (
@@ -10,6 +11,8 @@ public record ClassResponseDto (
     String hitPointDie,
     Integer numberSkills,
     List<SkillDto> skills,
+    Integer numberTools,
+    List<ItemSummaryDto> tools,
     List<ClassSavingThrowDto> savingThrows,
     List<ClassFeatureDto> features,
     List<SpellSummaryDto> spells,

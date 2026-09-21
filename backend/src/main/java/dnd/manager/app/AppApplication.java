@@ -16,5 +16,4 @@ public class AppApplication implements CommandLineRunner{
 		System.out.println("Aplicación iniciada correctamente en http://localhost:8080");
 	}
 
-
 }
