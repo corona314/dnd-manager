@@ -22,6 +22,7 @@ import dnd.manager.app.model.ClassEntities.ClassResource;
 import dnd.manager.app.model.ClassEntities.ClassSavingThrow;
 import dnd.manager.app.model.ClassEntities.ClassSkill;
 import dnd.manager.app.model.ClassEntities.ClassSpell;
+import dnd.manager.app.model.ClassEntities.ClassTool;
 import dnd.manager.app.model.SubclassEntities.Subclass;
 import dnd.manager.app.repository.SubclassRepositories.SubclassRepository;
 
@@ -57,6 +58,8 @@ public class ClassMapper {
             e.getHitPointDie(),
             e.getNumberSkills(),
             e.getSkills().stream().map(ClassSkill::getSkill).map(skillMapper::toDto).toList(),
+            e.getNumberTools(),
+            e.getTools().stream().map(ClassTool::getItem).map(itemMapper::toSummaryDto).toList(),
             e.getSavingThrows().stream().map(this::toClassSavingThrowDto).toList(),
             e.getFeatures().stream().sorted(Comparator.comparingInt(ClassFeature::getLevel)).map(this::toClassFeatureDto).toList(),
             e.getSpells().stream().sorted(Comparator.comparingInt((ClassSpell cs) -> cs.getSpell().getLevel())).map(cs -> spellMapper.toSummaryDto(cs.getSpell())).toList(),

@@ -113,7 +113,9 @@ public class CharacterMapper {
             resource.getName(),
             resource.getClassEntity() != null ? resource.getClassEntity().getName() : null,
             resource.getCurrentValue(),
-            resource.getMaxValue()
+            resource.getMaxValue(),
+            resource.getIncrement(),
+            resource.getTextValue()
         );
     }
 

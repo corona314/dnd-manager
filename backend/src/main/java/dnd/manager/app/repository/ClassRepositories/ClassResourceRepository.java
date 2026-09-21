@@ -9,4 +9,5 @@ import dnd.manager.app.model.ClassEntities.ClassResourceId;
 public interface ClassResourceRepository extends JpaRepository<ClassResource, ClassResourceId> {
 
     List<ClassResource> findByClassEntityIdAndLevel(Long classId, Integer level);
+    List<ClassResource> findByClassEntityIdAndLevelLessThanEqual(Long classId, Integer level);
 }
