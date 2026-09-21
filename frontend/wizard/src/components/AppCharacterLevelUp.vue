@@ -35,7 +35,7 @@
 
     //--- Cálculo de HP máxima (regla 2024: valor del dado + mod CON) ---
     const hit_die_max = computed(() => {
-        const die = character.value?.classEntity?.hitPointDie 
+        const die = character.value?.classes?.[0]?.classEntity?.hitPointDie 
         if (!die) return null
         const match = die.match(/d(\d+)/i)
         return match ? parseInt(match[1], 10) : null
@@ -93,8 +93,8 @@
                 return
             }
 
-            // 2) Finalizamos (el backend sube nivel y marca status)
-            const finalizeRes = await fetch(`${API_BASE}/characters/${props.characterId}/finalize`, {
+            // 2) Finalizamos (el backend sube nivel y marca status) /characters/{id}/classes/{classId}/level-up
+            const finalizeRes = await fetch(`${API_BASE}/characters/${props.characterId}/classes/${character.value?.classes?.[0]?.classEntity?.id}/level-up`, {
                 method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${props.token}`
@@ -135,7 +135,12 @@
 
             <div class="level_up_section">
                 <span class="level_up_label">Clase:</span>
-                <span>{{ character.classEntity?.name }} ({{ character.classEntity?.hitPointDie}})</span>
+                <ul class="level_up_class_list">
+                    <li v-for="c in character.classes" :key="c.classEntity.id">
+                        {{ c.classEntity.name }} ({{ c.classEntity.hitPointDie }}) — Nivel {{ c.level }}
+                        <span v-if="c.subclass"> / {{ c.subclass.name }}</span>
+                    </li>
+                </ul>
             </div>
 
             <div class="level_up_section">
