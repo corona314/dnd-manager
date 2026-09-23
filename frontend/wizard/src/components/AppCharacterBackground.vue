@@ -92,6 +92,7 @@
                 return
             }
             await applyBackgroundSkills()
+            await applyBackgroundTools()
             await fetchCharacter()
         } catch (e) {
             console.error(e)
@@ -136,6 +137,33 @@
         } catch (e) {
             console.error(e)
             error.value = 'Error de conexión al guardar competencias'
+        }
+    }
+
+    async function applyBackgroundTools() {
+        const grantedTools = viewed_background.value?.tools ?? []
+        if (!grantedTools.length) return
+
+        const existingIds = new Set((character.value?.tools ?? []).map(t => t.id))
+
+        const toAdd = grantedTools.filter(t => !existingIds.has(t.id))
+        if (!toAdd.length) return
+
+        try {
+            const results = await Promise.all(
+                toAdd.map(t =>
+                    fetch(`${API_BASE}/characters/${props.characterId}/tools/${t.id}`, {
+                        method: 'POST',
+                        headers: { Authorization: `Bearer ${props.token}` }
+                    })
+                )
+            )
+            if (results.some(r => !r.ok)) {
+                error.value = 'Error al guardar las herramientas del trasfondo'
+            }
+        } catch (e) {
+            console.error(e)
+            error.value = 'Error de conexión al guardar herramientas'
         }
     }
 

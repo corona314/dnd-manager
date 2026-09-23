@@ -1,6 +1,6 @@
 <script setup>
     import './styles/appCharacterClass.css'
-    import { ref, onMounted } from 'vue'
+    import { ref, computed, onMounted } from 'vue'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'
@@ -18,6 +18,38 @@
     const viewed_class = ref(null)
     const viewed_loading = ref(false)
     const viewed_id = ref(null)
+
+    //Const de tools
+    const selected_tools_ids = ref([])
+    const sourcesKey = `tool_sources_${props.characterId}`
+    const tool_sources = ref(JSON.parse(localStorage.getItem(sourcesKey) ?? '{}'))
+
+    function saveSource(name, added, granted) {
+        tool_sources.value = { ...tool_sources.value, [name]: { added, granted } }
+        localStorage.setItem(sourcesKey, JSON.stringify(tool_sources.value))
+    }
+
+    const class_tools = computed(() => viewed_class.value?.tools ?? [])
+    const tool_limit = computed(() => viewed_class.value?.numberTools ?? 0)
+    const tool_mode = computed(() => {
+        const total = class_tools.value.length
+        if (total === 0 || tool_limit.value === 0) return 'none'
+        if (total <= tool_limit.value) return 'auto'
+        return 'choose'
+    })
+    const pregranted_tools_ids = computed(() => {
+        const classAdded = tool_sources.value.class?.added ?? []
+        return (character.value?.tools ?? [])
+            .map(t => t.id)
+            .filter(id => !classAdded.includes(id))
+    })
+    const pregranted_in_class = computed(() =>
+        class_tools.value.filter(t => pregranted_tools_ids.value.includes(t.id)).length
+    )
+    const picks_left = computed(() =>
+        tool_limit.value - pregranted_in_class.value - selected_tools_ids.value.length
+    )
+
 
     //Guardado
     const saving = ref(false)
@@ -68,6 +100,7 @@
             })
             viewed_class.value = await res.json()
             viewed_id.value = class_data.id
+            selected_tools_ids.value = []
         }catch(e){
             console.error(e)
         }finally{
@@ -91,6 +124,11 @@
                     error.value = 'Error al quitar la clase anterior'
                     return
                 }
+                if (!(await removePreviousClassTools())) {
+                    error.value = 'Error al quitar las herramientas anteriores'
+                    return
+                }
+                await fetchCharacter()
             }
 
             const res = await fetch(`${API_BASE}/characters/${props.characterId}/classes/${classId}`, {
@@ -105,13 +143,94 @@
             }
             //Patch temporal para llenar skills por el momento
             await initializeClassSkills()
+            await insertClassTools()
             await fetchCharacter()
+            selected_tools_ids.value = []
         } catch (e) {
             console.error(e)
             error.value = 'Error de conexión'
         } finally {
             saving.value = false
         }
+    }
+
+    //Metodos de la gestion de tools
+    function isPregranted(toolId) {
+        return pregranted_tools_ids.value.includes(toolId)
+    }
+
+    function isToolSelected(toolId) {
+        return isPregranted(toolId) || selected_tools_ids.value.includes(toolId)
+    }
+
+    function canToggleOn() {
+        return picks_left.value > 0
+    }
+
+    function toggleTool(toolId) {
+        if (isPregranted(toolId)) return
+        if (selected_tools_ids.value.includes(toolId)) {
+            selected_tools_ids.value = selected_tools_ids.value.filter(id => id !== toolId)
+        } else if (canToggleOn()) {
+            selected_tools_ids.value = [...selected_tools_ids.value, toolId]
+        }
+    }
+
+    // Devuelve todos los ids de tools que da la clase según el modo
+    function getToolsGranted() {
+        if (tool_mode.value === 'auto') return class_tools.value.map(t => t.id)
+        if (tool_mode.value === 'choose') return [...selected_tools_ids.value]
+        return []
+    }
+
+    async function insertClassTools() {
+        const granted = getToolsGranted()
+        const owned = new Set(pregranted_tools_ids.value)
+        const toAdd = granted.filter(id => !owned.has(id))
+        let added = []
+
+        if (toAdd.length) {
+            try {
+                const results = await Promise.all(
+                    toAdd.map(id =>
+                        fetch(`${API_BASE}/characters/${props.characterId}/tools/${id}`, {
+                            method: 'POST',
+                            headers: { Authorization: `Bearer ${props.token}` }
+                        })
+                    )
+                )
+                added = toAdd.filter((id, i) => results[i].ok)
+                if (results.some(r => !r.ok)) error.value = 'Error al guardar las herramientas de clase'
+            } catch (e) {
+                console.error(e)
+                error.value = 'Error de conexión al guardar herramientas'
+            }
+        }
+        saveSource('class', added, granted)
+    }
+
+    async function removePreviousClassTools() {
+        const src = tool_sources.value
+        const others = new Set(
+            Object.entries(src)
+                .filter(([name]) => name !== 'class')
+                .flatMap(([, v]) => v.granted)
+        )
+        const ids = (src.class?.added ?? []).filter(id => !others.has(id))
+
+        if (ids.length) {
+            const results = await Promise.all(
+                ids.map(id =>
+                    fetch(`${API_BASE}/characters/${props.characterId}/tools/${id}`, {
+                        method: 'DELETE',
+                        headers: { Authorization: `Bearer ${props.token}` }
+                    })
+                )
+            )
+            if (results.some(r => !r.ok)) return false
+        }
+        saveSource('class', [], [])
+        return true
     }
 
     async function initializeClassSkills() {
@@ -245,7 +364,29 @@
                 </div>
             </div>
 
-            <button class="class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classes?.[0]?.classEntity?.id === viewed_id">
+            <!-- Tools automáticas -->
+            <div v-if="tool_mode === 'auto'" class="class_tools_auto">
+                <h3>Tool proficiencies (granted)</h3>
+                <span v-for="tool in class_tools" :key="tool.id" class="class_armor_chip">
+                    {{ tool.name }}
+                </span>
+            </div>
+            <!-- Tools a elegir -->
+            <div v-if="tool_mode === 'choose'" class="finalize_class_skills">
+                <h3>
+                    Tool proficiencies
+                    <span>({{ tool_limit - picks_left }} / {{ tool_limit }})</span>
+                </h3>
+                <div class="tool_list">
+                    <label v-for="tool in class_tools" :key="tool.id" class="tool_row">
+                        <input type="checkbox" :checked="isToolSelected(tool.id)" :disabled="isPregranted(tool.id) || (!isToolSelected(tool.id) && !canToggleOn())" @change="toggleTool(tool.id)"/>
+                        {{ tool.name }}
+                        <span v-if="isPregranted(tool.id)" class="tool_granted">(already proficient)</span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classes?.[0]?.classEntity?.id === viewed_id || (tool_mode === 'choose' && picks_left !== 0)">
                 {{ saving ? 'Guardando...' : (character?.classes?.[0]?.classEntity?.id === viewed_id ? 'Clase actual' : `Elegir ${viewed_class.name}`) }}
             </button>
         </div>

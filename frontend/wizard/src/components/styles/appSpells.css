@@ -11,16 +11,39 @@ body {
     justify-content: start;
     flex-direction: column;
     background-color: var(--background);
+    position: relative;
+
 }
 /*Cabecera-Filtrado*/ 
 .filters {
     display: flex;
     flex-wrap: wrap;
-    width: 75%;
-    justify-content: flex-start;
+    width: 100%;
+    justify-content: center;
     align-items: center;
     gap: 26px;
-    margin: 30px 0 20px 0;
+    margin-top: -8px;
+    padding: 20px 10px 10px 10px;
+    border-style: solid ;
+    border-color: var(--border);
+    border-top: 2px;
+    position: fixed;
+    z-index: 1;
+    background-color: var(--background);
+}
+.filters--closed{
+    padding: 0;
+    min-height: 40px;
+    border: none;
+    background-color: none;
+    z-index: 0;
+}
+
+.filters--closed > *:not(.hide_show_filters_btn) {
+    display: none;
+}
+.filters--closed .hide_show_filters_btn{
+    right: 33px;
 }
 
 .name {
@@ -308,15 +331,39 @@ body {
     border-color: var(--border);
 }
 
+.hide_show_filters_btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--default);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: bold;
+    position: absolute;
+    top: 27px;
+    right: 30px;
+}
+
 
 /*Muestra de Spells*/ 
 .spell_list{
-   display: flex;
+    display: flex;
     flex-direction: column;
     align-items: space-between;
     justify-content: space-between;
     width: 75%;
-    margin-top: 0;
+    margin-top: 70px;
+    margin-bottom: 50px;
+}
+.spell_list--filters-closed{
+    margin-top: 20px;
 }
 .spell_card{
     display: flex;
@@ -577,6 +624,12 @@ body {
     justify-content: center;
     gap: 4px;
     margin: 25px 0 35px 0;
+    position: fixed;
+    bottom: -35px;
+    border-top: 2px solid var(--border);
+    padding: 10px;
+    width: 100%;
+    background-color: var(--background);
 }
 
 .page_button {

@@ -265,9 +265,9 @@
                         <input type="checkbox" :checked="isSkillSelected(s.id)" :disabled="isPregranted(s.id) || (!isSkillSelected(s.id) && !canToggleOn())" @change="toggleSkill(s.id)"/>
                             {{ s.skill }} <em>({{ s.ability }})</em>
                             <span v-if="isPregranted(s.id)" class="finalize_skill_from_background">(ya adquirida por trasfondo)</span>
-                        </label>
-                    </div>
+                    </label>
                 </div>
+            </div>
             
 
             <div class="finalize_hp_preview">

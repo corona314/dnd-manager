@@ -33,6 +33,7 @@
     const filter_ritual = ref(null)
     const filter_concentration = ref(null)
     const school_open = ref(false)
+    const filters_open = ref(true)
     
     //Constantes de ordenacion
     const sort_labels = {
@@ -333,12 +334,16 @@
             .replace(/(Table:[^\n|]+)\|/, '$1\n|')   
         return marked(fixed)
     }
+
+    function minMaxFilters(){
+        filters_open.value = !filters_open.value
+    }
 </script>
 
 <template>
     <div class="spell_page">
         <!--Filtros de selección-->
-        <div class="filters">
+        <div class="filters" :class="{'filters--open': filters_open === true, 'filters--closed': filters_open === false}">
             <div class="name">
                 <input class="name_input" type="text" placeholder="Search spell..." v-model="filter_name" @keyup.enter="applyFilters"/>
                 <button class="search_button" @click="applyFilters">🔍</button>
@@ -453,11 +458,12 @@
                     </span>
                 </div>
             </div>
+            <button class="hide_show_filters_btn" @click="minMaxFilters()">{{ filters_open === true ? '▲' : '▼' }}</button>
         </div>
 
         <!--Tarjetas de los conjuros-->
         <div v-if="loading" class="loading">Cargando...</div>
-        <div v-else class="spell_list">
+        <div v-else class="spell_list" :class="{ 'spell_list--filters-closed': !filters_open }">
             <div
                 v-for="spell in spells"
                 :key="spell.id"
