@@ -1,5 +1,9 @@
 <script setup>
     import './styles/appSpells.css'
+    import './styles/appCharacterSpells.css'
+    import Slider from 'primevue/slider'
+    import RitualIcon from './icons/RitualIcon.vue'
+    import ConcentrationIcon from './icons/ConcentrationIcon.vue'
     import { ref, computed, onMounted } from 'vue'
     import { marked } from 'marked'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
@@ -121,6 +125,118 @@
         if (!res.ok) throw new Error(`Error al eliminar hechizo (${res.status})`)
     }
 
+    //Filtrado de conjuros
+    const Components = ['V', 'S', 'M']
+    const Schools = { 1: 'Abjuration', 2: 'Conjuration', 3: 'Divination', 4: 'Enchantment', 5: 'Evocation', 6: 'Illusion', 7: 'Necromancy', 8: 'Transmutation' }
+
+    const filter_name = ref('')
+    const filter_level = ref([1, 9])
+    const prev_level = ref([1, 9])
+    const filter_school = ref([])
+    const filter_components = ref({ V: null, S: null, M: null })
+    const filter_ritual = ref(null)
+    const filter_concentration = ref(null)
+    const school_open = ref(false)
+    const filters_open = ref(true)
+
+    const sort_labels = { name: 'Name', level: 'Level', school: 'School' }
+    const sort_field = ref('name')
+    const sort_direction = ref('asc')
+    const sort_open = ref(false)
+
+    function setSortField(field) {
+        sort_field.value = field
+        sort_open.value = false
+    }
+    function toggleSortDirection() {
+        sort_direction.value = sort_direction.value === 'asc' ? 'desc' : 'asc'
+    }
+
+    function nextTristate(v) {
+        if (v === null) return true
+        if (v === true) return false
+        return null
+    }
+    function previousTristate(v) {
+        if (v === null) return false
+        if (v === false) return true
+        return null
+    }
+    function cycleComponent(c) { filter_components.value[c] = nextTristate(filter_components.value[c]) }
+    function previousComponent(c) { filter_components.value[c] = previousTristate(filter_components.value[c]) }
+    function cycleRitual() { filter_ritual.value = nextTristate(filter_ritual.value) }
+    function previousRitual() { filter_ritual.value = previousTristate(filter_ritual.value) }
+    function cycleConcentration() { filter_concentration.value = nextTristate(filter_concentration.value) }
+    function previousConcentration() { filter_concentration.value = previousTristate(filter_concentration.value) }
+
+    function toggleSchool(id) {
+        const i = filter_school.value.indexOf(id)
+        if (i === -1) filter_school.value.push(id)
+        else filter_school.value.splice(i, 1)
+    }
+
+    function sliderOrder(value) {
+        const [newMin, newMax] = value
+        const [oldMin, oldMax] = prev_level.value
+        let min = newMin
+        let max = newMax
+        if (newMin !== oldMin) {
+            min = Math.min(newMin, oldMax)
+            max = oldMax
+        } else if (newMax !== oldMax) {
+            max = Math.max(newMax, oldMin)
+            min = oldMin
+        }
+        filter_level.value = [min, max]
+        prev_level.value = [min, max]
+    }
+
+    function minMaxFilters() { filters_open.value = !filters_open.value }
+
+    const filteredSpells = computed(() => {
+        const isCantripTab = spell_tab.value === 'cantrip'
+        const base = isCantripTab ? availableCantrips.value : availableLeveledSpells.value
+
+        const name = filter_name.value.trim().toLowerCase()
+        const [minL, maxL] = filter_level.value
+        const schoolNames = filter_school.value.map(id => Schools[id].toLowerCase())
+
+        const list = base.filter(s => {
+            if (name && !s.name.toLowerCase().includes(name)) return false
+
+            // El nivel solo aplica a la pestaña de conjuros (los trucos son siempre nivel 0)
+            if (!isCantripTab && (s.level < minL || s.level > maxL)) return false
+
+            if (schoolNames.length && !schoolNames.includes((s.school ?? '').toLowerCase())) return false
+
+            for (const c of Components) {
+                const v = filter_components.value[c]
+                const has = (s.components ?? '').includes(c)
+                if (v === true && !has) return false
+                if (v === false && has) return false
+            }
+
+            if (filter_ritual.value !== null && !!s.ritual !== filter_ritual.value) return false
+            if (filter_concentration.value !== null && !!s.concentration !== filter_concentration.value) return false
+
+            return true
+        })
+
+        const dir = sort_direction.value === 'asc' ? 1 : -1
+        const byName = (a, b) => a.name.localeCompare(b.name)
+        const bySchool = (a, b) => (a.school ?? '').localeCompare(b.school ?? '')
+        const byLevel = (a, b) => a.level - b.level
+
+        return list.sort((a, b) => {
+            switch (sort_field.value) {
+                case 'level':  return dir * byLevel(a, b) || byName(a, b)
+                case 'school': return dir * bySchool(a, b) || byLevel(a, b) || byName(a, b)
+                default:       return dir * byName(a, b)
+            }
+        })
+    })
+
+
     async function fetchCharacter() {
         loading_character.value = true
         try {
@@ -198,6 +314,8 @@
                 headers: { Authorization: `Bearer ${props.token}` }
             })
             class_detail.value = await res.json()
+            filter_level.value = [1, Math.max(max_level.value, 1)]
+            prev_level.value = [1, Math.max(max_level.value, 1)]
 
             const classSpells = class_detail.value?.spells ?? []
             const characterSpellIds = new Set(
@@ -234,8 +352,92 @@
 
         <div v-if="class_detail" class="spell_page">
 
-            <!-- TODO: barra de filtros del compendio (buscar, escuela, componentes...) iría aquí,
-                 usando la clase "filters" -->
+            <div class="filters_character" :class="{ 'filters_character--open': filters_open, 'filters_character--closed': !filters_open }">
+                <div class="name">
+                    <input class="name_input" type="text" placeholder="Search spell..." v-model="filter_name" />
+                </div>
+
+                <div class="level" v-if="spell_tab === 'spell' && max_level >= 1">
+                    <span class="level_label">{{ filter_level[0] }} -- {{ filter_level[1] }}</span>
+                    <Slider class="level_slider" v-model="filter_level" :min="1" :max="max_level" :step="1" range @update:modelValue="sliderOrder" />
+                </div>
+
+                <div class="sort_filter">
+                    <span class="sort_title">Order by:</span>
+                    <div class="sort_dropdown">
+                        <div class="dropdown_btn" @click="sort_open = !sort_open">
+                            {{ sort_labels[sort_field] }} <i>-</i>
+                        </div>
+                        <div v-if="sort_open" class="dropdown_menu">
+                            <div
+                                v-for="(label, field) in sort_labels"
+                                :key="field"
+                                class="dropdown_option"
+                                :class="{ selected: sort_field === field }"
+                                @click="setSortField(field)"
+                            >{{ label }}</div>
+                        </div>
+                    </div>
+                    <button class="sort_direction" @click="toggleSortDirection">
+                        {{ sort_direction === 'asc' ? '▲' : '▼' }}
+                    </button>
+                </div>
+
+                <div class="filter_group components_group">
+                    <span
+                        v-for="comp in Components"
+                        :key="comp"
+                        class="tristate"
+                        @click="cycleComponent(comp)"
+                        @contextmenu.prevent="previousComponent(comp)"
+                        :class="{
+                            'tristate--active': filter_components[comp] === true,
+                            'tristate--inactive': filter_components[comp] === false
+                        }"
+                    >{{ comp }}</span>
+                </div>
+
+                <div class="filter_group special_group">
+                    <span
+                        class="tristate"
+                        @click="cycleRitual"
+                        @contextmenu.prevent="previousRitual"
+                        :class="{ 'tristate--active': filter_ritual === true, 'tristate--inactive': filter_ritual === false }"
+                        title="Ritual"
+                    ><RitualIcon /></span>
+
+                    <span
+                        class="tristate"
+                        @click="cycleConcentration"
+                        @contextmenu.prevent="previousConcentration"
+                        :class="{ 'tristate--active': filter_concentration === true, 'tristate--inactive': filter_concentration === false }"
+                        title="Concentración"
+                    ><ConcentrationIcon /></span>
+                </div>
+
+                <div class="school_filter_group">
+                    <div class="school_filter">
+                        <div class="dropdown_btn" @click="school_open = !school_open">Schools <i>-</i></div>
+                        <div v-if="school_open" class="dropdown_menu">
+                            <div
+                                v-for="(name, id) in Schools"
+                                :key="id"
+                                class="dropdown_option"
+                                :class="{ selected: filter_school.includes(+id) }"
+                                @click="toggleSchool(+id)"
+                            >{{ name }}</div>
+                        </div>
+                    </div>
+                    <div v-if="filter_school.length" class="school_chips">
+                        <span v-for="id in filter_school" :key="id" class="school_chip">
+                            {{ Schools[id] }}
+                            <span class="school_chip_remove" @click.stop="toggleSchool(id)">✕</span>
+                        </span>
+                    </div>
+                </div>
+
+                <button class="hide_show_filters_btn" @click="minMaxFilters()">{{ filters_open ? '▲' : '▼' }}</button>
+            </div>
 
             <div class="spell_tabs">
                 <button
@@ -255,7 +457,7 @@
 
             <div class="spell_list">
                 <div
-                    v-for="spell in visibleSpells"
+                    v-for="spell in filteredSpells"
                     :key="spell.id"
                     class="spell_card"
                     :class="{ 'spell_card--expanded': expanded_id === spell.id, 'spell_card--selected': isSelected(spell) }"
