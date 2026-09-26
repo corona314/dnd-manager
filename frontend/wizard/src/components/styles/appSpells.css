@@ -5,14 +5,14 @@ body {
 
 /*Main-General*/ 
 .spell_page{
-    min-height: 100vh;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: start;
     flex-direction: column;
     background-color: var(--background);
     position: relative;
-
+    overflow: hidden;
 }
 /*Cabecera-Filtrado*/ 
 .filters {
@@ -27,7 +27,8 @@ body {
     border-style: solid ;
     border-color: var(--border);
     border-top: 2px;
-    position: fixed;
+    position: relative;
+    flex-shrink: 0;
     z-index: 1;
     background-color: var(--background);
 }
@@ -356,15 +357,17 @@ body {
 .spell_list{
     display: flex;
     flex-direction: column;
-    align-items: space-between;
-    justify-content: space-between;
+    align-items: stretch;
+    justify-content: flex-start;
     width: 75%;
-    margin-top: 70px;
-    margin-bottom: 50px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 0;
 }
-.spell_list--filters-closed{
-    margin-top: 20px;
-}
+
 .spell_card{
     display: flex;
     flex-direction: column;
@@ -623,9 +626,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    margin: 25px 0 35px 0;
-    position: fixed;
-    bottom: -35px;
+    flex-shrink: 0;
+    position: relative;
     border-top: 2px solid var(--border);
     padding: 10px;
     width: 100%;
