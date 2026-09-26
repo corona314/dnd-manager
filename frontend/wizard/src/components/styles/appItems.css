@@ -2,17 +2,8 @@ body {
     color: var(--text);
     background-color: var(--background);
 }
-/*Main-General*/ 
-    .items_page{
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: start;
-        flex-direction: column;
-        background-color: var(--background);
-    }
 
-/*Pestañas*/
+    /*Pestañas*/
     .tabs{
         display: flex;
         width: 50%;
@@ -31,20 +22,8 @@ body {
         color: var(--text);
         border-color: var(--border);
     }
-
-/*Filtros*/
-    .all_filters {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 16px;
-        width: 85%;
-        margin-bottom: 16px;
-    }
     
-    
-/*Filtros generales*/
+    /*Filtros generales*/
     .name, .name_input, .search_button{
         display: flex;
         border-radius: 0;
@@ -150,6 +129,7 @@ body {
         border: 1px solid var(--border);
         border-radius: 4px;
     }
+
 /*Filtros de ordenación*/
 .sort_filter {
     display: flex;
@@ -206,13 +186,7 @@ body {
         cursor: pointer;
     }
 /*Tarjetas de items*/
-    .item_list{
-        display: flex;
-        flex-direction: column;
-        align-items: stretch; 
-        justify-content: space-between;
-        width: 75%;
-    }
+
     .item_card{
         display: flex;
         flex-direction: column;
@@ -336,10 +310,4 @@ body {
         padding: 6px 10px;
         border-radius: 4px;
         line-height: 1.4;
-    }
-/*Paginación*/
-    .item_pages{
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }

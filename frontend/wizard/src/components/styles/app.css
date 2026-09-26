@@ -76,3 +76,136 @@ html, body, #app {
 *::-webkit-scrollbar-corner {
     background: var(--surface-secondary);
 }
+
+
+/* === Layout reutilizable para páginas de compendio === */
+
+.compendium_page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    background-color: var(--background);
+    position: relative;
+    overflow: hidden;
+}
+
+.compendium_scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 75%;
+    overflow-y: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.compendium_filters {
+    width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 10px 10px 10px;
+    border-bottom: 2px solid var(--border);
+    background-color: var(--background);
+    position: relative;
+    z-index: 1;
+}
+
+
+.compendium_filters--closed {
+    padding: 0;
+    min-height: 40px;
+    border-bottom: none;
+    background-color: var(--background);
+    z-index: 0;
+}
+
+.compendium_filters--closed > *:not(.compendium_filters_toggle) {
+    display: none;
+}
+
+.compendium_filters_toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--default);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: bold;
+    position: absolute;
+    top: 27px;
+    right: 30px;
+}
+
+
+
+
+
+
+
+.compendium_pages {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-shrink: 0;
+    border-top: 2px solid var(--border);
+    padding: 10px;
+    width: 100%;
+    background-color: var(--background);
+}
+
+.compendium_page_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--default);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.1rem;
+    line-height: 1;
+    transition:
+        background-color 0.15s,
+        border-color 0.15s,
+        color 0.15s;
+}
+
+.compendium_page_button:hover:not(:disabled) {
+    background-color: var(--surface-hover-strong);
+    border-color: var(--element-foreground);
+}
+
+.compendium_page_button:active:not(:disabled) {
+    background-color: var(--element-background);
+}
+
+.compendium_page_button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.compendium_page_info {
+    min-width: 110px;
+    padding: 0 12px;
+    text-align: center;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: bold;
+    user-select: none;
+}

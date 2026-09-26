@@ -49,6 +49,12 @@
     const current_page = ref(0)
     const total_pages = ref(1)
 
+    const filters_open = ref(true)
+
+    function minMaxFilters() {
+        filters_open.value = !filters_open.value
+    }
+
     //Metodos
     async function fetchItems(page=0) {
         loading.value = true
@@ -221,7 +227,7 @@
 </script>
 
 <template>
-    <div class="items_page">
+    <div class="compendium_page">
         <!-- Pestañas -->
         <div class="tabs">
             <button v-for="tab in Tabs" :key="tab.key"
@@ -231,7 +237,7 @@
             </button>
         </div>
         <!--Filtros-->
-        <div class="all_filters">
+        <div class="compendium_filters" :class="{ 'compendium_filters--closed': !filters_open }">
             <div class="general_filters">
                 <div class="name">
                     <input class="name" type="text" placeholder="Buscar objeto..." v-model="filter_name" @keyup.enter="fetchItems(0)"/>
@@ -292,10 +298,12 @@
                     </select>
                 </template>
             </div>
+            <button class="compendium_filters_toggle" @click="minMaxFilters()">{{ filters_open ? '▲' : '▼' }}</button>
+
         </div>
         <!-- Lista -->
         <div v-if="loading">Cargando...</div>
-        <div v-else class="item_list">
+        <div v-else class="item_list compendium_scroll">
             <div v-for="item in items" :key="item.id" class="item_card" :class="{ 'item_card--expanded': expanded_id === item.id }" @click="expandItem(item)">
                 <div class="item_card_base">
                     <strong class="item_name">{{ item.name }}</strong>
@@ -358,14 +366,14 @@
         </div>
 
         <!--Selector de página-->
-        <div class="item_pages">
-            <button @click="goToPage(0)" :disabled="current_page === 0">««</button>
-            <button @click="goToPage(current_page - 1)" :disabled="current_page === 0">‹</button>
+        <div class="compendium_pages">
+            <button class="compendium_page_button page_button--first" @click="goToPage(0)" :disabled="current_page === 0">«</button>
+            <button class="compendium_page_button page_button" @click="goToPage(current_page - 1)" :disabled="current_page === 0">‹</button>
 
-            <span>Página {{ current_page + 1 }} de {{total_pages}}</span>
+            <span class="page_info">Página {{ current_page + 1 }} de {{total_pages}}</span>
 
-            <button @click="goToPage(current_page + 1)" :disabled="current_page >= total_pages - 1">›</button>
-            <button @click="goToPage(total_pages - 1)" :disabled="current_page >= total_pages - 1">»»</button>
+            <button class="compendium_page_button page_button" @click="goToPage(current_page + 1)" :disabled="current_page >= total_pages - 1">›</button>
+            <button class="compendium_page_button page_button--last" @click="goToPage(total_pages - 1)" :disabled="current_page >= total_pages - 1">»</button>
         </div>
     </div>
 </template>

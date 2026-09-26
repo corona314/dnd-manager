@@ -341,9 +341,9 @@
 </script>
 
 <template>
-    <div class="spell_page">
+    <div class="compendium_page">
         <!--Filtros de selección-->
-        <div class="filters" :class="{'filters--open': filters_open === true, 'filters--closed': filters_open === false}">
+        <div class="compendium_filters" :class="{'filters--open': filters_open === true, 'filters--closed': filters_open === false}">
             <div class="name">
                 <input class="name_input" type="text" placeholder="Search spell..." v-model="filter_name" @keyup.enter="applyFilters"/>
                 <button class="search_button" @click="applyFilters">🔍</button>
@@ -463,7 +463,7 @@
 
         <!--Tarjetas de los conjuros-->
         <div v-if="loading" class="loading">Cargando...</div>
-        <div v-else class="spell_list" :class="{ 'spell_list--filters-closed': !filters_open }">
+        <div v-else class="compendium_scroll" :class="{ 'spell_list--filters-closed': !filters_open }">
             <div
                 v-for="spell in spells"
                 :key="spell.id"
@@ -553,9 +553,9 @@
         </div>
 
         <!--Selector de página-->
-        <div class="spell_pages">
+        <div class="compendium_pages">
             <button
-                class="page_button page_button--first"
+                class="compendium_page_button page_button--first"
                 @click="goToPage(0)"
                 :disabled="current_page === 0"
                 title="Primera página"
@@ -564,7 +564,7 @@
             </button>
 
             <button
-                class="page_button"
+                class="compendium_page_button page_button"
                 @click="goToPage(current_page - 1)"
                 :disabled="current_page === 0"
                 title="Página anterior"
@@ -577,7 +577,7 @@
             </span>
 
             <button
-                class="page_button"
+                class="compendium_page_button "
                 @click="goToPage(current_page + 1)"
                 :disabled="current_page >= total_pages - 1"
                 title="Página siguiente"
@@ -586,7 +586,7 @@
             </button>
 
             <button
-                class="page_button page_button--last"
+                class="compendium_page_button page_button--last"
                 @click="goToPage(total_pages - 1)"
                 :disabled="current_page >= total_pages - 1"
                 title="Última página"
