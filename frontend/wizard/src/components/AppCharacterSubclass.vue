@@ -1,13 +1,19 @@
 <script setup>
     //import './styles/appCharacterSubclass.css'
-    import { ref, onMounted } from 'vue'
-    const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
+    import { ref, onMounted, computed } from 'vue'
+    const props = defineProps({ token: String, characterId: { type: [Number, String], required: true }, classId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'
 
     //Constantes del personaje
     const character = ref(null)
     const loading_character = ref(false)
+    //Constantes de clase
+    const viewed_class = ref(null)
+    const current_class_entry = computed(() =>
+        character.value?.classes?.find(c => c.classEntity.id === Number(props.classId))
+    )
+    const current_subclass = computed(() => current_class_entry.value?.subclass ?? null)
 
     //Constantes de subclases
     const subclasses_data = ref([])
@@ -32,9 +38,7 @@
             })
             character.value = await res.json()
 
-            if (character.value?.classEntity?.id) {
-                await fetchSubclasses(character.value.classEntity.id)
-            }
+            await fetchSubclasses()
         } catch (e) {
             console.error(e)
         } finally {
@@ -42,14 +46,14 @@
         }
     }
 
-    async function fetchSubclasses(classId) {
+    async function fetchSubclasses() {
         loading_subclasses.value = true
         try {
-            const res = await fetch(`${API_BASE}/classes/${classId}`, {
+            const res = await fetch(`${API_BASE}/classes/${props.classId}`, {
                 headers: { Authorization: `Bearer ${props.token}` }
             })
-            const data = await res.json()
-            subclasses_data.value = data.subclasses ?? []
+            viewed_class.value = await res.json()
+            subclasses_data.value = viewed_class.value.subclasses ?? []
         } catch (e) {
             console.error(e)
         } finally {
@@ -128,17 +132,17 @@
         <div v-else-if="character" class="character_subclass_header">
             <h1>{{ character.name }}</h1>
             <span class="character_subclass_class_label">
-                Clase: {{ character.classEntity?.name ?? 'Sin asignar' }}
+                Clase: {{ viewed_class?.name ?? 'Sin asignar' }}
             </span>
-            <span v-if="character.subclass" class="character_subclass_current">
-                Current Subclass: {{ character.subclass.name }}
+            <span v-if="current_subclass" class="character_subclass_current">
+                Current Subclass: {{ current_subclass.name }}
             </span>
             <span v-else class="character_subclass_current character_subclass_current--empty">
                 No Subclass assigned
             </span>
         </div>
  
-        <span v-if="!character?.classEntity" class="character_subclass_warning">
+        <span v-if="!current_class_entry" class="character_subclass_warning">
             Debes elegir una clase antes de poder elegir una subclase.
         </span>
  
@@ -152,7 +156,7 @@
             </div>
             <div v-if="subclass_open" class="subclass_dropdown_menu">
                 <div v-if="loading_subclasses" class="loading">Cargando...</div>
-                <div v-else v-for="subclass_data in subclasses_data" :key="subclass_data.id" class="subclass_option" :class="{ selected: character?.subclass?.id === subclass_data.id }" @click="pickSubclassToView(subclass_data)">
+                <div v-else v-for="subclass_data in subclasses_data" :key="subclass_data.id" class="subclass_option" :class="{ selected: current_subclass?.id === subclass_data.id }" @click="pickSubclassToView(subclass_data)">
                     {{ subclass_data.name }}
                 </div>
             </div>
@@ -178,8 +182,8 @@
             </div>
  
             
-            <button class="subclass_details_select_btn" @click="selectSubclass(viewed_id)" :disabled="saving || character?.subclass?.id === viewed_id">
-                {{ saving ? 'Guardando...' : (character?.subclass?.id === viewed_id ? 'Subclase actual' : `Elegir ${viewed_subclass.name}`) }}
+            <button class="subclass_details_select_btn" @click="selectSubclass(viewed_id)" :disabled="saving || current_subclass?.id === viewed_id">
+                {{ saving ? 'Guardando...' : (current_subclass?.id === viewed_id ? 'Subclase actual' : `Elegir ${viewed_subclass.name}`) }}
             </button>
         </div>
 

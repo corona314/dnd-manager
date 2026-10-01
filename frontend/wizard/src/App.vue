@@ -133,7 +133,7 @@
         <AppCharacterFinalize v-if="currentPage === 'characterFinalize'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterFinalize>
         <AppCharacterView v-if="currentPage === 'characterView'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterView>
         <AppCharacterLevelUp v-if="currentPage === 'characterLevelUp'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterLevelUp>
-        <AppCharacterSubclass v-if="currentPage === 'characterSubclass'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSubclass>
+        <AppCharacterSubclass v-if="currentPage === 'characterSubclass'" :characterId="selectedCharacterId" :classId="selectedClassId" @navigate="handleNavigate" :token="authToken"></AppCharacterSubclass>
         <AppCharacterEquipment v-if="currentPage === 'characterEquipment'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterEquipment>
         <AppCharacterSpells1 v-if="currentPage === 'characterSpells'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSpells1>
       </div>

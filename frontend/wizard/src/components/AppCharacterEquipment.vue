@@ -261,7 +261,8 @@
 
     function isItMagical() {
         const isMagical = class_detail.value?.resources.some(resource => resource?.name === 'Cantrips' || resource?.name === 'Prepared Spells')
-        if(isMagical){
+        console.log(isMagical)
+        if(isMagical === true){
             emit('navigate', {page: 'characterSpells', characterId: props.characterId})
             return
         }

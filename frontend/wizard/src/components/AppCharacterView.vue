@@ -72,17 +72,17 @@
 
             <div class="view_section">
                 <span class="view_label">Class:</span>
-                <span>{{ character.classEntity?.name }} ({{ character.classEntity?.hitPointDie}})</span>
+                <ul class="view_class_list">
+                    <li v-for="c in character.classes" :key="c.classEntity.id">
+                        {{ c.classEntity.name }} ({{ c.classEntity.hitPointDie }}) — Nivel {{ c.level }}
+                        <span v-if="c.subclass"> / {{ c.subclass.name }}</span>
+                    </li>
+                </ul>
             </div>
 
             <div class="view_section">
                 <span class="view_label">Background:</span>
                 <span>{{ character.background?.name }}</span>
-            </div>
-
-            <div v-if="character?.subclass !== null" class="view_section">
-                <span class="view_label">Subclass:</span>
-                <span>{{ character.subclass?.name }}</span>
             </div>
 
             <div class="view_abilities">
