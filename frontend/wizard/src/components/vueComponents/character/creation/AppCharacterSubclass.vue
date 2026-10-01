@@ -1,5 +1,5 @@
 <script setup>
-    //import './styles/appCharacterSubclass.css'
+    //import '@/styles/appCharacterSubclass.css'
     import { ref, onMounted, computed } from 'vue'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true }, classId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])

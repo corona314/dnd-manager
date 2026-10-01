@@ -1,9 +1,9 @@
 <script setup>
-    import './styles/appSpells.css'
-    import './styles/appCharacterSpells.css'
+    import '@/styles/appSpells.css'
+    import '@/styles/appCharacterSpells.css'
     import Slider from 'primevue/slider'
-    import RitualIcon from './icons/RitualIcon.vue'
-    import ConcentrationIcon from './icons/ConcentrationIcon.vue'
+    import RitualIcon from '@/icons/RitualIcon.vue'
+    import ConcentrationIcon from '@/icons/ConcentrationIcon.vue'
     import { ref, computed, onMounted } from 'vue'
     import { marked } from 'marked'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })

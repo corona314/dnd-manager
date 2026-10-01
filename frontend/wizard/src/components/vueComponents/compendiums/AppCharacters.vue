@@ -1,6 +1,6 @@
 <script setup>
-import AppCharacterCreate from './AppCharacterCreate.vue';
-import './styles/appCharacters.css'
+import AppCharacterCreate from '@/vueComponents/character/creation/AppCharacterCreate.vue';
+import '@/styles/appCharacters.css'
 import { ref, onMounted } from 'vue'
 const props = defineProps({ token: String })
 const emit = defineEmits(['navigate'])

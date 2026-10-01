@@ -1,5 +1,5 @@
 <script setup>
-    //import './styles/appCharacterLevelUp.css'
+    //import '@/styles/appCharacterLevelUp.css'
     import { ref, computed, onMounted, watch } from 'vue'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])

@@ -2,28 +2,28 @@
   import './components/styles/app.css'
   import ToggleSwitch from 'primevue/toggleswitch'
   //Componentes
-  import AppClasses from './components/AppClasses.vue';
-  import AppClassExpansion from './components/AppClassExpansion.vue';
-  import AppItems from './components/AppItems.vue';
-  import AppLogin from './components/AppLogin.vue';
-  import AppMain from './components/AppMain.vue';
-  import AppSpells from './components/AppSpells.vue';
-  import AppSubclassExpansion from './components/AppSubclassExpansion.vue';
-  import AppSpecies from './components/AppSpecies.vue';
-  import AppBackgrounds from './components/AppBackgrounds.vue';
-  import AppSpecieExpansion from './components/AppSpecieExpansion.vue';
-  import AppBackgroundExpansion from './components/AppBackgroundExpansion.vue';
-  import AppCharacters from './components/AppCharacters.vue';
-  import AppCharacterClass from './components/AppCharacterClass.vue';
-  import AppCharacterSpecie from './components/AppCharacterSpecie.vue';
-  import AppCharacterBackground from './components/AppCharacterBackground.vue';
-  import AppCharacterAbilities from './components/AppCharacterAbilities.vue';
-  import AppCharacterFinalize from './components/AppCharacterFinalize.vue';
-  import AppCharacterView from './components/AppCharacterView.vue';
-  import AppCharacterLevelUp from './components/AppCharacterLevelUp.vue';
-  import AppCharacterSubclass from './components/AppCharacterSubclass.vue';
-  import AppCharacterEquipment from './components/AppCharacterEquipment.vue';
-  import AppCharacterSpells1 from './components/AppCharacterSpells1.vue';
+  import AppClasses from './components/vueComponents/compendiums/AppClasses.vue';
+  import AppClassExpansion from './components/vueComponents/compendiums/AppClassExpansion.vue';
+  import AppItems from './components/vueComponents/compendiums/AppItems.vue';
+  import AppLogin from './components/vueComponents/main/AppLogin.vue';
+  import AppMain from './components/vueComponents/main/AppMain.vue';
+  import AppSpells from './components/vueComponents/compendiums/AppSpells.vue';
+  import AppSubclassExpansion from './components/vueComponents/compendiums/AppSubclassExpansion.vue';
+  import AppSpecies from './components/vueComponents/compendiums/AppSpecies.vue';
+  import AppBackgrounds from './components/vueComponents/compendiums/AppBackgrounds.vue';
+  import AppSpecieExpansion from './components/vueComponents/compendiums/AppSpecieExpansion.vue';
+  import AppBackgroundExpansion from './components/vueComponents/compendiums/AppBackgroundExpansion.vue';
+  import AppCharacters from './components/vueComponents/compendiums/AppCharacters.vue';
+  import AppCharacterClass from './components/vueComponents/character/creation/AppCharacterClass.vue';
+  import AppCharacterSpecie from './components/vueComponents/character/creation/AppCharacterSpecie.vue';
+  import AppCharacterBackground from './components/vueComponents/character/creation/AppCharacterBackground.vue';
+  import AppCharacterAbilities from './components/vueComponents/character/creation/AppCharacterAbilities.vue';
+  import AppCharacterFinalize from './components/vueComponents/character/creation/AppCharacterFinalize.vue';
+  import AppCharacterView from './components/vueComponents/character/management/AppCharacterView.vue';
+  import AppCharacterLevelUp from './components/vueComponents/character/management/AppCharacterLevelUp.vue';
+  import AppCharacterSubclass from './components/vueComponents/character/creation/AppCharacterSubclass.vue';
+  import AppCharacterEquipment from './components/vueComponents/character/creation/AppCharacterEquipment.vue';
+  import AppCharacterSpells1 from './components/vueComponents/character/creation/AppCharacterSpells1.vue';
 
   import { ref, onMounted } from 'vue'
 

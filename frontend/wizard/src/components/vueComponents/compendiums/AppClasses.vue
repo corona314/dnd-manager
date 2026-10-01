@@ -1,5 +1,5 @@
 <script setup>
-    import './styles/appClasses.css'
+    import '@/styles/appClasses.css'
     import { ref, onMounted} from 'vue'
     const props = defineProps({ token: String })
     const API_BASE = 'http://localhost:8080/api'

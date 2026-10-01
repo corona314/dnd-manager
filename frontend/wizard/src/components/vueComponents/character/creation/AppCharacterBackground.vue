@@ -1,5 +1,5 @@
 <script setup>
-    import './styles/appCharacterBackground.css'
+    import '@/styles/appCharacterBackground.css'
     import { ref, onMounted } from 'vue'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])

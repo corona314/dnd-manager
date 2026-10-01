@@ -1,5 +1,5 @@
 <script setup>
-    import './styles/appMain.css'
+    import '@/styles/appMain.css'
 
     import { ref } from 'vue'
     defineEmits(['logout', 'navigate'])

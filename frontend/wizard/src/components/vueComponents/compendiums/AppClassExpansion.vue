@@ -1,5 +1,5 @@
 <script setup>
-    import './styles/appClassExpansion.css'
+    import '@/styles/appClassExpansion.css'
     import { marked } from 'marked'
     import { ref, onMounted} from 'vue'
     const props = defineProps({ token: String, classId: Number })

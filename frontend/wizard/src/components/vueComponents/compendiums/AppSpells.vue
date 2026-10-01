@@ -1,19 +1,19 @@
 <script setup>
     //Constantes de datos && cosas de que funcione y tal
-    import './styles/appSpells.css'
+    import '@/styles/appSpells.css'
     import Slider from 'primevue/slider';
     import { ref, onMounted, computed } from 'vue'
     import { marked } from 'marked';
-    import AttackIcon from './icons/AttackIcon.vue';
-    import DefenseIcon from './icons/DefenseIcon.vue';
-    import CastingTimeIcon from './icons/CastingTimeIcon.vue';
-    import RangeIcon from './icons/RangeIcon.vue';
-    import DurationIcon from './icons/DurationIcon.vue';
-    import MaterialIcon from './icons/MaterialIcon.vue';
-    import RitualIcon from './icons/RitualIcon.vue';
-    import NoRitualIcon from './icons/NoRitualIcon.vue';
-    import ConcentrationIcon from './icons/ConcentrationIcon.vue';
-    import NoConcentrationIcon from './icons/NoConcentrationIcon.vue';
+    import AttackIcon from '@/icons/AttackIcon.vue';
+    import DefenseIcon from '@/icons/DefenseIcon.vue';
+    import CastingTimeIcon from '@/icons/CastingTimeIcon.vue';
+    import RangeIcon from '@/icons/RangeIcon.vue';
+    import DurationIcon from '@/icons/DurationIcon.vue';
+    import MaterialIcon from '@/icons/MaterialIcon.vue';
+    import RitualIcon from '@/icons/RitualIcon.vue';
+    import NoRitualIcon from '@/icons/NoRitualIcon.vue';
+    import ConcentrationIcon from '@/icons/ConcentrationIcon.vue';
+    import NoConcentrationIcon from '@/icons/NoConcentrationIcon.vue';
 
 
     const props = defineProps({ token: String })
