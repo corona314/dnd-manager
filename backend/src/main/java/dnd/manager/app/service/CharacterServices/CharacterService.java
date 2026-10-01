@@ -3,9 +3,11 @@ package dnd.manager.app.service.CharacterServices;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -893,13 +895,247 @@ public class CharacterService {
     }
     
     
+    private void validateCharacterForFinalization(CharacterEntity character) {
+        List<String> errors = new ArrayList<>();
+
+        if (character.getName() == null || character.getName().isBlank()) {
+            errors.add("falta el nombre del personaje");
+        }
+        if (character.getSpecies() == null) {
+            errors.add("falta seleccionar la especie");
+        }
+        if (character.getBackground() == null) {
+            errors.add("falta seleccionar el trasfondo");
+        }
+        if (character.getWalkSpeed() == null || character.getWalkSpeed() < 0) {
+            errors.add("la velocidad caminando debe estar asignada y no puede ser negativa");
+        }
+        if (character.getFlySpeed() != null && character.getFlySpeed() < 0) {
+            errors.add("la velocidad volando no puede ser negativa");
+        }
+
+        Set<String> abilityCodes = character.getAbilities() == null
+            ? Set.of()
+            : character.getAbilities().stream()
+                .filter(ability -> ability.getAbility() != null)
+                .map(ability -> ability.getAbility().getCode())
+                .collect(Collectors.toSet());
+        Set<String> requiredAbilityCodes = Set.of("STR", "DEX", "CON", "INT", "WIS", "CHA");
+        if (!abilityCodes.containsAll(requiredAbilityCodes)) {
+            Set<String> missingAbilities = new HashSet<>(requiredAbilityCodes);
+            missingAbilities.removeAll(abilityCodes);
+            errors.add("faltan características: " + String.join(", ", missingAbilities));
+        }
+        if (character.getAbilities() != null && character.getAbilities().stream()
+            .anyMatch(ability -> ability.getBaseValue() == null)) {
+            errors.add("hay características sin puntuación");
+        }
+
+        List<CharacterClass> characterClasses = character.getClasses() == null
+            ? List.of()
+            : character.getClasses();
+        if (characterClasses.isEmpty()) {
+            errors.add("falta asignar una clase");
+        }
+
+        int calculatedLevel = 0;
+        for (CharacterClass characterClass : characterClasses) {
+            if (characterClass.getClassEntity() == null || characterClass.getLevel() == null || characterClass.getLevel() < 1) {
+                errors.add("hay una clase sin asignar o con nivel inválido");
+                continue;
+            }
+
+            calculatedLevel += characterClass.getLevel();
+            validateClassTools(character, characterClass, errors);
+            validateClassFeatures(character, characterClass, errors);
+
+            if (characterClasses.size() == 1 && character.getLevel() != null && character.getLevel() == 1) {
+                validateClassSkills(character, characterClass, errors);
+            }
+        }
+
+        if (character.getLevel() == null || character.getLevel() < 1) {
+            errors.add("el nivel total debe ser al menos 1");
+        } else if (!characterClasses.isEmpty() && character.getLevel() != calculatedLevel) {
+            errors.add("el nivel total no coincide con la suma de los niveles de clase");
+        }
+
+        validateBackgroundTools(character, errors);
+        validateBackgroundSkills(character, errors);
+
+        if (character.getMaxHp() == null || character.getMaxHp() <= 0) {
+            errors.add("los puntos de golpe máximos deben ser mayores que 0");
+        }
+        if (character.getCurrentHp() == null || character.getCurrentHp() < 0
+            || (character.getMaxHp() != null && character.getCurrentHp() > character.getMaxHp())) {
+            errors.add("los puntos de golpe actuales deben estar entre 0 y los máximos");
+        }
+        if (character.getMoney() == null || character.getMoney() < 0) {
+            errors.add("el dinero no puede ser negativo");
+        }
+
+        if (character.getLevel() != null && character.getLevel() == 1) {
+            boolean hasInventory = character.getItems() != null && character.getItems().stream()
+                .anyMatch(item -> item.getItem() != null && item.getQuantity() != null && item.getQuantity() > 0);
+            boolean hasStartingMoney = character.getMoney() != null && character.getMoney() > 0;
+            if (!hasInventory && !hasStartingMoney) {
+                errors.add("el equipo de nivel 1 no está asignado (añade equipo o dinero inicial)");
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            throw new IllegalStateException("No se puede finalizar el personaje: " + String.join("; ", errors));
+        }
+    }
+
+    private void validateClassTools(CharacterEntity character, CharacterClass characterClass, List<String> errors) {
+        ClassEntity classEntity = characterClass.getClassEntity();
+        int requestedTools = classEntity.getNumberTools() == null ? 0 : classEntity.getNumberTools();
+        Set<Long> eligibleToolIds = classEntity.getTools() == null
+            ? Set.of()
+            : classEntity.getTools().stream()
+                .filter(tool -> tool.getItem() != null)
+                .map(tool -> tool.getItem().getId())
+                .collect(Collectors.toSet());
+
+        validateToolSelection(character, "la clase " + classEntity.getName(), requestedTools, eligibleToolIds, errors);
+    }
+
+    private void validateBackgroundTools(CharacterEntity character, List<String> errors) {
+        if (character.getBackground() == null) {
+            return;
+        }
+
+        int requestedTools = character.getBackground().getNumberTools() == null
+            ? 0
+            : character.getBackground().getNumberTools();
+        Set<Long> eligibleToolIds = character.getBackground().getTools() == null
+            ? Set.of()
+            : character.getBackground().getTools().stream()
+                .filter(tool -> tool.getId() != null)
+                .map(Item::getId)
+                .collect(Collectors.toSet());
+
+        validateToolSelection(character, "el trasfondo " + character.getBackground().getName(), requestedTools, eligibleToolIds, errors);
+    }
+
+    private void validateToolSelection(
+        CharacterEntity character,
+        String source,
+        int requestedTools,
+        Set<Long> eligibleToolIds,
+        List<String> errors
+    ) {
+        if (requestedTools <= 0) {
+            return;
+        }
+        if (eligibleToolIds.isEmpty()) {
+            errors.add(source + " requiere herramientas pero no tiene opciones configuradas");
+            return;
+        }
+
+        Set<Long> ownedToolIds = character.getTools() == null
+            ? Set.of()
+            : character.getTools().stream()
+                .filter(tool -> tool.getItem() != null && tool.getItem().getId() != null)
+                .map(tool -> tool.getItem().getId())
+                .collect(Collectors.toSet());
+        long selectedEligibleTools = eligibleToolIds.stream().filter(ownedToolIds::contains).count();
+        int minimumRequired = Math.min(requestedTools, eligibleToolIds.size());
+        if (selectedEligibleTools < minimumRequired) {
+            errors.add(source + " requiere " + minimumRequired + " herramienta(s) elegida(s) de sus opciones");
+        }
+    }
+
+    private void validateClassSkills(CharacterEntity character, CharacterClass characterClass, List<String> errors) {
+        ClassEntity classEntity = characterClass.getClassEntity();
+        int requestedSkills = classEntity.getNumberSkills() == null ? 0 : classEntity.getNumberSkills();
+        if (requestedSkills <= 0) {
+            return;
+        }
+
+        Set<Long> eligibleSkillIds = classEntity.getSkills() == null
+            ? Set.of()
+            : classEntity.getSkills().stream()
+                .filter(skill -> skill.getSkill() != null)
+                .map(skill -> skill.getSkill().getId())
+                .collect(Collectors.toSet());
+        Set<Long> proficientSkillIds = character.getSkills() == null
+            ? Set.of()
+            : character.getSkills().stream()
+                .filter(skill -> Boolean.TRUE.equals(skill.getProficiency()) && skill.getSkill() != null)
+                .map(skill -> skill.getSkill().getId())
+                .collect(Collectors.toSet());
+
+        long selectedSkills = eligibleSkillIds.stream().filter(proficientSkillIds::contains).count();
+        if (selectedSkills < requestedSkills) {
+            errors.add("la clase " + classEntity.getName() + " requiere " + requestedSkills + " competencia(s) de habilidad");
+        }
+    }
+
+    private void validateBackgroundSkills(CharacterEntity character, List<String> errors) {
+        if (character.getBackground() == null || character.getBackground().getBackgroundSkills() == null) {
+            return;
+        }
+
+        Set<Long> proficientSkillIds = character.getSkills() == null
+            ? Set.of()
+            : character.getSkills().stream()
+                .filter(skill -> Boolean.TRUE.equals(skill.getProficiency()) && skill.getSkill() != null)
+                .map(skill -> skill.getSkill().getId())
+                .collect(Collectors.toSet());
+        character.getBackground().getBackgroundSkills().stream()
+            .filter(backgroundSkill -> backgroundSkill.getSkill() != null)
+            .filter(backgroundSkill -> !proficientSkillIds.contains(backgroundSkill.getSkill().getId()))
+            .forEach(backgroundSkill -> errors.add(
+                "falta la competencia de habilidad " + backgroundSkill.getSkill().getName() + " otorgada por el trasfondo"
+            ));
+    }
+
+    private void validateClassFeatures(CharacterEntity character, CharacterClass characterClass, List<String> errors) {
+        ClassEntity classEntity = characterClass.getClassEntity();
+        Set<Long> characterFeatureIds = character.getFeatures() == null
+            ? Set.of()
+            : character.getFeatures().stream()
+                .filter(feature -> feature.getFeature() != null)
+                .map(feature -> feature.getFeature().getId())
+                .collect(Collectors.toSet());
+
+        for (int level = 1; level <= characterClass.getLevel(); level++) {
+            final int currentLevel = level;
+            classFeatureRepository.findByClassEntityIdAndLevel(classEntity.getId(), currentLevel).stream()
+                .filter(classFeature -> classFeature.getFeature() != null)
+                .filter(classFeature -> !characterFeatureIds.contains(classFeature.getFeature().getId()))
+                .forEach(classFeature -> errors.add(
+                    "falta la feature " + classFeature.getFeature().getName() + " de " + classEntity.getName() + " nivel " + currentLevel
+                ));
+
+            if (characterClass.getSubclass() != null) {
+                subclassFeatureRepository.findBySubclassIdAndLevel(characterClass.getSubclass().getId(), currentLevel).stream()
+                    .filter(subclassFeature -> subclassFeature.getFeature() != null)
+                    .filter(subclassFeature -> !characterFeatureIds.contains(subclassFeature.getFeature().getId()))
+                    .forEach(subclassFeature -> errors.add(
+                        "falta la feature " + subclassFeature.getFeature().getName()
+                            + " de la subclase " + characterClass.getSubclass().getName() + " nivel " + currentLevel
+                    ));
+            }
+        }
+    }
+
     // Finalizar personaje
+    @Transactional
     public CharacterResponseDto finalize(Long userId, Long id) {
         CharacterEntity entity = repository.findByUserIdAndId(userId, id);
+        if (entity == null) {
+            throw new EntityNotFoundException("Character not found");
+        }
+
+        validateCharacterForFinalization(entity);
 
         entity.setStatus(CharacterStatus.FINAL);
-        entity.setUpdatedAt(LocalDateTime.now());
-        entity.setFinalizedAt(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        entity.setUpdatedAt(now);
+        entity.setFinalizedAt(now);
         return mapper.toResponseDto(repository.save(entity));
     }
 }

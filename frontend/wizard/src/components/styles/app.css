@@ -107,6 +107,7 @@ html, body, #app {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    gap: 20px;
     padding: 20px 10px 10px 10px;
     border-bottom: 2px solid var(--border);
     background-color: var(--background);
@@ -118,7 +119,7 @@ html, body, #app {
 .compendium_filters--closed {
     padding: 0;
     min-height: 40px;
-    border-bottom: none;
+    border: none;
     background-color: var(--background);
     z-index: 0;
 }
@@ -209,3 +210,4 @@ html, body, #app {
     font-weight: bold;
     user-select: none;
 }
+

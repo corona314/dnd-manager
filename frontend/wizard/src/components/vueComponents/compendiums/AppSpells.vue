@@ -343,7 +343,7 @@
 <template>
     <div class="compendium_page">
         <!--Filtros de selección-->
-        <div class="compendium_filters" :class="{'filters--open': filters_open === true, 'filters--closed': filters_open === false}">
+        <div class="compendium_filters" :class="{'compendium_filters--open': filters_open === true, 'compendium_filters--closed': filters_open === false}">
             <div class="name">
                 <input class="name_input" type="text" placeholder="Search spell..." v-model="filter_name" @keyup.enter="applyFilters"/>
                 <button class="search_button" @click="applyFilters">🔍</button>
@@ -388,7 +388,7 @@
                 </button>
             </div>
 
-            <div class="filter_group components_group">
+            <div class="components_group">
                 <span
                     v-for="comp in Components"
                     :key="comp"
@@ -458,7 +458,7 @@
                     </span>
                 </div>
             </div>
-            <button class="hide_show_filters_btn" @click="minMaxFilters()">{{ filters_open === true ? '▲' : '▼' }}</button>
+            <button class="compendium_filters_toggle" @click="minMaxFilters()">{{ filters_open === true ? '▲' : '▼' }}</button>
         </div>
 
         <!--Tarjetas de los conjuros-->
