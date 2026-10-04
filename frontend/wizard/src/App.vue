@@ -49,7 +49,7 @@
     localStorage.setItem('dnd_token', token)
     localStorage.setItem('dnd_username', username.value)
   }
-  
+
   function logout() {
     showSettings.value = false
     authToken.value = ''
@@ -125,6 +125,7 @@
     </header>
 
       <div class="app_content">
+        <AppMain v-if="currentPage === 'main'" @navigate="handleNavigate" @logout="logout" :token="authToken" />
         <AppSpells v-if="currentPage === 'spells'" :token="authToken"/>
         <AppItems v-if="currentPage === 'items'"  :token="authToken"/>
         <AppClasses v-if="currentPage === 'classes'"  @navigate="handleNavigate" :token="authToken"/>
