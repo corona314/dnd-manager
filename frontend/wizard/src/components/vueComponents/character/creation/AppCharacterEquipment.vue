@@ -226,7 +226,7 @@
 
     async function confirmEquipment() {
         if (!can_confirm.value) {
-            error.value = 'Debes elegir equipo o dinero para cada fuente disponible'
+            error.value = 'You must choose A/B for all sources before confirming'
             return
         }
 
@@ -236,7 +236,7 @@
             // 1) Dinero (si se eligió opción B en alguna fuente)
             const moneyOk = await saveMoney(total_money.value)
             if (!moneyOk) {
-                error.value = 'Error al guardar el dinero inicial'
+                error.value = 'Error saving initial money'
                 return
             }
 
@@ -245,7 +245,7 @@
             for (const entry of finalItems) {
                 const ok = await upsertItem(entry.itemId, entry.quantity)
                 if (!ok) {
-                    error.value = 'Error al añadir uno de los items'
+                    error.value = 'Error saving one of the items'
                     return
                 }
             }
@@ -253,7 +253,7 @@
             emit('navigate', { page: 'characterSpells', characterId: props.characterId })
         } catch (e) {
             console.error(e)
-            error.value = 'Error de conexión'
+            error.value = 'Connection error'
         } finally {
             saving.value = false
         }
@@ -277,95 +277,102 @@
 
 <template>
     <div class="character_equipment_page">
-        <div v-if="loading_character">Cargando personaje...</div>
+        <div v-if="loading_character">Loading character...</div>
 
         <div v-else-if="character" class="character_equipment_header">
             <h1>{{ character.name }}</h1>
-            <span class="equipment_subtitle">Elige tu equipo inicial</span>
+            <span class="equipment_subtitle">Choose your initial equipment</span>
         </div>
 
         <span v-if="error" class="character_equipment_error">{{ error }}</span>
 
         <!--Equipo de Clase-->
-        <div v-if="loading_class">Cargando equipo de clase...</div>
+        <div v-if="loading_class">Loading class equipment...</div>
         <div v-else-if="class_detail" class="equipment_source_card">
-            <h2>Equipo de {{ character.classes[0].classEntity.name }}</h2>
+            <h2>{{ character.classes[0].classEntity.name }} Equipment</h2>
 
             <div class="equipment_choice_toggle">
-                <button :class="{ active: class_choice === 'A' }" @click="class_choice = 'A'">
-                    Paquete de equipo
+                <button class="general_button" :class="{ active: class_choice === 'A' }" @click="class_choice = 'A'">
+                    Equipment Package
                 </button>
-                <button :class="{ active: class_choice === 'B' }" @click="class_choice = 'B'">
-                    {{ (moneyOf(class_detail, 'B') / 100).toFixed(2) }} po en su lugar
+                <button class="general_button" :class="{ active: class_choice === 'B' }" @click="class_choice = 'B'">
+                    {{ (moneyOf(class_detail, 'B') / 100).toFixed(2) }} gold pieces instead
                 </button>
             </div>
 
             <div v-if="class_choice === 'A'" class="equipment_items_preview">
                 <div v-for="entry in class_fixed_items" :key="entry.item.id" class="equipment_item_row">
-                    {{ entry.quantity }}x {{ entry.item.name }}
+                    {{ entry.item.name }}     
+                    <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
+
                 </div>
                 <div v-if="moneyOf(class_detail, 'A') > 0" class="equipment_item_row">
                     {{ (moneyOf(class_detail, 'A') / 100).toFixed(2) }} po
                 </div>
                 <div v-if="class_optional_items.length" class="equipment_optional_list">
-                    <span class="equipment_optional_label">Opcionales:</span>
+                    <span class="equipment_optional_label">Choose 1:</span>
                     <label v-for="entry in class_optional_items" :key="entry.item.id" class="equipment_optional_row">
                         <input type="radio" name="class_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, class_optional_items)" />
-                        {{ entry.quantity }}x {{ entry.item.name }}
+                        {{ entry.item.name }}                     
+                        <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
+
                     </label>
                 </div>
             </div>
 
             <div v-else-if="class_choice === 'B'" class="equipment_money_preview">
-                Recibirás {{ (moneyOf(class_detail, 'B') / 100).toFixed(2) }} piezas de oro.
+                You will receive {{ (moneyOf(class_detail, 'B') / 100).toFixed(2) }} gold pieces.
             </div>
         </div>
 
         <!--Equipo de Trasfondo-->
-        <div v-if="loading_background">Cargando equipo de trasfondo...</div>
+        <div v-if="loading_background">Loading background equipment...</div>
         <div v-else-if="background_detail" class="equipment_source_card">
-            <h2>Equipo de {{ character.background.name }}</h2>
+            <h2>{{ character.background.name }} Equipment</h2>
 
             <div class="equipment_choice_toggle">
-                <button :class="{ active: background_choice === 'A' }" @click="background_choice = 'A'">
-                    Paquete de equipo
+                <button class="general_button" :class="{ active: background_choice === 'A' }" @click="background_choice = 'A'">
+                    Equipment Package
                 </button>
-                <button :class="{ active: background_choice === 'B' }" @click="background_choice = 'B'">
-                    {{ (moneyOf(background_detail, 'B') / 100).toFixed(2) }} po en su lugar
+                <button class="general_button" :class="{ active: background_choice === 'B' }" @click="background_choice = 'B'">
+                    {{ (moneyOf(background_detail, 'B') / 100).toFixed(2) }} gold pieces instead
                 </button>
             </div>
 
             <div v-if="background_choice === 'A'" class="equipment_items_preview">
                 <div v-for="entry in background_fixed_items" :key="entry.item.id" class="equipment_item_row">
-                    {{ entry.quantity }}x {{ entry.item.name }}
+                    {{ entry.item.name }}     
+                    <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
                 </div>
                 <div v-if="moneyOf(background_detail, 'A') > 0" class="equipment_item_row">
                     {{ (moneyOf(background_detail, 'A') / 100).toFixed(2) }} po
                 </div>
                 <div v-if="background_optional_items.length" class="equipment_optional_list">
-                    <span class="equipment_optional_label">Opcionales:</span>
+                    <span class="equipment_optional_label">Choose 1:</span>
                     <label v-for="entry in background_optional_items" :key="entry.item.id" class="equipment_optional_row">
                         <input type="radio" name="background_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, background_optional_items)" />
-                        {{ entry.quantity }}x {{ entry.item.name }}
+                        {{ entry.item.name }}                     
+                        <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
+
                     </label>
                 </div>
             </div>
 
             <div v-else-if="background_choice === 'B'" class="equipment_money_preview">
-                Recibirás {{ (moneyOf(background_detail, 'B') / 100).toFixed(2) }} piezas de oro.
+                You will receive {{ (moneyOf(background_detail, 'B') / 100).toFixed(2) }} gold pieces.
             </div>
         </div>
 
         <!--Resumen-->
         <div v-if="total_money > 0" class="equipment_total_money">
-            Dinero total: {{ (total_money / 100).toFixed(2) }} po
+            Total Money: {{ (total_money / 100).toFixed(2) }} gp
         </div>
 
-        <button class="character_equipment_confirm_btn" @click="confirmEquipment" :disabled="saving || !can_confirm">
-            {{ saving ? 'Guardando...' : 'Confirmar equipo' }}
+        <button class="general_button character_equipment_confirm_btn" @click="confirmEquipment" :disabled="saving || !can_confirm">
+            {{ saving ? 'Saving...' : 'Confirm Equipment' }}
         </button>
-        <button class="character_equipment_forward" @click="isItMagical">Continue Creation</button>
-        <button class="character_equipment_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_equipment_forward" @click="isItMagical">Continue Creation</button>
+        <button class="general_button character_equipment_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>
 

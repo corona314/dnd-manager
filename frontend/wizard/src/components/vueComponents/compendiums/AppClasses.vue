@@ -77,7 +77,7 @@
                                 {{ p.ability }}
                             </span>
                         </div>
-                        <button @click="$emit('navigate', { page: 'classExtended', classId: class_data.id })">More about {{ class_data.name }}</button>
+                        <button class="general_button" @click="$emit('navigate', { page: 'classExtended', classId: class_data.id })">More about {{ class_data.name }}</button>
                     </div>
                 </div>
             </div>

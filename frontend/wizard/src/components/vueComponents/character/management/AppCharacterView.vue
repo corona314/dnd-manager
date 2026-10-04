@@ -59,14 +59,14 @@
 
 <template>
     <div class="character_view_page">
-        <div v-if="loading_character">Cargando personaje...</div>
+        <div v-if="loading_character">Loading Character...</div>
 
         <div v-else-if="character" class="character_view_summary">
             <h1>{{ character.name }}</h1>
             <span class="view_level">Current Level: {{ character.level }}</span>
 
             <div class="view_section">
-                <span class="view_label">Specie:</span>
+                <span class="view_label">Species:</span>
                 <span>{{ character.species?.name}}</span>
             </div>
 
@@ -105,11 +105,11 @@
             </div>
 
             <div class="view_hp_preview">
-                <span>Hp:</span>
+                <span>HP:</span>
                 <span>{{ character.maxHp }}/{{ character.currentHp }}</span>
             </div>
         </div>
-        <button class="character_view_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_view_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>
 

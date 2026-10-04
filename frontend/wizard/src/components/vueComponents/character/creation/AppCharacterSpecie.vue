@@ -125,10 +125,10 @@
         <h2>Pick a Specie</h2>
         <div class="specie_filter">
             <div class="specie_dropdown_btn" @click="specie_open = !specie_open">
-                {{ viewed_specie ? viewed_specie.name : 'Selecciona una especie' }} <i>▾</i>
+                {{ viewed_specie ? viewed_specie.name : 'Select a Specie' }} <i>▾</i>
             </div>
             <div v-if="specie_open" class="specie_dropdown_menu">
-                <div v-if="loading_species" class="loading">Cargando...</div>
+                <div v-if="loading_species" class="loading">Loading...</div>
                 <div v-else v-for="specie in species" :key="specie.name" class="specie_option" :class="{ selected: character?.specie?.id === specie.id }" @click="pickSpecieToView(specie)">
                     {{ specie.name }}
                 </div>
@@ -136,7 +136,7 @@
         </div>
 
         <!--Detalles de la clase elegida en el desplegable-->
-        <div v-if="viewed_loading" class="loading">Cargando...</div>
+        <div v-if="viewed_loading" class="loading">Loading...</div>
         <div v-else-if="viewed_specie" class="specie_details_card">
             <div class="specie_details_header">
                 <span class="specie_details_name">{{ viewed_specie.name }}</span>
@@ -146,19 +146,19 @@
             <span v-if="viewed_specie.flySpeed !== 0" class="specie_card_expanded_fly">Fly movement: {{ viewed_specie.flySpeed }}ft</span>
             
             <div v-if="viewed_specie.features?.length" class="specie_features">
-                <h3>Feats:</h3>
+                <h3>Features:</h3>
                 <div v-for="f in viewed_specie.features" :key="f.id" class="specie_feature_row">
                     <div class="specie_feature_header" @click="toggleFeature(f.id)">
                         <span class="specie_feature_name">{{ f.name }}</span>
                     </div>
                 </div>                
             </div>
-            <button class="specie_details_select_btn" @click="selectSpecie(viewed_id)" :disabled="saving || character?.species?.id === viewed_id">
-                {{ saving ? 'Guardando...' : (character?.species?.id === viewed_id ? 'Especie actual' : `Elegir ${viewed_specie.name}`) }}
+            <button class="general_button specie_details_select_btn" @click="selectSpecie(viewed_id)" :disabled="saving || character?.species?.id === viewed_id">
+                {{ saving ? 'Saving...' : (character?.species?.id === viewed_id ? 'Current Specie' : `Pick ${viewed_specie.name}`) }}
             </button>
         </div>
-        <button class="character_specie_forward" @click="emit('navigate', {page: 'characterBackground', characterId: props.characterId})" :disabled="character?.species === null">Continue Creation</button>
-        <button class="character_specie_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_specie_forward" @click="emit('navigate', {page: 'characterBackground', characterId: props.characterId})" :disabled="character?.species === null">Continue Creation</button>
+        <button class="general_button character_specie_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>
 

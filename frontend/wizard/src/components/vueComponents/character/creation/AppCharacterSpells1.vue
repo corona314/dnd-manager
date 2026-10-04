@@ -342,7 +342,7 @@
 
 <template>
     <div class="character_spell_page">
-        <div v-if="loading_character">Cargando personaje...</div>
+        <div v-if="loading_character">Loading Character...</div>
 
         <div v-else-if="character" class="character_spell_summary">
             <h1>{{ character.name }}</h1>
@@ -352,8 +352,8 @@
 
         <div v-if="class_detail" class="spell_page">
 
-            <div class="filters_character" :class="{ 'filters_character--open': filters_open, 'filters_character--closed': !filters_open }">
-                <div class="name">
+        <div class="compendium_filters" :class="{ 'compendium_filters--open': filters_open === true, 'compendium_filters--closed': filters_open === false }">                
+            <div class="name">
                     <input class="name_input" type="text" placeholder="Search spell..." v-model="filter_name" />
                 </div>
 
@@ -378,9 +378,6 @@
                             >{{ label }}</div>
                         </div>
                     </div>
-                    <button class="sort_direction" @click="toggleSortDirection">
-                        {{ sort_direction === 'asc' ? '▲' : '▼' }}
-                    </button>
                 </div>
 
                 <div class="filter_group components_group">
@@ -436,7 +433,7 @@
                     </div>
                 </div>
 
-                <button class="hide_show_filters_btn" @click="minMaxFilters()">{{ filters_open ? '▲' : '▼' }}</button>
+                <button class="compendium_filters_toggle" @click="minMaxFilters()">{{ filters_open === true ? '▲' : '▼' }}</button>            
             </div>
 
             <div class="spell_tabs">
@@ -445,13 +442,13 @@
                     @click="spell_tab = 'cantrip'"
                     :disabled="!canUseCantrips"
                 >
-                    Trucos ({{ selected_cantrips.length }}/{{ cantripLimit }})
+                    Cantrips ({{ selected_cantrips.length }}/{{ cantripLimit }})
                 </button>
                 <button
                     :class="{ active: spell_tab === 'spell' }"
                     @click="spell_tab = 'spell'"
                 >
-                    Conjuros ({{ selected_leveled_spells.length }}/{{ preparedSpellsLimit }})
+                    Spells ({{ selected_leveled_spells.length }}/{{ preparedSpellsLimit }})
                 </button>
             </div>
 
@@ -532,8 +529,8 @@
             </div>
         </div>
 
-        <button class="character_spell_forward" @click="emit('navigate', {page: 'characterFinalize', characterId: props.characterId})">Continue Creation</button>
-        <button class="character_spell_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_spell_forward" @click="emit('navigate', {page: 'characterFinalize', characterId: props.characterId})">Continue Creation</button>
+        <button class="general_button character_spell_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>
 

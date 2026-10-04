@@ -462,7 +462,7 @@
         </div>
 
         <!--Tarjetas de los conjuros-->
-        <div v-if="loading" class="loading">Cargando...</div>
+        <div v-if="loading" class="loading">Loading...</div>
         <div v-else class="compendium_scroll" :class="{ 'spell_list--filters-closed': !filters_open }">
             <div
                 v-for="spell in spells"

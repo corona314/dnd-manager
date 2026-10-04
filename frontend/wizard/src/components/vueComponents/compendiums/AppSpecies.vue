@@ -67,7 +67,7 @@
                     <div v-else class="specie_card_expanded_content">
                         <span class="specie_card_expanded_walk">Movement: {{ expanded_specie.walkSpeed }}ft</span>
                         <span v-if="expanded_specie.flySpeed !== 0" class="specie_card_expanded_fly">Fly movement: {{ expanded_specie.flySpeed }}ft</span>
-                        <button @click="$emit('navigate', { page: 'specieExtended', specieId: specie.id })">More about {{ specie.name }}</button>
+                        <button class="general_button" @click="$emit('navigate', { page: 'specieExtended', specieId: specie.id })">More about {{ specie.name }}</button>
                     </div>
                 </div>
             </div>

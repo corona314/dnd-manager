@@ -290,7 +290,7 @@
 <template>
     <div class="character_class_page">
         <!--Cabecera con info del personaje-->
-        <div v-if="loading_character">Cargando personaje...</div>
+        <div v-if="loading_character">Loading Character...</div>
         <div v-else-if="character" class="character_class_header">
             <h1>{{ character.name }}</h1>
             <span v-if="character.classes?.length" class="character_class_current">
@@ -307,10 +307,10 @@
         <h2>Pick a Class</h2>
         <div class="class_filter">
             <div class="class_dropdown_btn" @click="class_open = !class_open">
-                {{ viewed_class ? viewed_class.name : 'Selecciona una clase' }} <i>▾</i>
+                {{ viewed_class ? viewed_class.name : 'Select a Class' }} <i>▾</i>
             </div>
             <div v-if="class_open" class="class_dropdown_menu">
-                <div v-if="loading_classes" class="loading">Cargando...</div>
+                <div v-if="loading_classes" class="loading">Loading...</div>
                 <div v-else v-for="class_data in classes_data" :key="class_data.name" class="class_option" :class="{ selected: character?.classes?.[0]?.classEntity?.id === class_data.id }" @click="pickClassToView(class_data)">
                     {{ class_data.name }}
                 </div>
@@ -318,7 +318,7 @@
         </div>
 
         <!--Detalles de la clase elegida en el desplegable-->
-        <div v-if="viewed_loading" class="loading">Cargando...</div>
+        <div v-if="viewed_loading" class="loading">Loading...</div>
         <div v-else-if="viewed_class" class="class_details_card">
             <div class="class_details_header">
                 <span class="class_details_name">{{ viewed_class.name }}</span>
@@ -386,12 +386,12 @@
                 </div>
             </div>
 
-            <button class="class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classes?.[0]?.classEntity?.id === viewed_id || (tool_mode === 'choose' && picks_left !== 0)">
-                {{ saving ? 'Guardando...' : (character?.classes?.[0]?.classEntity?.id === viewed_id ? 'Clase actual' : `Elegir ${viewed_class.name}`) }}
+            <button class="general_button class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classes?.[0]?.classEntity?.id === viewed_id || (tool_mode === 'choose' && picks_left !== 0)">
+                {{ saving ? 'Saving...' : (character?.classes?.[0]?.classEntity?.id === viewed_id ? 'Current Class' : `Pick ${viewed_class.name}`) }}
             </button>
         </div>
-        <button class="character_class_forward" @click="emit('navigate', {page: 'characterSpecie', characterId: props.characterId})" :disabled="!character?.classes?.length">Continue Creation</button>
-        <button class="character_class_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_class_forward" @click="emit('navigate', {page: 'characterSpecie', characterId: props.characterId})" :disabled="!character?.classes?.length">Continue Creation</button>
+        <button class="general_button character_class_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>
 

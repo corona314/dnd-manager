@@ -224,6 +224,8 @@ html, body, #app {
 }
 
 .header_avatar_btn {
+  background: var(--avatar-bg, rgba(128, 128, 128, 0.2));
+  border: 2px solid rgba(128, 128, 128, 0.5);
   width: 40px;
   height: 40px;
   padding: 0;

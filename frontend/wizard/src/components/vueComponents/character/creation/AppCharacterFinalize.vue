@@ -88,7 +88,7 @@
 
     async function saveClassSkills() {
         if (!skills_are_valid.value) {
-            skills_error.value = `Debes elegir exactamente ${skill_limit.value} competencias nuevas`
+            skills_error.value = `You must choose exactly ${skill_limit.value} new skills`
             return false
         }
 
@@ -118,14 +118,14 @@
                 body: JSON.stringify(merged)
             })
             if (!res.ok) {
-                skills_error.value = 'Error al guardar las competencias'
+                skills_error.value = 'Error saving class skills'
                 return false
             }
             await fetchCharacter()
             return true
         } catch (e) {
             console.error(e)
-            skills_error.value = 'Error de conexión'
+            skills_error.value = 'Connection error'
             return false
         } finally {
             saving_skills.value = false
@@ -168,7 +168,7 @@
     //--- Finalizar ---
     async function finalizeCharacter() {
         if (calculated_max_hp.value === null) {
-            error.value = 'No se puede calcular la vida: falta clase asignada'
+            error.value = 'Health cannot be calculated because the character has no class assigned yet.'
             return
         }
 
@@ -178,7 +178,7 @@
             // 1) Guardamos las skills de clase elegidas
             const skillsOk = await saveClassSkills()
             if (!skillsOk) {
-                error.value = skills_error.value || 'Error al guardar las competencias'
+                error.value = skills_error.value || 'Error saving class skills'
                 return
             }
             // 2) Guardamos maxHp/currentHp calculados
@@ -194,7 +194,7 @@
                 })
             })
             if (!patchRes.ok) {
-                error.value = 'Error al guardar la vida del personaje'
+                error.value = 'Error saving character health'
                 return
             }
 
@@ -206,7 +206,7 @@
                 }
             })
             if (!finalizeRes.ok) {
-                error.value = 'Error al finalizar el personaje'
+                error.value = 'Error finishing the character'
                 return
             }
 
@@ -214,7 +214,7 @@
             emit('navigate', 'characters')
         } catch (e) {
             console.error(e)
-            error.value = 'Error de conexión'
+            error.value = 'Connection error'
         } finally {
             saving.value = false
         }
@@ -227,29 +227,29 @@
 
 <template>
     <div class="character_finalize_page">
-        <div v-if="loading_character">Cargando personaje...</div>
+        <div v-if="loading_character">Loading Character...</div>
 
         <div v-else-if="character" class="character_finalize_summary">
             <h1>{{ character.name }}</h1>
-            <span class="finalize_level">Nivel actual: {{ character.level - 1 }} → 1</span>
+            <span class="finalize_level">Current Level: {{ character.level - 1 }} → 1</span>
 
             <div class="finalize_section">
-                <span class="finalize_label">Especie:</span>
-                <span>{{ character.species?.name ?? 'Sin asignar' }}</span>
+                <span class="finalize_label">Species:</span>
+                <span>{{ character.species?.name ?? 'Not assigned' }}</span>
             </div>
 
             <div class="finalize_section">
-                <span class="finalize_label">Clase:</span>
-                <span>{{ character.classes?.[0]?.classEntity?.name ?? 'Sin asignar' }} ({{ character.classes?.[0]?.classEntity?.hitPointDie ?? '—' }})</span>
+                <span class="finalize_label">Class:</span>
+                <span>{{ character.classes?.[0]?.classEntity?.name ?? 'Not assigned' }} ({{ character.classes?.[0]?.classEntity?.hitPointDie ?? '—' }})</span>
             </div>
 
             <div class="finalize_section">
-                <span class="finalize_label">Trasfondo:</span>
-                <span>{{ character.background?.name ?? 'Sin asignar' }}</span>
+                <span class="finalize_label">Background:</span>
+                <span>{{ character.background?.name ?? 'Not assigned' }}</span>
             </div>
 
             <div class="finalize_abilities">
-                <h2>Características</h2>
+                <h2>Abilities</h2>
                 <div v-for="ab in character.abilities" :key="ab.ability" class="finalize_ability_row">
                     <span>{{ ab.ability }}</span>
                     <span>{{ ab.baseValue }}</span>
@@ -258,36 +258,36 @@
             </div>
 
             <div v-if="class_detail" class="finalize_class_skills">
-                <h2>Competencias de Clase ({{ selected_skill_ids.length }} / {{ skill_limit }})</h2>
+                <h2>Class Skills ({{ selected_skill_ids.length }} / {{ skill_limit }})</h2>
                 <span v-if="skills_error" class="finalize_skills_error">{{ skills_error }}</span>
                 <div class="finalize_skill_list">
                     <label v-for="s in class_detail.skills" :key="s.id" class="finalize_skill_row">
                         <input type="checkbox" :checked="isSkillSelected(s.id)" :disabled="isPregranted(s.id) || (!isSkillSelected(s.id) && !canToggleOn())" @change="toggleSkill(s.id)"/>
                             {{ s.skill }} <em>({{ s.ability }})</em>
-                            <span v-if="isPregranted(s.id)" class="finalize_skill_from_background">(ya adquirida por trasfondo)</span>
+                            <span v-if="isPregranted(s.id)" class="finalize_skill_from_background">(adquired by background)</span>
                     </label>
                 </div>
             </div>
             
 
             <div class="finalize_hp_preview">
-                <h2>Vida (calculada)</h2>
+                <h2>Health (calculated)</h2>
                 <span v-if="calculated_max_hp !== null">
-                    {{ hit_die_max }} (dado) {{ formatModifier(con_modifier) }} (CON) = <strong>{{ calculated_max_hp }} HP</strong>
+                    {{ hit_die_max }} (die) {{ formatModifier(con_modifier) }} (CON) = <strong>{{ calculated_max_hp }} HP</strong>
                 </span>
                 <span v-else class="finalize_hp_warning">
-                    No se puede calcular: falta asignar una clase
+                    It cannot be calculated because the character has no class assigned yet.
                 </span>
             </div>
         </div>
 
         <span v-if="error" class="character_finalize_error">{{ error }}</span>
 
-        <button class="character_finalize_save_btn" @click="finalizeCharacter" :disabled="saving || calculated_max_hp === null || character.level !== 1">
-            {{ saving ? 'Finalizando...' : 'Finalizar y Guardar' }}
+        <button class="general_button character_finalize_save_btn" @click="finalizeCharacter" :disabled="saving || calculated_max_hp === null || character.level !== 1">
+            {{ saving ? 'Finishing...' : 'Finish and Save' }}
         </button>
 
-        <button class="character_finalize_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_finalize_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>
 

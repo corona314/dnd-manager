@@ -44,8 +44,8 @@ async function createCharacter() {
         <div class="character_create_form">
             <input type="text" v-model="name" placeholder="Nombre del personaje" @keyup.enter="createCharacter"/>
             <span v-if="error" class="character_create_error">{{ error }}</span>
-            <button @click="createCharacter" :disabled="saving">
-                {{ saving ? 'Guardando...' : 'Crear' }}
+            <button class="general_button" @click="createCharacter" :disabled="saving">
+                {{ saving ? 'Saving...' : 'Create' }}
             </button>
         </div>
     </div>

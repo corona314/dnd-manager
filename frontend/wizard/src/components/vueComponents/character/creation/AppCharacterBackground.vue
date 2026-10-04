@@ -175,7 +175,7 @@
 <template>
     <div class="character_background_page">
         <!--Cabecera con info del personaje-->
-        <div v-if="loading_character">Cargando personaje...</div>
+        <div v-if="loading_character">Loading Character...</div>
         <div v-else-if="character" class="character_background_header">
             <h1>{{ character.name }}</h1>
             <span v-if="character.background" class="character_backgroundcurrent">
@@ -192,10 +192,10 @@
         <h2>Pick a Background</h2>
         <div class="background_filter">
             <div class="background_dropdown_btn" @click="background_open = !background_open">
-                {{ viewed_background ? viewed_background.name : 'Selecciona un trasfondo' }} <i>▾</i>
+                {{ viewed_background ? viewed_background.name : 'Select a Background' }} <i>▾</i>
             </div>
             <div v-if="background_open" class="background_dropdown_menu">
-                <div v-if="loading_background" class="loading">Cargando...</div>
+                <div v-if="loading_background" class="loading">Loading...</div>
                 <div v-else v-for="background in background" :key="background.name" class="background_option" :class="{ selected: character?.background?.id === background.id }" @click="pickBackgroundToView(background)">
                     {{ background.name }}
                 </div>
@@ -203,7 +203,7 @@
         </div>
 
         <!--Detalles de la clase elegida en el desplegable-->
-        <div v-if="viewed_loading" class="loading">Cargando...</div>
+        <div v-if="viewed_loading" class="loading">Loading...</div>
         <div v-else-if="viewed_background" class="background_details_card">
             <div class="background_details_header">
                 <span class="background_details_name">{{ viewed_background.name }}</span>
@@ -217,17 +217,17 @@
                 </span>
             </div>
             <div v-if="viewed_background.tools?.length" class="background_tools">
-                <span class="background_section_label">Tools (Choose 1):</span>
+                <span class="background_section_label">Tools (just 1):</span>
                 <span v-for="t in viewed_background.tools" :key="t.id" class="background_tool_chip" :title="`${t.weight} lb · ${t.rarity}`">
                     {{ t.name }}
                 </span>
             </div>
 
-            <button class="background_details_select_btn" @click="selectBackground(viewed_id)" :disabled="saving || character?.background?.id === viewed_id">
-                {{ saving ? 'Guardando...' : (character?.background?.id === viewed_id ? 'Trasfondo actual' : `Elegir ${viewed_background.name}`) }}
+            <button class="general_button background_details_select_btn" @click="selectBackground(viewed_id)" :disabled="saving || character?.background?.id === viewed_id">
+                {{ saving ? 'Saving...' : (character?.background?.id === viewed_id ? 'Current Background' : `Pick ${viewed_background.name}`) }}
             </button>
         </div>
-        <button class="character_background_forward" @click="emit('navigate', {page: 'characterAbilities', characterId: props.characterId})" :disabled="character?.background === null">Continue Creation</button>
-        <button class="character_background_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_background_forward" @click="emit('navigate', {page: 'characterAbilities', characterId: props.characterId})" :disabled="character?.background === null">Continue Creation</button>
+        <button class="general_button character_background_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>

@@ -78,22 +78,22 @@ onMounted(() => fetchCharacters())
 
 <template>
     <div class="characters_page">
-        <h1>Mis Personajes</h1>
-        <button @click="createCharacter">+ Nuevo personaje</button>
-        <div v-if="loading">Cargando...</div>
+        <h1>My Characters</h1>
+        <button class="general_button" @click="createCharacter">+ New Character</button>
+        <div v-if="loading">Loading...</div>
         <div v-else class="characters_list">
             <div v-for="c in characters" :key="c.id" class="character_card">
                 <span class="character_name">{{ c.name }}</span>
                 <span class="character_status" :class="c.status === 'FINAL' ? 'status_completed' : 'status_draft'"> {{ c.status === 'FINAL' ? 'Completed' : 'Draft' }} </span>
                 <span>{{ c.className === null ? 'no hay clase' : c.className}}</span>
                 <span>{{ c.speciesName === null ? 'no hay especie' : c.speciesName}}</span>
-                <button @click="deleteCharacter(c.id)">🗑️</button>
-                <button v-if="c.status === 'DRAFT'" @click="goToEditCharacter(c.id)">Editar</button>
-                <button v-if="c.status === 'FINAL'" @click="goToLevelUpCharacter(c.id)">Level Up</button>
-                <button v-if="c.status === 'FINAL'" @click="goToViewCharacter(c.id)">View Details</button>
+                <button class="general_button" @click="deleteCharacter(c.id)">🗑️</button>
+                <button class="general_button" v-if="c.status === 'DRAFT'" @click="goToEditCharacter(c.id)">Edit</button>
+                <button class="general_button" v-if="c.status === 'FINAL'" @click="goToLevelUpCharacter(c.id)">Level Up</button>
+                <button class="general_button" v-if="c.status === 'FINAL'" @click="goToViewCharacter(c.id)">View Details</button>
             </div>
             <div v-if="!characters.length" class="characters_empty">
-                No tienes personajes todavía.
+                You don't have any characters yet.
             </div>
             <div v-if="newCharacter" class="character_name_creator" >
                 <AppCharacterCreate :token="token" @created="onCharacterCreated"></AppCharacterCreate>

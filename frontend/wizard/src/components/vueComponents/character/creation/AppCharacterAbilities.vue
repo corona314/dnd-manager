@@ -241,58 +241,58 @@
         </div>
 
         <div class="ability_method_selector">
-            <button :class="{ active: score_method === 'pointbuy' }" @click="setScoreMethod('pointbuy')">Point Buy</button>
-            <button :class="{ active: score_method === 'manual' }" @click="setScoreMethod('manual')">Asignación manual</button>
+            <button class="general_button" :class="{ active: score_method === 'pointbuy' }" @click="setScoreMethod('pointbuy')">Point Cost</button>
+            <button class="general_button" :class="{ active: score_method === 'manual' }" @click="setScoreMethod('manual')">Manual Assignment</button>
         </div>
 
         <span v-if="error" class="character_ability_error">{{ error }}</span>
         <!--Metodo de selección de puntos, ya sea compra de puntos, asignar-->
         <template v-if="score_method === 'pointbuy'">
-            <h2>Point Buy</h2>
+            <h2>Point Cost</h2>
             <span class="ability_points_remaining" :class="{ invalid: points_remaining !== 0 }">
-                Puntos restantes: {{ points_remaining }} / {{ TOTAL_POINTS }}
+                Remaining: {{ points_remaining }} / {{ TOTAL_POINTS }}
             </span>
         </template>
         <template v-else-if="score_method === 'manual'">
-            <h2>Manual Selection</h2>
+            <h2>Manual Assignment</h2>
         </template>
         <div class="ability_grid">
             <div v-for="ability in ABILITY_DEFS" :key="ability.code" class="ability_card">
                 <span class="ability_label">{{ ability.label }} ({{ ability.code }})</span>
 
                 <div v-if="score_method === 'pointbuy'" class="ability_score_controls">
-                    <button @click="decreaseScore(ability.code)" :disabled="base_scores[ability.code] <= 8">-</button>
+                    <button class="general_button" @click="decreaseScore(ability.code)" :disabled="base_scores[ability.code] <= 8">-</button>
                     <span class="ability_base_score">{{ base_scores[ability.code] }}</span>
-                    <button @click="increaseScore(ability.code)" :disabled="base_scores[ability.code] >= 15">+</button>
+                    <button class="general_button" @click="increaseScore(ability.code)" :disabled="base_scores[ability.code] >= 15">+</button>
                 </div>
                 <div v-else class="ability_score_controls">
                     <input type="number" class="ability_manual_input" :min="MANUAL_MIN" :max="MANUAL_MAX" :value="base_scores[ability.code]" @change="setManualScore(ability.code, $event.target.value)"/>
                 </div>
                 <span v-if="bonusFor(ability.code) > 0" class="ability_bg_bonus">
-                    + {{ bonusFor(ability.code) }} (trasfondo)
+                    + {{ bonusFor(ability.code) }} (background)
                 </span>
                 <span class="ability_final_score">
-                    Total: {{ finalScore(ability.code) }}
+                    Score: {{ finalScore(ability.code) }}
                 </span>
                 <span class="ability_modifier">
-                    Modificador: {{ formatModifier(modifier(ability.code)) }}
+                    Modifier: {{ formatModifier(modifier(ability.code)) }}
                 </span>
             </div>
         </div>
 
         <div v-if="background_options.length" class="background_bonus_section">
-            <h2>Bonus de Trasfondo</h2>
+            <h2>Background Bonus</h2>
             <div class="bonus_mode_selector">
-                <button :class="{ active: bonus_mode === '2-1' }" @click="setBonusMode('2-1')">+2 / +1</button>
-                <button :class="{ active: bonus_mode === '1-1-1' }" @click="setBonusMode('1-1-1')">+1 / +1 / +1</button>
+                <button class="general_button" :class="{ active: bonus_mode === '2-1' }" @click="setBonusMode('2-1')">+2 / +1</button>
+                <button class="general_button" :class="{ active: bonus_mode === '1-1-1' }" @click="setBonusMode('1-1-1')">+1 / +1 / +1</button>
             </div>
 
             <div class="bonus_options">
                 <div v-for="code in background_options" :key="code" class="bonus_option">
                     <span>{{ code }}</span>
                     <template v-if="bonus_mode === '2-1'">
-                        <button :class="{ selected: bonusFor(code) === 2 }" @click="assignBonus(code, 2)">+2</button>
-                        <button :class="{ selected: bonusFor(code) === 1 }" @click="assignBonus(code, 1)">+1</button>
+                        <button class="general_button" :class="{ selected: bonusFor(code) === 2 }" @click="assignBonus(code, 2)">+2</button>
+                        <button class="general_button" :class="{ selected: bonusFor(code) === 1 }" @click="assignBonus(code, 1)">+1</button>
                     </template>
                     <template v-else>
                         <span class="bonus_fixed">+1</span>
@@ -301,12 +301,12 @@
             </div>
         </div>
 
-        <button class="character_ability_save_btn" @click="saveAbilities" :disabled="saving">
-            {{ saving ? 'Guardando...' : 'Guardar características' }}
+        <button class="general_button character_ability_save_btn" @click="saveAbilities" :disabled="saving">
+            {{ saving ? 'Saving...' : 'Save Abilities' }}
         </button>
 
-        <button class="character_ability_forward" @click="emit('navigate', {page: 'characterEquipment', characterId: props.characterId})">Continue Creation</button>
-        <button class="character_ability_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_ability_forward" @click="emit('navigate', {page: 'characterEquipment', characterId: props.characterId})">Continue Creation</button>
+        <button class="general_button character_ability_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>
 
