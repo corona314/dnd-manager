@@ -2,7 +2,7 @@
 
 import ToggleSwitch from 'primevue/toggleswitch'
 import AppAvatar from './AppAvatar.vue'
-
+import { usingIcons } from '@/composables/usePreferences.js'
 
 const isDark = defineModel('dark')
 const emit = defineEmits(['logout', 'toggle-theme'])
@@ -20,6 +20,11 @@ defineProps({ username: String })
 
     <div class="settings_avatar">
       <AppAvatar :name="username" />
+    </div>
+
+    <div class="settings_row">
+      <span>Use Icons</span>
+      <ToggleSwitch v-model="usingIcons" />
     </div>
 
     <div class="settings_row">

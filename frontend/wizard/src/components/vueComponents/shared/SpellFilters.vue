@@ -2,9 +2,18 @@
     import Slider from 'primevue/slider'
     import RitualIcon from '@/icons/RitualIcon.vue'
     import ConcentrationIcon from '@/icons/ConcentrationIcon.vue'
+    import NoRitualIcon from '@/icons/NoRitualIcon.vue'
+    import NoConcentrationIcon from '@/icons/NoConcentrationIcon.vue'
+    import VocalIcon from '@/icons/VocalIcon.vue'
+    import NoVocalIcon from '@/icons/NoVocalIcon.vue'
+    import SomaticIcon from '@/icons/SomaticIcon.vue'
+    import NoSomaticIcon from '@/icons/NoSomaticIcon.vue'
+    import MaterialIcon from '@/icons/MaterialIcon.vue'
+    import NoMaterialIcon from '@/icons/NoMaterialIcon.vue'
+    import SearchIcon from '@/icons/SearchIcon.vue'
     import { ref } from 'vue'
     import { Components, Schools, SortLabels } from '@/composables/spellFilters.js'
-
+    import { usingIcons } from '@/composables/usePreferences.js'
     // El padre es dueño del objeto de filtros (reactive) y se edita aquí dentro.
     const filters = defineModel({ required: true })
     // Abierto/cerrado: opcional. Si el padre no lo enlaza, funciona igualmente.
@@ -26,7 +35,13 @@
 
     const next = v => (v === null ? true : v === true ? false : null)
     const prev = v => (v === null ? false : v === false ? true : null)
-
+    
+    const ComponentIcons = {
+        V: { on: VocalIcon, off: NoVocalIcon },
+        S: { on: SomaticIcon, off: NoSomaticIcon },
+        M: { on: MaterialIcon, off: NoMaterialIcon }
+    }
+    
     function cycleComponent(c) {
         filters.value.components[c] = next(filters.value.components[c])
         emit('apply')
@@ -99,7 +114,7 @@
     <div class="compendium_filters" :class="{ 'compendium_filters--open': open === true, 'compendium_filters--closed': open === false }">
         <div class="name">
             <input class="name_input" type="text" placeholder="Search spell..." v-model="filters.name" @keyup.enter="emit('apply')" />
-            <button v-if="showSearchButton" class="search_button" @click="emit('apply')">🔍</button>
+            <button v-if="showSearchButton" class="search_button" @click="emit('apply')"><SearchIcon /></button>
         </div>
 
         <div class="level" v-if="showLevel">
@@ -145,7 +160,7 @@
             <button
                 class="sort_direction"
                 @click="toggleSortDirection"
-                :title="filters.sortDirection === 'asc' ? 'Ascendente' : 'Descendente'"
+                :title="filters.sortDirection === 'asc' ? 'Ascending' : 'Descending'"
             >
                 {{ filters.sortDirection === 'asc' ? '▲' : '▼' }}
             </button>
@@ -156,6 +171,7 @@
                 v-for="comp in Components"
                 :key="comp"
                 class="tristate"
+                :title = "comp === 'V' ? 'Verbal' : comp === 'S' ? 'Somatic' : 'Material'"
                 @click="cycleComponent(comp)"
                 @contextmenu.prevent="previousComponent(comp)"
                 :class="{
@@ -163,36 +179,48 @@
                     'tristate--inactive': filters.components[comp] === false
                 }"
             >
-                {{ comp }}
+                <component
+                    v-if="usingIcons"
+                    :is="filters.components[comp] === false ? ComponentIcons[comp].off : ComponentIcons[comp].on"
+                />
+                <template v-else>{{ comp }}</template>
             </span>
         </div>
 
         <div class="filter_group special_group">
-            <span
-                class="tristate"
-                @click="cycleRitual"
-                @contextmenu.prevent="previousRitual"
-                :class="{
-                    'tristate--active': filters.ritual === true,
-                    'tristate--inactive': filters.ritual === false
-                }"
-                title="Ritual"
-            >
-                <RitualIcon />
-            </span>
+          <span
+              class="tristate tristate_ritual"
+              @click="cycleRitual"
+              @contextmenu.prevent="previousRitual"
+              :class="{
+                  'tristate--active': filters.ritual === true,
+                  'tristate--inactive': filters.ritual === false
+              }"
+              title="Ritual"
+          >
+              <template v-if="usingIcons">
+                  <NoRitualIcon v-if="filters.ritual === false" />
+                  <RitualIcon v-else />
+              </template>
+              <template v-else>R</template>
+          </span>
 
-            <span
-                class="tristate"
-                @click="cycleConcentration"
-                @contextmenu.prevent="previousConcentration"
-                :class="{
-                    'tristate--active': filters.concentration === true,
-                    'tristate--inactive': filters.concentration === false
-                }"
-                title="Concentración"
-            >
-                <ConcentrationIcon />
-            </span>
+          <span
+              class="tristate tristate_concentration"
+              @click="cycleConcentration"
+              @contextmenu.prevent="previousConcentration"
+              :class="{
+                  'tristate--active': filters.concentration === true,
+                  'tristate--inactive': filters.concentration === false
+              }"
+              title="Concentration"
+          >
+              <template v-if="usingIcons">
+                  <NoConcentrationIcon v-if="filters.concentration === false" />
+                  <ConcentrationIcon v-else />
+              </template>
+              <template v-else>C</template>
+          </span>
         </div>
 
         <div class="school_filter_group">

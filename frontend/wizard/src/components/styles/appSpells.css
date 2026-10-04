@@ -273,9 +273,11 @@ body {
     width: 18px;
     height: 18px;
     display: block;
-    color: var(--accent)
-
 }
+
+.tristate_ritual svg { color: var(--danger); }
+.tristate_concentration svg { color: var(--accent); }
+
 .tristate :deep(svg) {
     width: 18px;
     height: 18px;
@@ -388,25 +390,6 @@ body {
     top: 0;
     left: 200px;
 }
-/* TOP RIGHT */
-.spell_component_v {
-    position: absolute;
-    top: 0;
-    right: 45px;
-    font-size: 0.85rem;
-} 
-.spell_component_s {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 0.85rem;
-}
-.spell_component_m {
-    position: absolute;
-    top: 0;
-    right: 2px;
-    font-size: 0.85rem;
-}
 
 /* BOTTOM LEFT */
 .spell_level {
@@ -427,19 +410,18 @@ body {
     bottom: 0;
     left: 200px;
 }
-/* BOTTOM RIGHT */
-.spell_ritual {
-    position: absolute;
-    bottom: 0;
-    right: 40px;
-    font-size: 0.8rem;
+
+.spell_ritual:not(.spell_ritual--active),
+.spell_concentration:not(.spell_concentration--active) {
+    opacity: 0.3;
 }
 
-.spell_concentration {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    font-size: 0.8rem;
+.spell_ritual.spell_ritual--text {
+    right: 45px;
+}
+.spell_concentration.spell_concentration--text {
+    right: 4px;
+
 }
 
 /*Upcast*/
@@ -515,8 +497,10 @@ body {
 
 .spell_ritual {
     position: absolute;
+    bottom: 0;
+    right: 43px;
+    font-size: 0.8rem;
     top: 1;
-    right: 40px;
 }
 
 .spell_ritual svg {
@@ -531,8 +515,10 @@ body {
 
 .spell_concentration {
     position: absolute;
-    top: 1;
+    bottom: 0;
     right: 0;
+    font-size: 0.8rem;
+    top: 1;
 }
 
 .spell_concentration svg {
@@ -543,4 +529,35 @@ body {
 
 .spell_concentration--active {
     color: var(--accent);
+}
+
+.spell_component_v {
+    position: absolute;
+    top: 0;
+    right: 45px;
+    font-size: 0.85rem;
+} 
+.spell_component_s {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 0.85rem;
+}
+.spell_component_m {
+    position: absolute;
+    top: 0;
+    right: 2px;
+    font-size: 0.85rem;
+}
+
+.spell_component_v svg,
+.spell_component_s svg,
+.spell_component_m svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+}
+
+.icon_off {
+    opacity: 0.3;
 }

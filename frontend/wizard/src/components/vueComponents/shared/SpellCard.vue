@@ -6,10 +6,16 @@
     import RangeIcon from '@/icons/RangeIcon.vue'
     import DurationIcon from '@/icons/DurationIcon.vue'
     import MaterialIcon from '@/icons/MaterialIcon.vue'
+    import NoMaterialIcon from '@/icons/NoMaterialIcon.vue'
     import RitualIcon from '@/icons/RitualIcon.vue'
     import NoRitualIcon from '@/icons/NoRitualIcon.vue'
     import ConcentrationIcon from '@/icons/ConcentrationIcon.vue'
     import NoConcentrationIcon from '@/icons/NoConcentrationIcon.vue'
+    import VocalIcon from '@/icons/VocalIcon.vue'
+    import NoVocalIcon from '@/icons/NoVocalIcon.vue'
+    import SomaticIcon from '@/icons/SomaticIcon.vue'
+    import NoSomaticIcon from '@/icons/NoSomaticIcon.vue'
+    import { usingIcons } from '@/composables/usePreferences.js'
 
     const props = defineProps({
         spell: { type: Object, required: true },
@@ -116,24 +122,54 @@
 
             <div class="spell_card_base">
                 <span class="spell_name">{{ spell.name }}</span>
-                <span v-if="spell.attackRoll" class="spell_attackroll"><AttackIcon /></span>
-                <span v-if="spell.savingThrowAbility" class="spell_savingthrow"><DefenseIcon /></span>
+                <span v-if="spell.attackRoll" class="spell_attackroll">    
+                    <AttackIcon v-if="usingIcons" /><template v-else>A</template>
+                </span>
+                <span v-if="spell.savingThrowAbility" class="spell_savingthrow">
+                    <DefenseIcon v-if="usingIcons" /><template v-else>ST</template>
+                </span>
 
-                <span class="spell_component_v">{{ spell.components.includes('V') ? 'V' : '📀' }}</span>
-                <span class="spell_component_s">{{ spell.components.includes('S') ? 'S' : '📉' }}</span>
-                <span class="spell_component_m">{{ spell.components.includes('M') ? 'M' : '🏥' }}</span>
+                <span class="spell_component_v" title="Verbal" :class="{ icon_off: !spell.components.includes('V') }">
+                    <template v-if="usingIcons">
+                        <VocalIcon v-if="spell.components.includes('V')" />
+                        <NoVocalIcon v-else />
+                    </template>
+                    <template v-else>{{ spell.components.includes('V') ? 'V' : '' }}</template>
+                </span>
 
+                <span class="spell_component_s" title="Somatic" :class="{ icon_off: !spell.components.includes('S') }">
+                    <template v-if="usingIcons">
+                        <SomaticIcon v-if="spell.components.includes('S')" />
+                        <NoSomaticIcon v-else />
+                    </template>
+                    <template v-else>{{ spell.components.includes('S') ? 'S' : '' }}</template>
+                </span>
+
+                <span class="spell_component_m" title="Material" :class="{ icon_off: !spell.components.includes('M') }">
+                    <template v-if="usingIcons">
+                        <MaterialIcon v-if="spell.components.includes('M')" />
+                        <NoMaterialIcon v-else />
+                    </template>
+                    <template v-else>{{ spell.components.includes('M') ? 'M' : '' }}</template>
+                </span>
+                
                 <span class="spell_level">{{ spell.level === 0 ? 'Cantrip' : `Lvl. ${spell.level}` }}</span>
                 <span class="spell_school">{{ spell.school }}</span>
 
-                <span class="spell_ritual" :class="{ 'spell_ritual--active': spell.ritual }">
-                    <RitualIcon v-if="spell.ritual" />
-                    <NoRitualIcon v-else />
+                <span class="spell_ritual" :class="{ 'spell_ritual--active': spell.ritual, 'spell_ritual--text': !usingIcons }">
+                    <template v-if="usingIcons">
+                        <RitualIcon v-if="spell.ritual" />
+                        <NoRitualIcon v-else />
+                    </template>
+                    <template v-else>{{ spell.ritual ? 'R ' : '' }}</template>
                 </span>
 
-                <span class="spell_concentration" :class="{ 'spell_concentration--active': spell.concentration }">
-                    <ConcentrationIcon v-if="spell.concentration" />
-                    <NoConcentrationIcon v-else />
+                <span class="spell_concentration" :class="{ 'spell_concentration--active': spell.concentration, 'spell_concentration--text': !usingIcons }">                    
+                <template v-if="usingIcons">
+                        <ConcentrationIcon v-if="spell.concentration" />
+                        <NoConcentrationIcon v-else />
+                    </template>
+                    <template v-else>{{ spell.concentration ? 'C' : '' }}</template>
                 </span>
             </div>
         </div>
