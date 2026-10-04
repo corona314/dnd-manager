@@ -11,7 +11,9 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@blobatar/vue": "^2.7.0",
     "@primevue/themes": "^4.5.4",
+    "blobatar": "^2.7.0",
     "marked": "^18.0.5",
     "primevue": "^4.5.5",
     "vue": "^3.5.32"

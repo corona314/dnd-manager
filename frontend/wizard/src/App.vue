@@ -24,10 +24,15 @@
   import AppCharacterSubclass from './components/vueComponents/character/creation/AppCharacterSubclass.vue';
   import AppCharacterEquipment from './components/vueComponents/character/creation/AppCharacterEquipment.vue';
   import AppCharacterSpells1 from './components/vueComponents/character/creation/AppCharacterSpells1.vue';
+  import AppAvatar from './components/vueComponents/main/AppAvatar.vue'
+  import AppSettings from './components/vueComponents/main/AppSettings.vue'
+  import Dialog from 'primevue/dialog'
+
 
   import { ref, onMounted } from 'vue'
 
 
+  const username = ref(localStorage.getItem('dnd_username') || 'user')
   const authToken = ref(localStorage.getItem('dnd_token') || '')
   const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackground' | 'characterAbility' | 'characterFinalize' | 'characterView' | 'characterLevelUp' | 'characterSubclass' | 'characterEquipment' | 'characterSpells'
   const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackground: 'characterSpecie', characterAbilities: 'characterBackground', characterFinalize: 'characterSpells', characterView: 'characters', characterLevelUp: 'characters', characterSubclass: 'characterLevelUp', characterEquipment: 'characterAbilities', characterSpells: 'characterEquipment'}
@@ -36,20 +41,21 @@
   const selectedSpecieId = ref(null)
   const selectedBackgroundId = ref(null)
   const selectedCharacterId = ref(null)
-
-  function handleLogin(token) {
+  const showSettings = ref(false)
+ 
+  function handleLogin(token, name) {
+    username.value = name || 'user'
     authToken.value = token
-    localStorage.setItem('dnd_token', token) 
+    localStorage.setItem('dnd_token', token)
+    localStorage.setItem('dnd_username', username.value)
   }
-
+  
   function logout() {
+    showSettings.value = false
     authToken.value = ''
+    username.value = 'user'
     localStorage.removeItem('dnd_token')
-    characters.value = []
-    selectedId.value = null
-    selectedChar.value = null
-    showCreate.value = false
-    showEdit.value = false
+    localStorage.removeItem('dnd_username')
     currentPage.value = 'main'
     selectedClassId.value = null
     selectedSubclassId.value = null
@@ -108,14 +114,17 @@
 
   <transition name="fade">
     <div v-if="authToken" class="app_components">
-      <header class="app_header">
-        <button v-if="currentPage !== 'main'" class="header_back_btn" @click="goBack">Back</button>
-        <span class="header_title">{{ currentPage }}</span>
-        <ToggleSwitch class="header_color_switch" v-model="isDark" @change="toggleTheme" />
-        <button class="header_logout_btn" @click="logout">Log Out</button>
-      </header>
+
+    <header class="app_header" v-no-double-select>
+      <button v-if="currentPage !== 'main'" class="general_button" @click="goBack">Back</button>
+      <span class="header_title">{{ currentPage }}</span>
+
+      <button class="header_avatar_btn" @click="showSettings = true" title="Settings" v-no-double-select>
+        <AppAvatar :name="username"/>
+      </button>
+    </header>
+
       <div class="app_content">
-        <AppMain v-if="currentPage === 'main'" @navigate="handleNavigate" @logout="logout" :token="authToken"/>
         <AppSpells v-if="currentPage === 'spells'" :token="authToken"/>
         <AppItems v-if="currentPage === 'items'"  :token="authToken"/>
         <AppClasses v-if="currentPage === 'classes'"  @navigate="handleNavigate" :token="authToken"/>
@@ -137,6 +146,9 @@
         <AppCharacterEquipment v-if="currentPage === 'characterEquipment'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterEquipment>
         <AppCharacterSpells1 v-if="currentPage === 'characterSpells'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSpells1>
       </div>
+      <Dialog v-model:visible="showSettings" modal dismissableMask header="Settings" :style="{ width: '25rem' }">
+        <AppSettings :username="username" v-model:dark="isDark" @toggle-theme="toggleTheme" @logout="logout" />      
+      </Dialog>
     </div>
   </transition>
 
