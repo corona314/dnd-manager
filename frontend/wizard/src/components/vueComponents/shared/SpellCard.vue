@@ -134,7 +134,7 @@
                         <VocalIcon v-if="spell.components.includes('V')" />
                         <NoVocalIcon v-else />
                     </template>
-                    <template v-else>{{ spell.components.includes('V') ? 'V' : '' }}</template>
+                    <template v-else>V</template>
                 </span>
 
                 <span class="spell_component_s" title="Somatic" :class="{ icon_off: !spell.components.includes('S') }">
@@ -142,7 +142,7 @@
                         <SomaticIcon v-if="spell.components.includes('S')" />
                         <NoSomaticIcon v-else />
                     </template>
-                    <template v-else>{{ spell.components.includes('S') ? 'S' : '' }}</template>
+                    <template v-else>S</template>
                 </span>
 
                 <span class="spell_component_m" title="Material" :class="{ icon_off: !spell.components.includes('M') }">
@@ -150,7 +150,7 @@
                         <MaterialIcon v-if="spell.components.includes('M')" />
                         <NoMaterialIcon v-else />
                     </template>
-                    <template v-else>{{ spell.components.includes('M') ? 'M' : '' }}</template>
+                    <template v-else>M</template>
                 </span>
                 
                 <span class="spell_level">{{ spell.level === 0 ? 'Cantrip' : `Lvl. ${spell.level}` }}</span>
@@ -161,7 +161,7 @@
                         <RitualIcon v-if="spell.ritual" />
                         <NoRitualIcon v-else />
                     </template>
-                    <template v-else>{{ spell.ritual ? 'R ' : '' }}</template>
+                    <template v-else>R</template>
                 </span>
 
                 <span class="spell_concentration" :class="{ 'spell_concentration--active': spell.concentration, 'spell_concentration--text': !usingIcons }">                    
@@ -169,7 +169,7 @@
                         <ConcentrationIcon v-if="spell.concentration" />
                         <NoConcentrationIcon v-else />
                     </template>
-                    <template v-else>{{ spell.concentration ? 'C' : '' }}</template>
+                    <template v-else>C</template>
                 </span>
             </div>
         </div>

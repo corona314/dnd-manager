@@ -3,6 +3,13 @@
     import Slider from 'primevue/slider';
     import { ref, onMounted, reactive } from 'vue'
     import { marked } from 'marked'
+    import SearchIcon from '@/icons/SearchIcon.vue';
+    import MagicIcon from '@/icons/MagicIcon.vue'
+    import NoMagicIcon from '@/icons/NoMagicIcon.vue'
+    import AttunementIcon from '@/icons/AttunementIcon.vue'
+    import NoAttunementIcon from '@/icons/NoAttunementIcon.vue'
+    import { usingIcons } from '@/composables/usePreferences.js'
+
     const props = defineProps({ token: String })
     const API_BASE = 'http://localhost:8080/api'
     //Constantes 
@@ -15,7 +22,7 @@
         { key: 'shields', label: 'Escudos',   endpoint: '/items/shields' },
         { key: 'items',   label: 'Otros',     endpoint: '/items' },
     ]
-    const Rarities = ['common', 'uncommon', 'rare', 'very rare',  'legendary']
+    const Rarities = ['Common', 'Uncommon', 'Rare', 'Very Rare',  'Legendary']
 
     const SpecificFilters = {
         armor:   [{ key: 'armorType',   label: 'All Types',    options: ['Light', 'Medium', 'Heavy'] }],
@@ -121,13 +128,11 @@
             })
             expanded_item.value = await res.json()
             expanded_id.value = item.id
-            console.log('Holii')
 
         } catch (e) {
             console.error(e)
         } finally {
             expanded_loading.value = false
-            console.log('haces algo?')
         }
     }
 
@@ -240,12 +245,12 @@
         <div class="compendium_filters" :class="{ 'compendium_filters--closed': !filters_open }">
             <div class="general_filters">
                 <div class="name">
-                    <input class="name" type="text" placeholder="Buscar objeto..." v-model="filter_name" @keyup.enter="fetchItems(0)"/>
-                    <button class="search_button" @click="fetchItems(0)">🔍</button>
+                    <input class="name" type="text" placeholder="Search item..." v-model="filter_name" @keyup.enter="fetchItems(0)"/>
+                    <button class="search_button" @click="fetchItems(0)"><SearchIcon /></button>
                 </div>
                 
                 <div class="rarity_filter">
-                    <div class="rarity_dropdown_btn" @click="rarity_open = !rarity_open">Rareza ▾</div>
+                    <div class="rarity_dropdown_btn" @click="rarity_open = !rarity_open">Rarity ▾</div>
                     <div v-if="rarity_open" class="rarity_dropdown_menu">
                         <div v-for="r in Rarities" :key="r" class="rarity_option"
                             :class="{ selected: filter_rarity.includes(r) }"
@@ -267,23 +272,38 @@
                     </div>
                     <Slider class="price_slider" v-model="filter_price" :min="0" :max="filter_price_max" :step="50" range @slideend="fetchItems" @update:modelValue="onPriceSlide"/>
                 </div>
-                <div class="magic" >
-                    <span class="tristate" @click="cycleMagic" :class="{'tristate--active': filter_magic === true, 'tristate--inactive': filter_magic === false}">
-                        <span v-if="filter_magic === null">M</span>
-                        <span v-else-if="filter_magic === true">M</span>
-                        <span v-else>M</span>
+                <div class="magic">
+                    <span
+                        class="tristate tristate_magic"
+                        title="Magic"
+                        @click="cycleMagic"
+                        :class="{ 'tristate--active': filter_magic === true, 'tristate--inactive': filter_magic === false }"
+                    >
+                        <template v-if="usingIcons">
+                            <NoMagicIcon v-if="filter_magic === false" />
+                            <MagicIcon v-else />
+                        </template>
+                        <template v-else>M</template>
                     </span>
                 </div>
-                <div class="attunement" >
-                    <span class="tristate" @click="cycleAttunement" :class="{'tristate--active': filter_attunement === true, 'tristate--inactive': filter_attunement === false}">
-                        <span v-if="filter_attunement === null">A</span>
-                        <span v-else-if="filter_attunement === true">A</span>
-                        <span v-else>A</span>
+
+                <div class="attunement">
+                    <span
+                        class="tristate tristate_attunement"
+                        title="Attunement"
+                        @click="cycleAttunement"
+                        :class="{ 'tristate--active': filter_attunement === true, 'tristate--inactive': filter_attunement === false }"
+                    >
+                        <template v-if="usingIcons">
+                            <NoAttunementIcon v-if="filter_attunement === false" />
+                            <AttunementIcon v-else />
+                        </template>
+                        <template v-else>A</template>
                     </span>
-                </div>
+                </div>                
                 <div class="sort_filter">
                     <div class="sort_chip" :class="{ 'sort_chip--active': filter_sort_name.active }">
-                        <span class="sort_label" @click="toggleSortNameActive">Nombre</span>
+                        <span class="sort_label" @click="toggleSortNameActive">Name</span>
                         <span class="sort_dir_btn" @click="toggleSortNameDir">
                             {{ filter_sort_name.dir === 'asc' ? '▲' : '▼' }}
                         </span>
@@ -292,7 +312,7 @@
             </div>
             <div class="specific_filters" v-if="SpecificFilters[activeTab]?.length">
                 <template v-for="f in SpecificFilters[activeTab]" :key="f.key">
-                    <select v-model="filter_specific[f.key]" @change="fetchItems(0)">
+                    <select class="specific_filter" v-model="filter_specific[f.key]" @change="fetchItems(0)">
                         <option value="">{{ f.label }}</option>
                         <option v-for="opt in f.options" :key="opt" :value="opt">{{ opt }}</option>
                     </select>
@@ -302,19 +322,32 @@
 
         </div>
         <!-- Lista -->
-        <div v-if="loading">Cargando...</div>
+        <div v-if="loading">Loading...</div>
         <div v-else class="item_list compendium_scroll">
-            <div v-for="item in items" :key="item.id" class="item_card" :class="{ 'item_card--expanded': expanded_id === item.id }" @click="expandItem(item)">
+            <div v-for="item in items" :key="item.id" v-no-double-select class="item_card" :class="{ 'item_card--expanded': expanded_id === item.id }" @click="expandItem(item)">
                 <div class="item_card_base">
                     <strong class="item_name">{{ item.name }}</strong>
                     <span class="item_rarity">{{ item.rarity }}</span>
                     <span class="item_price">{{ formatPrice(item.price) }} </span>
                     <span class="item_weight">{{ item.weight }} lb</span>
-                    <span class="item_magic" v-if="item.magic">✦ Magic</span>
-                    <span class="item_attunement">{{ item.attunement === true ? '🧙' : '🙅' }}</span>
+                    <span class="item_magic" :class="{ icon_off: !item.magic }" :title="item.magic ? 'Magic' : 'Not magic'">
+                        <template v-if="usingIcons">
+                            <MagicIcon v-if="item.magic" />
+                            <NoMagicIcon v-else />
+                        </template>
+                        <template v-else>M</template>
+                    </span>
+
+                    <span class="item_attunement" :class="{ icon_off: !item.attunement }" :title="item.attunement ? 'Requires attunement' : 'No attunement'">
+                        <template v-if="usingIcons">
+                            <AttunementIcon v-if="item.attunement" />
+                            <NoAttunementIcon v-else />
+                        </template>
+                        <template v-else>A</template>
+                    </span>                
                 </div>
                 <div v-if="expanded_id === item.id" class="item_card_expanded" @click.stop>
-                    <div v-if="expanded_loading">Cargando...</div>
+                    <div v-if="expanded_loading">Loading...</div>
                     <div v-else class="item_card_expanded_content">
                         <div class="item_details">
                             <!-- Armor -->
@@ -370,7 +403,7 @@
             <button class="compendium_page_button page_button--first" @click="goToPage(0)" :disabled="current_page === 0">«</button>
             <button class="compendium_page_button page_button" @click="goToPage(current_page - 1)" :disabled="current_page === 0">‹</button>
 
-            <span class="page_info">Página {{ current_page + 1 }} de {{total_pages}}</span>
+            <span class="page_info">Page {{ current_page + 1 }} of {{total_pages}}</span>
 
             <button class="compendium_page_button page_button" @click="goToPage(current_page + 1)" :disabled="current_page >= total_pages - 1">›</button>
             <button class="compendium_page_button page_button--last" @click="goToPage(total_pages - 1)" :disabled="current_page >= total_pages - 1">»</button>
