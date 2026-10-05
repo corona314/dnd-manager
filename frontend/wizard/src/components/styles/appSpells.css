@@ -169,7 +169,6 @@ body {
     background: var(--default);
     color: var(--text);
     cursor: pointer;
-    font-family: inherit;
     font-size: 1rem;
     font-weight: bold;
 }
@@ -222,7 +221,6 @@ body {
     color: var(--text);
     opacity: 0.55;
     cursor: pointer;
-    font-family: inherit;
 }
 .sort_chip--active {
     opacity: 1;

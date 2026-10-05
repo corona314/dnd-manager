@@ -111,7 +111,7 @@
 </script>
 
 <template>
-    <div class="compendium_filters" :class="{ 'compendium_filters--open': open === true, 'compendium_filters--closed': open === false }">
+    <div v-no-double-select class="compendium_filters" :class="{ 'compendium_filters--open': open === true, 'compendium_filters--closed': open === false }">
         <div class="name">
             <input class="name_input" type="text" placeholder="Search spell..." v-model="filters.name" @keyup.enter="emit('apply')" />
             <button v-if="showSearchButton" class="search_button" @click="emit('apply')"><SearchIcon /></button>

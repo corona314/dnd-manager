@@ -15,8 +15,10 @@
     import NoVocalIcon from '@/icons/NoVocalIcon.vue'
     import SomaticIcon from '@/icons/SomaticIcon.vue'
     import NoSomaticIcon from '@/icons/NoSomaticIcon.vue'
+    import CompendiumCard from '@/vueComponents/shared/CompendiumCard.vue'
     import { usingIcons } from '@/composables/usePreferences.js'
-
+    import { renderDescription } from '@/composables/renderDescription.js'
+    
     const props = defineProps({
         spell: { type: Object, required: true },
         expanded: Boolean,
@@ -92,92 +94,75 @@
         return null
     }
 
-    function renderDescription(text) {
-        if (!text) return ''
-        const fixed = text
-            .replace(/\|\s*\|/g, '|\n|')
-            .replace(/(Table:[^\n|]+)\|/, '$1\n|')
-        return marked(fixed)
-    }
 </script>
 
 <template>
-    <div
-        class="spell_card"
+    <CompendiumCard
         :style="{ background: getBackground(spell), color: getTextColor(spell) }"
-        :class="{ 'spell_card--expanded': expanded, 'spell_card--selected': selected }"
-        v-no-double-select
-        @click="emit('expand', spell)"
+        :expanded="expanded"
+        :selected="selected"
+        :selectable="selectable"
+        :select-disabled="selectDisabled"
+        @toggle="emit('expand', spell)"
+        @toggle-select="emit('toggle-select', spell)"
     >
-        <div class="spell_card_header">
-            <label v-if="selectable" class="spell_select" @click.stop>
-                <input
-                    type="checkbox"
-                    :checked="selected"
-                    :disabled="selectDisabled"
-                    :aria-label="`Select ${spell.name}`"
-                    @change="emit('toggle-select', spell)"
-                />
-            </label>
+        <template #base>
+            <span class="spell_name">{{ spell.name }}</span>
+            <span v-if="spell.attackRoll" class="spell_attackroll">    
+                <AttackIcon v-if="usingIcons" /><template v-else>A</template>
+            </span>
+            <span v-if="spell.savingThrowAbility" class="spell_savingthrow">
+                <DefenseIcon v-if="usingIcons" /><template v-else>ST</template>
+            </span>
 
-            <div class="spell_card_base">
-                <span class="spell_name">{{ spell.name }}</span>
-                <span v-if="spell.attackRoll" class="spell_attackroll">    
-                    <AttackIcon v-if="usingIcons" /><template v-else>A</template>
-                </span>
-                <span v-if="spell.savingThrowAbility" class="spell_savingthrow">
-                    <DefenseIcon v-if="usingIcons" /><template v-else>ST</template>
-                </span>
-
-                <span class="spell_component_v" title="Verbal" :class="{ icon_off: !spell.components.includes('V') }">
-                    <template v-if="usingIcons">
-                        <VocalIcon v-if="spell.components.includes('V')" />
-                        <NoVocalIcon v-else />
-                    </template>
-                    <template v-else>V</template>
-                </span>
-
-                <span class="spell_component_s" title="Somatic" :class="{ icon_off: !spell.components.includes('S') }">
-                    <template v-if="usingIcons">
-                        <SomaticIcon v-if="spell.components.includes('S')" />
-                        <NoSomaticIcon v-else />
-                    </template>
-                    <template v-else>S</template>
-                </span>
-
-                <span class="spell_component_m" title="Material" :class="{ icon_off: !spell.components.includes('M') }">
-                    <template v-if="usingIcons">
-                        <MaterialIcon v-if="spell.components.includes('M')" />
-                        <NoMaterialIcon v-else />
-                    </template>
-                    <template v-else>M</template>
-                </span>
-                
-                <span class="spell_level">{{ spell.level === 0 ? 'Cantrip' : `Lvl. ${spell.level}` }}</span>
-                <span class="spell_school">{{ spell.school }}</span>
-
-                <span class="spell_ritual" :class="{ 'spell_ritual--active': spell.ritual, 'spell_ritual--text': !usingIcons }">
-                    <template v-if="usingIcons">
-                        <RitualIcon v-if="spell.ritual" />
-                        <NoRitualIcon v-else />
-                    </template>
-                    <template v-else>R</template>
-                </span>
-
-                <span class="spell_concentration" :class="{ 'spell_concentration--active': spell.concentration, 'spell_concentration--text': !usingIcons }">                    
+            <span class="spell_component_v" title="Verbal" :class="{ icon_off: !spell.components.includes('V') }">
                 <template v-if="usingIcons">
-                        <ConcentrationIcon v-if="spell.concentration" />
-                        <NoConcentrationIcon v-else />
-                    </template>
-                    <template v-else>C</template>
-                </span>
-            </div>
-        </div>
+                    <VocalIcon v-if="spell.components.includes('V')" />
+                    <NoVocalIcon v-else />
+                </template>
+                <template v-else>V</template>
+            </span>
 
-        <div v-if="expanded" class="spell_card_expanded" @click.stop>
+            <span class="spell_component_s" title="Somatic" :class="{ icon_off: !spell.components.includes('S') }">
+                <template v-if="usingIcons">
+                    <SomaticIcon v-if="spell.components.includes('S')" />
+                    <NoSomaticIcon v-else />
+                </template>
+                <template v-else>S</template>
+            </span>
+
+            <span class="spell_component_m" title="Material" :class="{ icon_off: !spell.components.includes('M') }">
+                <template v-if="usingIcons">
+                    <MaterialIcon v-if="spell.components.includes('M')" />
+                    <NoMaterialIcon v-else />
+                </template>
+                <template v-else>M</template>
+            </span>
+            
+            <span class="spell_level">{{ spell.level === 0 ? 'Cantrip' : `Lvl. ${spell.level}` }}</span>
+            <span class="spell_school">{{ spell.school }}</span>
+
+            <span class="spell_ritual" :class="{ 'spell_ritual--active': spell.ritual, 'spell_ritual--text': !usingIcons }">
+                <template v-if="usingIcons">
+                    <RitualIcon v-if="spell.ritual" />
+                    <NoRitualIcon v-else />
+                </template>
+                <template v-else>R</template>
+            </span>
+
+            <span class="spell_concentration" :class="{ 'spell_concentration--active': spell.concentration, 'spell_concentration--text': !usingIcons }">                    
+            <template v-if="usingIcons">
+                    <ConcentrationIcon v-if="spell.concentration" />
+                    <NoConcentrationIcon v-else />
+                </template>
+                <template v-else>C</template>
+            </span>
+        </template>
+
+        <template #expanded>
             <div v-if="loading">Loading...</div>
-            <div v-else-if="detail" class="spell_card_expanded_content">
-                <div class="spell_details">
+            <div v-else-if="detail" class="card_expanded_content">
+                <div class="card_details">
                     <span><CastingTimeIcon class="spell_detail_icon" /> {{ detail.castingTime }}</span>
                     <span><RangeIcon class="spell_detail_icon" /> {{ detail.range }}</span>
                     <span><DurationIcon class="spell_detail_icon" /> {{ detail.duration }}</span>
@@ -185,9 +170,8 @@
                         <MaterialIcon class="spell_detail_icon" /> {{ detail.material }}
                     </span>
                 </div>
-
-                <p class="spell_desc" v-html="renderDescription(detail.description)"></p>
-
+                <p class="card_desc" v-html="renderDescription(detail.description)"></p>
+                
                 <div v-if="detail.upcasts.length && detail.upcasts[0].upcastType === 'SLOT'" class="upcast_section">
                     <div class="upcast_levels">
                         <span
@@ -213,9 +197,10 @@
                         </span>
                     </div>
                 </div>
+                
             </div>
-        </div>
-    </div>
+        </template>
+    </CompendiumCard>
 </template>
 
 <style scoped>

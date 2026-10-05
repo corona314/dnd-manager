@@ -1,0 +1,128 @@
+/* Carcasa común de las tarjetas (hechizos, objetos, tienda...).
+   Para cambiar la altura de la cabecera en una pantalla concreta:
+   <CompendiumCard style="--card-base-height: 50px"> */
+
+.compendium_card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    padding: 10px;
+    margin: 10px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    height: calc(var(--card-base-height, 40px) + 20px);
+    cursor: pointer;
+    transition: height 0.2s, transform 0.15s ease,
+                border-color 0.15s ease, background 0.15s ease;
+}
+
+.compendium_card:hover {
+    transform: translateX(4px);
+    filter: brightness(1.08);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.compendium_card--expanded {
+    height: auto;
+    border: 3px solid var(--accent);
+}
+
+.compendium_card--selected {
+    border-color: var(--accent);
+}
+
+/* Cabecera: fila con el selector (si hay) y la base */
+.compendium_card_header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    height: var(--card-base-height, 40px);
+    flex-shrink: 0;
+}
+
+.compendium_card_base {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+    height: var(--card-base-height, 40px);
+    flex-shrink: 0;
+}
+
+.compendium_card_header > .compendium_card_base {
+    width: auto;
+    flex: 1;
+}
+
+.card_select {
+    flex-shrink: 0;
+    padding-top: 2px;
+    cursor: pointer;
+}
+
+/* Zona expandida */
+.compendium_card_expanded {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--separator-lines);
+}
+
+.card_expanded_content {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 8px;
+}
+
+.card_details {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-weight: bold;
+}
+
+.card_desc {
+    line-height: 1.5;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.card_desc table {
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 14px;
+    width: 100%;
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+.card_desc th,
+.card_desc td {
+    border: 1px solid var(--separator-lines);
+    padding: 4px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.card_desc th {
+    background: var(--separator-lines);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.card_details > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.card_details svg {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+}
