@@ -4,8 +4,8 @@
     import SpellFilters from '@/vueComponents/shared/SpellFilters.vue'
     import SpellCard from '@/vueComponents/shared/SpellCard.vue'
     import { Components, Schools, createSpellFilters } from '@/composables/spellFilters.js'
-    import { useSpellExpansion } from '@/composables/useSpellExpansion.js'
     import { ref, reactive, computed, onMounted } from 'vue'
+    import { useCardExpansion } from '@/composables/useCardExpansion.js'
 
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
@@ -163,10 +163,8 @@
     })
 
     // Expansión de tarjetas
-    const {
-        expanded_id, expanded_spell, expanded_loading, selected_upcast_level,
-        expandSpell, selectUpcastLevel
-    } = useSpellExpansion(() => props.token)
+
+    const { isOpen, isLoading, details, toggle: expandSpell } = useCardExpansion('/spells', () => props.token, {multiple: true})
 
     // Carga de datos
     async function fetchCharacter() {
@@ -253,27 +251,27 @@
                 </button>
             </div>
 
-            <div class="spell_list">
+            <div class="spell_list compendium_scroll">
                 <SpellCard
                     v-for="spell in filteredSpells"
                     :key="spell.id"
                     :spell="spell"
-                    :expanded="expanded_id === spell.id"
-                    :detail="expanded_spell"
-                    :loading="expanded_loading"
-                    :upcast-level="selected_upcast_level"
+                    :expanded="isOpen(spell.id)"
+                    :detail="details[spell.id]"
+                    :loading="isLoading(spell.id)"
                     selectable
                     :selected="isSelected(spell)"
                     :select-disabled="!isSelected(spell) && !canSelect(spell)"
                     @expand="expandSpell"
-                    @select-upcast="selectUpcastLevel"
                     @toggle-select="toggleSpell"
                 />
             </div>
         </div>
 
-        <button class="general_button character_spell_forward" @click="emit('navigate', {page: 'characterFinalize', characterId: props.characterId})">Continue Creation</button>
-        <button class="general_button character_spell_back" @click="goBackToCharacters">Go Back to Characters</button>
+        <div class="character_spell_footer">
+            <button class="general_button character_spell_back" @click="goBackToCharacters">Go Back to Characters</button>
+            <button class="general_button character_spell_forward" @click="emit('navigate', {page: 'characterFinalize', characterId: props.characterId})">Continue Creation</button>
+        </div>
     </div>
 </template>
 
@@ -286,7 +284,9 @@
         gap: 8px;
         width: 75%;
         margin: 20px 0 10px 0;
+        flex-shrink: 0;
     }
+
 
     .spell_tabs button {
         padding: 6px 14px;

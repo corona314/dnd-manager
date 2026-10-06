@@ -59,6 +59,10 @@
 }
 
 .card_select {
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
     padding-top: 2px;
     cursor: pointer;

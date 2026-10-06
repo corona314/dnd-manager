@@ -45,15 +45,11 @@
 
     // Expansión de tarjetas: la ruta depende de la pestaña activa
     const currentEndpoint = () => Tabs.find(t => t.key === activeTab.value).endpoint
-    const {
-        expanded_id,
-        expanded: expanded_item,
-        expanded_loading,
-        expand: expandItem,
-        collapse: collapseItem
-    } = useCardExpansion(currentEndpoint, () => props.token)
-
-    //Filtros generales
+    
+    const { isOpen, isLoading, details, toggle: expandItem, collapseAll, reset } =
+        useCardExpansion(currentEndpoint, () => props.token, { multiple: true })
+    
+        //Filtros generales
     const filter_name = ref('')
     const filter_price = ref([0,40000])
     const filter_price_max = ref(40000)
@@ -156,9 +152,10 @@
         fetchItems(0)
     }
     function switchTab(key) {
+        collapseAll()
         activeTab.value = key
         current_page.value = 0
-        collapseItem()
+        reset()
         Object.keys(filter_specific).forEach(k => delete filter_specific[k])
         SpecificFilters[key]?.forEach(f => { filter_specific[f.key] = '' })
         fetchMaxPrice()
@@ -172,6 +169,7 @@
     })
 
     function goToPage(page){
+        collapseAll()
         if (page < 0 || page >= total_pages.value) return
         fetchItems(page)
     }
@@ -314,7 +312,7 @@
                 v-for="item in items"
                 :key="item.id"
                 style="--card-base-height: 50px"
-                :expanded="expanded_id === item.id"
+                :expanded="isOpen(item.id)"
                 @toggle="expandItem(item)"
             >
                 <template #base>
@@ -341,51 +339,51 @@
                 </template>
 
                 <template #expanded>
-                    <div v-if="expanded_loading">Loading...</div>
-                    <div v-else-if="expanded_item" class="card_expanded_content">
+                    <div v-if="isLoading(item.id)">Loading...</div>
+                    <div v-else-if="details[item.id]" class="card_expanded_content">
                         <div class="card_details">
                             <!-- Armor -->
-                            <template v-if="expanded_item.armorDto">
-                                <span><DefenseIcon /> AC: {{ expanded_item.armorDto.acBase }}
-                                    <span v-if="expanded_item.armorDto.acMax > expanded_item.armorDto.acBase">
-                                        (max {{ expanded_item.armorDto.acMax }})
+                            <template v-if="details[item.id].armorDto">
+                                <span><DefenseIcon /> AC: {{ details[item.id].armorDto.acBase }}
+                                    <span v-if="details[item.id].armorDto.acMax > details[item.id].armorDto.acBase">
+                                        (max {{ details[item.id].armorDto.acMax }})
                                     </span>
                                 </span>
-                                <span><LayersIcon /> Type: {{ expanded_item.armorDto.armorType }}</span>
-                                <span v-if="expanded_item.armorDto.strMin > 0"><StrengthIcon /> Min STR: {{ expanded_item.armorDto.strMin }}</span>
-                                <span v-if="expanded_item.armorDto.stealthDis"><StealthIcon /> Stealth Disadvantage</span>
+                                <span><LayersIcon /> Type: {{ details[item.id].armorDto.armorType }}</span>
+                                <span v-if="details[item.id].armorDto.strMin > 0"><StrengthIcon /> Min STR: {{ details[item.id].armorDto.strMin }}</span>
+                                <span v-if="details[item.id].armorDto.stealthDis"><StealthIcon /> Stealth Disadvantage</span>
                             </template>
 
                             <!-- Weapon -->
-                            <template v-else-if="expanded_item.weaponDto">
-                                <span><AttackIcon /> {{ expanded_item.weaponDto.weaponCategory }} · {{ expanded_item.weaponDto.weaponType }}</span>
-                                <span v-for="d in expanded_item.weaponDto.damages" :key="d.damageType">
+                            <template v-else-if="details[item.id].weaponDto">
+                                <span><AttackIcon /> {{ details[item.id].weaponDto.weaponCategory }} · {{ details[item.id].weaponDto.weaponType }}</span>
+                                <span v-for="d in details[item.id].weaponDto.damages" :key="d.damageType">
                                     <DiceIcon /> {{ d.damageRoll }} {{ d.damageType }}
                                 </span>
-                                <span v-if="expanded_item.weaponDto.rangeNormal > 0">
-                                    <RangeIcon /> Range: {{ expanded_item.weaponDto.rangeNormal }}/{{ expanded_item.weaponDto.rangeLong }}
+                                <span v-if="details[item.id].weaponDto.rangeNormal > 0">
+                                    <RangeIcon /> Range: {{ details[item.id].weaponDto.rangeNormal }}/{{ details[item.id].weaponDto.rangeLong }}
                                 </span>
                             </template>
 
                             <!-- Generic -->
                             <template v-else>
-                                <span><TagIcon /> {{ expanded_item.itemType }}</span>
+                                <span><TagIcon /> {{ details[item.id].itemType }}</span>
                             </template>
 
                             <!-- Properties -->
-                            <div v-if="expanded_item.weaponDto?.properties?.length" class="item_properties">
-                                <span v-for="p in expanded_item.weaponDto.properties" :key="p.name" class="item_property_chip" :title="p.description">
+                            <div v-if="details[item.id].weaponDto?.properties?.length" class="item_properties">
+                                <span v-for="p in details[item.id].weaponDto.properties" :key="p.name" class="item_property_chip" :title="p.description">
                                     {{ p.name }}<span v-if="p.value"> ({{ p.value }})</span>
                                 </span>
                             </div>
                         </div>
 
-                        <p class="card_desc" v-html="renderDescription(expanded_item.description)"></p>
+                        <p class="card_desc" v-html="renderDescription(details[item.id].description)"></p>
 
                         <!-- Mastery -->
-                        <div v-if="expanded_item.weaponDto?.mastery" class="item_mastery">
-                            <strong>{{ expanded_item.weaponDto.mastery.name }}:</strong>
-                            {{ expanded_item.weaponDto.mastery.description }}
+                        <div v-if="details[item.id].weaponDto?.mastery" class="item_mastery">
+                            <strong>{{ details[item.id].weaponDto.mastery.name }}:</strong>
+                            {{ details[item.id].weaponDto.mastery.description }}
                         </div>
                     </div>
                 </template>

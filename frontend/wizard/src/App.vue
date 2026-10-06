@@ -1,6 +1,5 @@
 <script setup>
   import './components/styles/app.css'
-  import ToggleSwitch from 'primevue/toggleswitch'
   //Componentes
   import AppClasses from './components/vueComponents/compendiums/AppClasses.vue';
   import AppClassExpansion from './components/vueComponents/compendiums/AppClassExpansion.vue';
@@ -23,7 +22,7 @@
   import AppCharacterLevelUp from './components/vueComponents/character/management/AppCharacterLevelUp.vue';
   import AppCharacterSubclass from './components/vueComponents/character/creation/AppCharacterSubclass.vue';
   import AppCharacterEquipment from './components/vueComponents/character/creation/AppCharacterEquipment.vue';
-  import AppCharacterSpells1 from './components/vueComponents/character/creation/AppCharacterSpells1.vue';
+  import AppCharacterSpells from './components/vueComponents/character/creation/AppCharacterSpells.vue';
   import AppAvatar from './components/vueComponents/main/AppAvatar.vue'
   import AppSettings from './components/vueComponents/main/AppSettings.vue'
   import Dialog from 'primevue/dialog'
@@ -145,7 +144,7 @@
         <AppCharacterLevelUp v-if="currentPage === 'characterLevelUp'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterLevelUp>
         <AppCharacterSubclass v-if="currentPage === 'characterSubclass'" :characterId="selectedCharacterId" :classId="selectedClassId" @navigate="handleNavigate" :token="authToken"></AppCharacterSubclass>
         <AppCharacterEquipment v-if="currentPage === 'characterEquipment'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterEquipment>
-        <AppCharacterSpells1 v-if="currentPage === 'characterSpells'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSpells1>
+        <AppCharacterSpells v-if="currentPage === 'characterSpells'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSpells>
       </div>
       <Dialog v-model:visible="showSettings" modal dismissableMask header="Settings" :style="{ width: '25rem' }">
         <AppSettings :username="username" v-model:dark="isDark" @toggle-theme="toggleTheme" @logout="logout" />      

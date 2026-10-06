@@ -3,7 +3,7 @@
     import SpellFilters from '@/vueComponents/shared/SpellFilters.vue'
     import SpellCard from '@/vueComponents/shared/SpellCard.vue'
     import { createSpellFilters } from '@/composables/spellFilters.js'
-    import { useSpellExpansion } from '@/composables/useSpellExpansion.js'
+    import { useCardExpansion } from '@/composables/useCardExpansion.js'
     import { ref, reactive, onMounted } from 'vue'
 
     const props = defineProps({ token: String })
@@ -18,10 +18,7 @@
     const loading = ref(false)
 
     // Expansión de tarjetas
-    const {
-        expanded_id, expanded_spell, expanded_loading, selected_upcast_level,
-        expandSpell, selectUpcastLevel
-    } = useSpellExpansion(() => props.token)
+    const { isOpen, isLoading, details, toggle: expandSpell, collapseAll } = useCardExpansion('/spells', () => props.token, { multiple: true })
 
     // Paginación
     const current_page = ref(0)
@@ -82,10 +79,12 @@
     onMounted(() => fetchSpells(0))
 
     function applyFilters() {
+        collapseAll()
         fetchSpells(0)
     }
 
     function goToPage(page) {
+        collapseAll()
         if (page < 0 || page >= total_pages.value) return
         fetchSpells(page)
     }
@@ -101,19 +100,19 @@
             @apply="applyFilters"
         />
 
+
         <!--Tarjetas de los conjuros-->
         <div v-if="loading" class="loading">Loading...</div>
         <div v-else class="compendium_scroll" :class="{ 'spell_list--filters-closed': !filters_open }">
+            
             <SpellCard
                 v-for="spell in spells"
                 :key="spell.id"
                 :spell="spell"
-                :expanded="expanded_id === spell.id"
-                :detail="expanded_spell"
-                :loading="expanded_loading"
-                :upcast-level="selected_upcast_level"
+                :expanded="isOpen(spell.id)"
+                :detail="details[spell.id]"
+                :loading="isLoading(spell.id)"
                 @expand="expandSpell"
-                @select-upcast="selectUpcastLevel"
             />
         </div>
 

@@ -1,5 +1,4 @@
 <script setup>
-    import { marked } from 'marked'
     import AttackIcon from '@/icons/AttackIcon.vue'
     import DefenseIcon from '@/icons/DefenseIcon.vue'
     import CastingTimeIcon from '@/icons/CastingTimeIcon.vue'
@@ -18,19 +17,22 @@
     import CompendiumCard from '@/vueComponents/shared/CompendiumCard.vue'
     import { usingIcons } from '@/composables/usePreferences.js'
     import { renderDescription } from '@/composables/renderDescription.js'
-    
+    import { ref, computed } from 'vue'
+
+
     const props = defineProps({
         spell: { type: Object, required: true },
         expanded: Boolean,
-        detail: Object,            // conjuro completo (cuando está expandido)
-        loading: Boolean,          // cargando el detalle
-        upcastLevel: Number,       // nivel de upcast seleccionado
-        selectable: Boolean,       // muestra el checkbox (personaje)
+        detail: Object,
+        loading: Boolean,
+        selectable: Boolean,
         selected: Boolean,
         selectDisabled: Boolean
     })
+    const emit = defineEmits(['expand', 'toggle-select'])
 
-    const emit = defineEmits(['expand', 'toggle-select', 'select-upcast'])
+    const picked = ref(null)
+    const upcastLevel = computed(() => picked.value ?? (props.detail ? props.detail.level + 1 : null))
 
     const Damage_Colors = {Acid: '--damage-acid', Cold: '--damage-cold', Fire: '--damage-fire', Force: '--damage-force', Lightning: '--damage-lightning', Necrotic: '--damage-necrotic', Piercing: '--damage-piercing', Poison: '--damage-poison', Psychic: '--damage-psychic', Radiant: '--damage-radiant', Slashing: '--damage-slashing', Thunder: '--damage-thunder', Bludgeoning: '--damage-bludgeoning'}
 
@@ -115,7 +117,7 @@
                 <DefenseIcon v-if="usingIcons" /><template v-else>ST</template>
             </span>
 
-            <span class="spell_component_v" title="Verbal" :class="{ icon_off: !spell.components.includes('V') }">
+            <span class="spell_component_v" title="Vocal" :class="{ icon_off: !spell.components.includes('V') }">
                 <template v-if="usingIcons">
                     <VocalIcon v-if="spell.components.includes('V')" />
                     <NoVocalIcon v-else />
@@ -179,7 +181,7 @@
                             :key="lvl"
                             class="upcast_button"
                             :class="{ 'upcast_button--active': upcastLevel === lvl }"
-                            @click="emit('select-upcast', lvl)"
+                            @click="picked = lvl"
                         >{{ lvl }}</span>
                     </div>
                     <div class="upcast_result">
@@ -197,7 +199,7 @@
                         </span>
                     </div>
                 </div>
-                
+
             </div>
         </template>
     </CompendiumCard>
