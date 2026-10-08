@@ -86,8 +86,8 @@
         saving.value = true
         error.value = ''
         try {
-            const res = await fetch(`${API_BASE}/characters/${props.characterId}`, {
-                method: 'PATCH',
+            const res = await fetch(`${API_BASE}/characters/${props.characterId}/classes/${props.classId}/subclasses/${subclassId}`, {
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${props.token}`,
                     'Content-Type': 'application/json'
@@ -95,7 +95,9 @@
                 body: JSON.stringify({ subclassId })
             })
             if (!res.ok) {
-                error.value = 'Error al guardar la subclase'
+                const body = await res.text()
+                console.error('Subclass POST failed:', res.status, body)
+                error.value = body || 'Error al guardar la subclase'
                 return
             }
             await fetchCharacter()
