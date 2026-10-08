@@ -143,6 +143,26 @@ public class CharacterController {
     }
 
 
+    // Subclasses
+
+    @PostMapping("/{id}/classes/{classId}/subclasses/{subclassId}")
+    public ResponseEntity<CharacterResponseDto> addSubclass(
+        @AuthenticationPrincipal User user, 
+        @PathVariable Long id, 
+        @PathVariable Long classId,
+        @PathVariable Long subclassId
+    ) {
+        return ResponseEntity.ok(service.addSubclass(user.getId(), id, classId, subclassId));
+    }
+
+    @DeleteMapping("/{id}/classes/{classId}/subclass")
+    public ResponseEntity<CharacterResponseDto> removeSubclass(
+        @AuthenticationPrincipal User user,
+        @PathVariable Long id,
+        @PathVariable Long classId
+    ) {
+        return ResponseEntity.ok(service.removeSubclass(user.getId(), id, classId));
+    }
     
     //Items
 
