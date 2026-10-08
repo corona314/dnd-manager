@@ -1,17 +1,31 @@
 <script setup>
-import { ref, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { Blobatar } from '@blobatar/vue'
 import { gaze } from 'blobatar/gaze'
 import * as expressions from 'blobatar/expression'
 import 'blobatar/motion.css'
 import 'blobatar/gaze.css'
+import { blob } from '@/composables/useBlobSay.js'
 
-defineProps({ name: String })
 
-const MOODS = ['happy', 'wink', 'surprised', 'smug', 'love', 'sleepy', 'unsure', 'shy', 'thinking']
+
+// speaks: solo el avatar del header debe reaccionar a los mensajes del blob
+const props = defineProps({ name: String, speaks: Boolean })
+
+const MOODS = ['happy', 'wink', 'surprised', 'smug', 'love', 'sleepy', 'unsure', 'shy', 'thinking', 'mad', 'sad'];
 
 const current = ref(null)
-const expression = computed(() => (current.value ? expressions[current.value] : undefined))
+
+// Pose neutra explícita (si la librería la exporta; si no, queda undefined y es la de por defecto)
+const idle = expressions.idle
+
+// Mientras habla, su expresión manda sobre los cambios de humor aleatorios
+const expression = computed(() => {
+  if (props.speaks && blob.message && blob.mood) {
+    return expressions[blob.mood] ?? idle
+  }
+  return current.value ? expressions[current.value] : idle
+})
 
 const wrapper = ref(null)
 let driver
@@ -29,8 +43,15 @@ function scheduleNext() {
       current.value = null
       scheduleNext()
     }, rand(1500, 3000))
-  }, rand(5000, 12000))
+  }, rand(20000, 40000))
 }
+
+watch(() => blob.message, () => {
+  if (!props.speaks) return
+  clearTimeout(timer)
+  current.value = null
+  scheduleNext()
+})
 
 function watchPosition() {
   const rect = wrapper.value?.getBoundingClientRect()
