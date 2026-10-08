@@ -1,5 +1,5 @@
 <script setup>
-    import '@/styles/appItems.css'
+    import '@/styles/compendium/appItems.css'
     import Slider from 'primevue/slider';
     import { ref, onMounted, reactive } from 'vue'
     import SearchIcon from '@/icons/SearchIcon.vue';

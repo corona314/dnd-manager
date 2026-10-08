@@ -1,5 +1,5 @@
 <script setup>
-    import '@/styles/appCompendium.css'
+    import '@/styles/compendium/appCompendium.css'
 
     defineProps({
         expanded: Boolean,
