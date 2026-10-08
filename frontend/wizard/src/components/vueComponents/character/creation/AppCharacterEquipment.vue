@@ -26,6 +26,31 @@
     const saving = ref(false)
     const error = ref('')
 
+    //--- Registro de lo aplicado por este paso (para poder deshacerlo sin tocar lo previo) ---
+    const equipment_record = ref(null) // { previousMoney, appliedMoney, items: [{ itemId, name, quantity }] }
+    const equipment_locked = computed(() => equipment_record.value !== null)
+    const resetting = ref(false)
+    const storage_key = computed(() => `equipment_applied_${props.characterId}`)
+
+    function loadRecord() {
+        try {
+            const raw = localStorage.getItem(storage_key.value)
+            equipment_record.value = raw ? JSON.parse(raw) : null
+        } catch (e) {
+            equipment_record.value = null
+        }
+    }
+
+    function persistRecord(record) {
+        equipment_record.value = record
+        localStorage.setItem(storage_key.value, JSON.stringify(record))
+    }
+
+    function clearRecord() {
+        equipment_record.value = null
+        localStorage.removeItem(storage_key.value)
+    }
+
     async function fetchCharacter() {
         loading_character.value = true
         try {
@@ -75,8 +100,9 @@
         }
     }
 
-    onMounted(() => {
-        fetchCharacter()
+    onMounted(async () => {
+        await fetchCharacter()
+        loadRecord()
     })
 
     //--- Helpers para separar items fijos / opcionales de un optionGroup ---
@@ -150,33 +176,27 @@
     function buildFinalItemsList() {
         const map = new Map() // itemId -> quantity
 
-        function addEntries(entries) {
-            entries.forEach(entry => {
-                const id = entry.item.id
-                const prev = map.get(id) ?? 0
-                map.set(id, prev + entry.quantity)
-            })
+        function add(entry) {
+            const id = entry.item.id
+            const prev = map.get(id)
+            map.set(id, { name: entry.item.name, quantity: (prev?.quantity ?? 0) + entry.quantity })
         }
 
-        addEntries(class_fixed_items.value)
-        addEntries(background_fixed_items.value)
+        class_fixed_items.value.forEach(add)
+        background_fixed_items.value.forEach(add)
 
         // Opcionales seleccionados (cantidad 1 cada uno, buscando en ambas fuentes)
         const allOptional = [...class_optional_items.value, ...background_optional_items.value]
         allOptional.forEach(entry => {
-            if (selected_optional_ids.value.includes(entry.item.id)) {
-                const prev = map.get(entry.item.id) ?? 0
-                map.set(entry.item.id, prev + entry.quantity)
-            }
+            if (selected_optional_ids.value.includes(entry.item.id)) add(entry)
         })
 
-        return [...map.entries()].map(([itemId, quantity]) => ({ itemId, quantity }))
+        return [...map.entries()].map(([itemId, v]) => ({ itemId, name: v.name, quantity: v.quantity }))
     }
 
     //--- Guardar dinero inicial ---
     // NOTA: se asume que el campo del personaje se llama "money". Ajustar si el backend usa otro nombre (ej. "gold").
     async function saveMoney(amount) {
-        if (amount <= 0) return true
         try {
             const res = await fetch(`${API_BASE}/characters/${props.characterId}`, {
                 method: 'PATCH',
@@ -233,12 +253,18 @@
         saving.value = true
         error.value = ''
         try {
+            const previousMoney = character.value?.money ?? 0
+            const record = { previousMoney, appliedMoney: total_money.value, items: [] }
+
             // 1) Dinero (si se eligió opción B en alguna fuente)
-            const moneyOk = await saveMoney(total_money.value)
-            if (!moneyOk) {
-                error.value = 'Error saving initial money'
-                return
+            if (total_money.value > 0) {
+                const moneyOk = await saveMoney(previousMoney + total_money.value)
+                if (!moneyOk) {
+                    error.value = 'Error saving initial money'
+                    return
+                }
             }
+            persistRecord({ ...record })
 
             // 2) Items (si se eligió opción A en alguna fuente, o hay opcionales marcados)
             const finalItems = buildFinalItemsList()
@@ -248,14 +274,82 @@
                     error.value = 'Error saving one of the items'
                     return
                 }
+                record.items.push({ itemId: entry.itemId, name: entry.name, quantity: entry.quantity })
+                persistRecord({ ...record, items: [...record.items] })
             }
 
+            await fetchCharacter()
             emit('navigate', { page: 'characterSpells', characterId: props.characterId })
         } catch (e) {
             console.error(e)
             error.value = 'Connection error'
         } finally {
             saving.value = false
+        }
+    }
+
+    async function resetEquipment() {
+        if (!equipment_record.value) return
+        resetting.value = true
+        error.value = ''
+        try {
+            // Datos frescos para conocer las cantidades actuales
+            await fetchCharacter()
+            const record = equipment_record.value
+
+            for (const applied of record.items) {
+                const existing = (character.value?.items ?? []).find(ci => ci.item.id === applied.itemId)
+                if (!existing) continue
+
+                const remaining = existing.quantity - applied.quantity
+                const url = `${API_BASE}/characters/${props.characterId}/items/${applied.itemId}`
+                let res
+
+                if (remaining > 0) {
+                    // Tenía unidades previas: solo se resta lo que añadió este paso
+                    res = await fetch(url, {
+                        method: 'PATCH',
+                        headers: {
+                            Authorization: `Bearer ${props.token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            quantity: remaining,
+                            equipped: existing.equipped,
+                            attuned: existing.attuned
+                        })
+                    })
+                } else {
+                    // Solo existía por este paso: se elimina
+                    res = await fetch(url, {
+                        method: 'DELETE',
+                        headers: { Authorization: `Bearer ${props.token}` }
+                    })
+                }
+
+                if (!res.ok) {
+                    error.value = `Error removing ${applied.name}`
+                    return
+                }
+            }
+
+            // Restaurar el dinero previo
+            const moneyOk = await saveMoney(record.previousMoney)
+            if (!moneyOk) {
+                error.value = 'Error restoring money'
+                return
+            }
+
+            clearRecord()
+            class_choice.value = null
+            background_choice.value = null
+            selected_optional_ids.value = []
+            await fetchCharacter()
+        } catch (e) {
+            console.error(e)
+            error.value = 'Connection error'
+        } finally {
+            resetting.value = false
         }
     }
 
@@ -286,91 +380,111 @@
 
         <span v-if="error" class="character_equipment_error">{{ error }}</span>
 
-        <!--Equipo de Clase-->
-        <div v-if="loading_class">Loading class equipment...</div>
-        <div v-else-if="class_detail" class="equipment_source_card">
-            <h2>{{ character.classes[0].classEntity.name }} Equipment</h2>
+        <!--Modo bloqueado: equipo ya asignado-->
+        <div v-if="equipment_locked" class="equipment_locked_summary">
+            <h2>Equipment already assigned</h2>
 
-            <div class="equipment_choice_toggle">
-                <button class="general_button" :class="{ active: class_choice === 'A' }" @click="class_choice = 'A'">
-                    Equipment Package
-                </button>
-                <button class="general_button" :class="{ active: class_choice === 'B' }" @click="class_choice = 'B'">
-                    {{ (moneyOf(class_detail, 'B') / 100).toFixed(2) }} gold pieces instead
-                </button>
+            <div v-for="it in equipment_record.items" :key="it.itemId" class="equipment_item_row">
+                {{ it.name }}
+                <span v-if="it.quantity > 1" class="item_qty">x{{ it.quantity }}</span>
+            </div>
+            <div v-if="equipment_record.appliedMoney > 0" class="equipment_item_row">
+                {{ (equipment_record.appliedMoney / 100).toFixed(2) }} gp
             </div>
 
-            <div v-if="class_choice === 'A'" class="equipment_items_preview">
-                <div v-for="entry in class_fixed_items" :key="entry.item.id" class="equipment_item_row">
-                    {{ entry.item.name }}     
-                    <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
+            <button class="general_button character_equipment_reset" @click="resetEquipment" :disabled="resetting">
+                {{ resetting ? 'Resetting...' : 'Reset and Reassign' }}
+            </button>
+        </div>
 
+        <template v-if="!equipment_locked">
+            <!--Equipo de Clase-->
+            <div v-if="loading_class">Loading class equipment...</div>
+            <div v-else-if="class_detail" class="equipment_source_card">
+                <h2>{{ character.classes[0].classEntity.name }} Equipment</h2>
+
+                <div class="equipment_choice_toggle">
+                    <button class="general_button" :class="{ active: class_choice === 'A' }" @click="class_choice = 'A'">
+                        Equipment Package
+                    </button>
+                    <button class="general_button" :class="{ active: class_choice === 'B' }" @click="class_choice = 'B'">
+                        {{ (moneyOf(class_detail, 'B') / 100).toFixed(2) }} gold pieces instead
+                    </button>
                 </div>
-                <div v-if="moneyOf(class_detail, 'A') > 0" class="equipment_item_row">
-                    {{ (moneyOf(class_detail, 'A') / 100).toFixed(2) }} po
-                </div>
-                <div v-if="class_optional_items.length" class="equipment_optional_list">
-                    <span class="equipment_optional_label">Choose 1:</span>
-                    <label v-for="entry in class_optional_items" :key="entry.item.id" class="equipment_optional_row">
-                        <input type="radio" name="class_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, class_optional_items)" />
-                        {{ entry.item.name }}                     
+
+                <div v-if="class_choice === 'A'" class="equipment_items_preview">
+                    <div v-for="entry in class_fixed_items" :key="entry.item.id" class="equipment_item_row">
+                        {{ entry.item.name }}     
                         <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
 
-                    </label>
+                    </div>
+                    <div v-if="moneyOf(class_detail, 'A') > 0" class="equipment_item_row">
+                        {{ (moneyOf(class_detail, 'A') / 100).toFixed(2) }} po
+                    </div>
+                    <div v-if="class_optional_items.length" class="equipment_optional_list">
+                        <span class="equipment_optional_label">Choose 1:</span>
+                        <label v-for="entry in class_optional_items" :key="entry.item.id" class="equipment_optional_row">
+                            <input type="radio" name="class_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, class_optional_items)" />
+                            {{ entry.item.name }}                     
+                            <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
+
+                        </label>
+                    </div>
+                </div>
+
+                <div v-else-if="class_choice === 'B'" class="equipment_money_preview">
+                    You will receive {{ (moneyOf(class_detail, 'B') / 100).toFixed(2) }} gold pieces.
                 </div>
             </div>
 
-            <div v-else-if="class_choice === 'B'" class="equipment_money_preview">
-                You will receive {{ (moneyOf(class_detail, 'B') / 100).toFixed(2) }} gold pieces.
-            </div>
-        </div>
+            <!--Equipo de Trasfondo-->
+            <div v-if="loading_background">Loading background equipment...</div>
+            <div v-else-if="background_detail" class="equipment_source_card">
+                <h2>{{ character.background.name }} Equipment</h2>
 
-        <!--Equipo de Trasfondo-->
-        <div v-if="loading_background">Loading background equipment...</div>
-        <div v-else-if="background_detail" class="equipment_source_card">
-            <h2>{{ character.background.name }} Equipment</h2>
-
-            <div class="equipment_choice_toggle">
-                <button class="general_button" :class="{ active: background_choice === 'A' }" @click="background_choice = 'A'">
-                    Equipment Package
-                </button>
-                <button class="general_button" :class="{ active: background_choice === 'B' }" @click="background_choice = 'B'">
-                    {{ (moneyOf(background_detail, 'B') / 100).toFixed(2) }} gold pieces instead
-                </button>
-            </div>
-
-            <div v-if="background_choice === 'A'" class="equipment_items_preview">
-                <div v-for="entry in background_fixed_items" :key="entry.item.id" class="equipment_item_row">
-                    {{ entry.item.name }}     
-                    <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
+                <div class="equipment_choice_toggle">
+                    <button class="general_button" :class="{ active: background_choice === 'A' }" @click="background_choice = 'A'">
+                        Equipment Package
+                    </button>
+                    <button class="general_button" :class="{ active: background_choice === 'B' }" @click="background_choice = 'B'">
+                        {{ (moneyOf(background_detail, 'B') / 100).toFixed(2) }} gold pieces instead
+                    </button>
                 </div>
-                <div v-if="moneyOf(background_detail, 'A') > 0" class="equipment_item_row">
-                    {{ (moneyOf(background_detail, 'A') / 100).toFixed(2) }} po
-                </div>
-                <div v-if="background_optional_items.length" class="equipment_optional_list">
-                    <span class="equipment_optional_label">Choose 1:</span>
-                    <label v-for="entry in background_optional_items" :key="entry.item.id" class="equipment_optional_row">
-                        <input type="radio" name="background_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, background_optional_items)" />
-                        {{ entry.item.name }}                     
+
+                <div v-if="background_choice === 'A'" class="equipment_items_preview">
+                    <div v-for="entry in background_fixed_items" :key="entry.item.id" class="equipment_item_row">
+                        {{ entry.item.name }}     
                         <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
+                    </div>
+                    <div v-if="moneyOf(background_detail, 'A') > 0" class="equipment_item_row">
+                        {{ (moneyOf(background_detail, 'A') / 100).toFixed(2) }} po
+                    </div>
+                    <div v-if="background_optional_items.length" class="equipment_optional_list">
+                        <span class="equipment_optional_label">Choose 1:</span>
+                        <label v-for="entry in background_optional_items" :key="entry.item.id" class="equipment_optional_row">
+                            <input type="radio" name="background_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, background_optional_items)" />
+                            {{ entry.item.name }}                     
+                            <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
 
-                    </label>
+                        </label>
+                    </div>
+                </div>
+
+                <div v-else-if="background_choice === 'B'" class="equipment_money_preview">
+                    You will receive {{ (moneyOf(background_detail, 'B') / 100).toFixed(2) }} gold pieces.
                 </div>
             </div>
 
-            <div v-else-if="background_choice === 'B'" class="equipment_money_preview">
-                You will receive {{ (moneyOf(background_detail, 'B') / 100).toFixed(2) }} gold pieces.
+            <!--Resumen-->
+            <div v-if="total_money > 0" class="equipment_total_money">
+                Total Money: {{ (total_money / 100).toFixed(2) }} gp
             </div>
-        </div>
 
-        <!--Resumen-->
-        <div v-if="total_money > 0" class="equipment_total_money">
-            Total Money: {{ (total_money / 100).toFixed(2) }} gp
-        </div>
+            <button class="general_button character_equipment_confirm_btn" @click="confirmEquipment" :disabled="saving || !can_confirm">
+                {{ saving ? 'Saving...' : 'Confirm Equipment' }}
+            </button>
+        </template>
 
-        <button class="general_button character_equipment_confirm_btn" @click="confirmEquipment" :disabled="saving || !can_confirm">
-            {{ saving ? 'Saving...' : 'Confirm Equipment' }}
-        </button>
         <button class="general_button character_equipment_forward" @click="isItMagical">Continue Creation</button>
         <button class="general_button character_equipment_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>

@@ -86,9 +86,13 @@
         }
     }
 
-    onMounted(() => {
-        fetchCharacter()
+    onMounted(async () => {
+        await fetchCharacter()
         fetchClasses()
+        // Si ya tiene clase, lo cargamos como el que se está viendo
+        if (character.value?.classes?.[0]?.classEntity?.id) {
+            await pickClassToView(character.value.classes[0].classEntity)
+        }
     })
 
     async function pickClassToView(class_data) {

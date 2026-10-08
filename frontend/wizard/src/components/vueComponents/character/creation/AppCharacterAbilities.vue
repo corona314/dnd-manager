@@ -170,6 +170,33 @@
         return values.includes(2) && values.includes(1)
     })
 
+    // Si ya hay características guardadas, se bloquea la edición hasta resetear
+    const abilities_locked = ref(false)
+
+    function savedValue(code) {
+        return character.value?.abilities?.find(a => a.ability === code)?.baseValue ?? 10
+    }
+
+    function savedModifier(code) {
+        return Math.floor((savedValue(code) - 10) / 2)
+    }
+
+    function checkIfAbilitiesAssigned() {
+        const abs = character.value?.abilities ?? []
+        abilities_locked.value = abs.length > 0 && abs.some(a => a.baseValue !== 8)
+    }
+
+    function resetAbilities() {
+        const reset = {}
+        ABILITY_DEFS.forEach(a => { reset[a.code] = 8 })
+        base_scores.value = reset
+        background_bonus_assignment.value = {}
+        bonus_mode.value = '2-1'
+        score_method.value = SCORE_METHOD.POINT_BUY
+        error.value = ''
+        abilities_locked.value = false
+    }
+
     //--- Cálculo final ---
     function finalScore(code) {
         return base_scores.value[code] + bonusFor(code)
@@ -215,6 +242,7 @@
                 return
             }
             await fetchCharacter()
+            abilities_locked.value = true
         } catch (e) {
             console.error(e)
             error.value = 'Error de conexión'
@@ -229,7 +257,7 @@
 
     onMounted(async () => {
         await fetchCharacter()
-        initializeAbilitiesFromCharacter()
+        checkIfAbilitiesAssigned()
     })
 </script>
 
@@ -247,36 +275,50 @@
 
         <span v-if="error" class="character_ability_error">{{ error }}</span>
         <!--Metodo de selección de puntos, ya sea compra de puntos, asignar-->
-        <template v-if="score_method === 'pointbuy'">
+        <template v-if="abilities_locked">
+            <h2>Abilities already assigned</h2>
+            <button class="general_button character_ability_reset" @click="resetAbilities">Reset and Reassign</button>
+        </template>
+        <template v-else-if="score_method === 'pointbuy'">
             <h2>Point Cost</h2>
             <span class="ability_points_remaining" :class="{ invalid: points_remaining !== 0 }">
                 Remaining: {{ points_remaining }} / {{ TOTAL_POINTS }}
             </span>
         </template>
-        <template v-else-if="score_method === 'manual'">
+        <template v-else>
             <h2>Manual Assignment</h2>
         </template>
         <div class="ability_grid">
             <div v-for="ability in ABILITY_DEFS" :key="ability.code" class="ability_card">
                 <span class="ability_label">{{ ability.label }} ({{ ability.code }})</span>
+                <!-- Modo bloqueado: solo lectura -->
+                <template v-if="abilities_locked">
+                    <span class="ability_final_score">Score: {{ savedValue(ability.code) }}</span>
+                    <span class="ability_modifier">Modifier: {{ formatModifier(savedModifier(ability.code)) }}</span>
+                </template>
 
-                <div v-if="score_method === 'pointbuy'" class="ability_score_controls">
-                    <button class="general_button" @click="decreaseScore(ability.code)" :disabled="base_scores[ability.code] <= 8">-</button>
-                    <span class="ability_base_score">{{ base_scores[ability.code] }}</span>
-                    <button class="general_button" @click="increaseScore(ability.code)" :disabled="base_scores[ability.code] >= 15">+</button>
-                </div>
-                <div v-else class="ability_score_controls">
-                    <input type="number" class="ability_manual_input" :min="MANUAL_MIN" :max="MANUAL_MAX" :value="base_scores[ability.code]" @change="setManualScore(ability.code, $event.target.value)"/>
-                </div>
-                <span v-if="bonusFor(ability.code) > 0" class="ability_bg_bonus">
-                    + {{ bonusFor(ability.code) }} (background)
-                </span>
-                <span class="ability_final_score">
-                    Score: {{ finalScore(ability.code) }}
-                </span>
-                <span class="ability_modifier">
-                    Modifier: {{ formatModifier(modifier(ability.code)) }}
-                </span>
+                <!-- Modo edición-->
+                <template v-else>  
+                    <div v-if="score_method === 'pointbuy'" class="ability_score_controls">
+                        <button class="general_button" @click="decreaseScore(ability.code)" :disabled="base_scores[ability.code] <= 8">-</button>
+                        <span class="ability_base_score">{{ base_scores[ability.code] }}</span>
+                        <button class="general_button" @click="increaseScore(ability.code)" :disabled="base_scores[ability.code] >= 15">+</button>
+                    </div>
+                
+                    <div v-else class="ability_score_controls">
+                        <input type="number" class="ability_manual_input" :min="MANUAL_MIN" :max="MANUAL_MAX" :value="base_scores[ability.code]" @change="setManualScore(ability.code, $event.target.value)"/>
+                    </div>
+                    <span v-if="bonusFor(ability.code) > 0" class="ability_bg_bonus">
+                        + {{ bonusFor(ability.code) }} (background)
+                    </span>
+                    <span class="ability_final_score">
+                        Score: {{ finalScore(ability.code) }}
+                    </span>
+                    <span class="ability_modifier">
+                        Modifier: {{ formatModifier(modifier(ability.code)) }}
+                    </span>
+                </template>
+                    
             </div>
         </div>
 

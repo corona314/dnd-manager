@@ -54,9 +54,13 @@
         }
     }
 
-    onMounted(() => {
+    onMounted(async () => {
         fetchBackgrounds()
-        fetchCharacter()
+        await fetchCharacter()
+        // Si ya tiene trasfondo, lo cargamos como el que se está viendo
+        if (character.value?.background?.id) {
+            await pickBackgroundToView(character.value.background)
+        }
     })
 
     async function pickBackgroundToView(background) {

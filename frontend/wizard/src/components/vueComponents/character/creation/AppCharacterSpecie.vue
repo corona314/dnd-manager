@@ -54,9 +54,13 @@
         }
     }
 
-    onMounted(() => {
+    onMounted(async () => {
         fetchSpecies()
-        fetchCharacter()
+        await fetchCharacter()
+        // Si ya tiene especie, lo cargamos como el que se está viendo
+        if (character.value?.species?.id) {
+            await pickSpecieToView(character.value.species)
+        }
     })
 
     async function pickSpecieToView(specie) {

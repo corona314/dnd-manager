@@ -48,7 +48,7 @@
             const eligibleIds = new Set((class_detail.value?.skills ?? []).map(s => s.id))
 
             const alreadyProficient = (character.value?.skills ?? [])
-                .filter(cs => cs.proficiency && eligibleIds.has(cs.skill.id))
+                .filter(cs => cs.proficient && eligibleIds.has(cs.skill.id))
                 .map(cs => cs.skill.id)
 
             pregranted_skill_ids.value = alreadyProficient
@@ -206,7 +206,9 @@
                 }
             })
             if (!finalizeRes.ok) {
-                error.value = 'Error finishing the character'
+                const body = await finalizeRes.text()
+                console.error('Finalize failed:', finalizeRes.status, body)
+                error.value = body || 'Error finishing the character'
                 return
             }
 
