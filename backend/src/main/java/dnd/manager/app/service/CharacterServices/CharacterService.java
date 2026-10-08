@@ -632,6 +632,31 @@ public class CharacterService {
         return mapper.toResponseDto(repository.save(character));
     }
 
+    public CharacterResponseDto removeSubclass(Long userId, Long characterId, Long classId) {
+        CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
+        if (character == null) throw new EntityNotFoundException("Character not found");
+
+        CharacterClass characterClass = character.getClasses().stream()
+            .filter(cc -> cc.getClassEntity().getId().equals(classId))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Character does not have this class"));
+
+        Subclass subclass = characterClass.getSubclass();
+        if (subclass == null) {
+            throw new RuntimeException("Character does not have a subclass for this class");
+        }
+
+        // Quita las features de la subclase de todos los niveles alcanzados
+        for (int lvl = 1; lvl <= characterClass.getLevel(); lvl++) {
+            removeSubclassFeatures(character, subclass.getId(), lvl);
+        }
+
+        characterClass.setSubclass(null);
+
+        return mapper.toResponseDto(repository.save(character));
+    }
+
+
     public CharacterResponseDto levelUpClass(Long userId, Long characterId, Long classId) {
         CharacterEntity character = repository.findByUserIdAndId(userId, characterId);
         

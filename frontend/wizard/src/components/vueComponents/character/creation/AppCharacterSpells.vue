@@ -1,6 +1,6 @@
 <script setup>
-    import '@/styles/appSpells.css'
-    import '@/styles/appCharacterSpells.css'
+    import '@/styles/compendium/appSpells.css'
+    import '@/styles/character/appCharacterSpells.css'
     import SpellFilters from '@/vueComponents/shared/SpellFilters.vue'
     import SpellCard from '@/vueComponents/shared/SpellCard.vue'
     import { Components, Schools, createSpellFilters } from '@/composables/spellFilters.js'

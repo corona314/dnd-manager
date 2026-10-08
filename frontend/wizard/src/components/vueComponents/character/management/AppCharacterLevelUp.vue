@@ -188,19 +188,19 @@
 
 <template>
     <div class="character_level_up_page">
-        <div v-if="loading_character">Cargando personaje...</div>
+        <div v-if="loading_character">Loading Character...</div>
 
         <div v-else-if="character" class="character_level_up_summary">
             <h1>{{ character.name }}</h1>
-            <span class="level_up_level">Nivel total: {{ character.level }} -> {{ character.level + 1 }}</span>
+            <span class="level_up_level">Total Level: {{ character.level }} -> {{ character.level + 1 }}</span>
 
             <div class="level_up_section">
-                <span class="level_up_label">Especie:</span>
+                <span class="level_up_label">Species: </span>
                 <span>{{ character.species?.name }}</span>
             </div>
 
             <div class="level_up_section">
-                <span class="level_up_label">Clases actuales:</span>
+                <span class="level_up_label">Current Classes: </span>
                 <ul class="level_up_class_list">
                     <li v-for="c in character.classes" :key="c.classEntity.id">
                         {{ c.classEntity.name }} ({{ c.classEntity.hitPointDie }}) — Nivel {{ c.level }}
@@ -211,27 +211,27 @@
 
             <!-- selector de clase -->
             <div class="level_up_section">
-                <span class="level_up_label">Subir nivel en:</span>
+                <span class="level_up_label">Level Up in: </span>
                 <select v-model="selected_class_id" class="level_up_class_select">
-                    <optgroup label="Mis clases">
+                    <optgroup label="My Classes">
                         <option v-for="c in character.classes" :key="c.classEntity.id" :value="c.classEntity.id">
-                            {{ c.classEntity.name }} (Nivel {{ c.level }} -> {{ c.level + 1 }})
+                            {{ c.classEntity.name }} (Level {{ c.level }} -> {{ c.level + 1 }})
                         </option>
                     </optgroup>
-                    <optgroup label="Multiclase (nueva clase)">
+                    <optgroup label="Multiclass (new class)">
                         <option v-for="c in new_classes" :key="c.id" :value="c.id">
-                            {{ c.name }} (Nivel 1)
+                            {{ c.name }} (Level 1)
                         </option>
                     </optgroup>
                 </select>
                 <p v-if="selected_class_entity">
-                    {{ selected_class_entity.name }}: nivel {{ new_class_level }}
-                    <span v-if="is_new_class">(nueva clase)</span>
+                    {{ selected_class_entity.name }}: level {{ new_class_level }}
+                    <span v-if="is_new_class">(new class)</span>
                 </p>
             </div>
 
             <div class="level_up_section">
-                <span class="level_up_label">Trasfondo:</span>
+                <span class="level_up_label">Background: </span>
                 <span>{{ character.background?.name }}</span>
             </div>
 
@@ -244,12 +244,12 @@
             <p v-if="error" class="level_up_error">{{ error }}</p>
         </div>
 
-        <button v-if="needs_subclass" class="character_subclass_btn" @click="goToSubclassList()">Subclass</button>
-        <button class="character_level_up_save_btn" @click="levelUpCharacter"
+        <button v-if="needs_subclass" class="general_button character_subclass_btn" @click="goToSubclassList()">Subclass</button>
+        <button class="general_button character_level_up_save_btn" @click="levelUpCharacter"
                 :disabled="saving || calculated_max_hp === null || character.level >= 20">
-            {{ saving ? 'Finalizando...' : 'Level Up' }}
+            {{ saving ? 'Finalizing...' : 'Level Up' }}
         </button>
-        <button class="character_level_up_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_level_up_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>
 

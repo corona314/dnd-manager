@@ -128,11 +128,11 @@
 <template>
     <div class="character_subclass_page">
         <!--Cabecera con info del personaje-->
-        <div v-if="loading_character">Cargando personaje...</div>
+        <div v-if="loading_character">Loading Character...</div>
         <div v-else-if="character" class="character_subclass_header">
             <h1>{{ character.name }}</h1>
             <span class="character_subclass_class_label">
-                Clase: {{ viewed_class?.name ?? 'Sin asignar' }}
+                Class: {{ viewed_class?.name ?? 'Not assigned' }}
             </span>
             <span v-if="current_subclass" class="character_subclass_current">
                 Current Subclass: {{ current_subclass.name }}
@@ -143,7 +143,7 @@
         </div>
  
         <span v-if="!current_class_entry" class="character_subclass_warning">
-            Debes elegir una clase antes de poder elegir una subclase.
+            You must choose a class before you can choose a subclass.
         </span>
  
         <span v-if="error" class="character_subclass_error">{{ error }}</span>
@@ -152,10 +152,10 @@
         <h2>Pick a Subclass</h2>
         <div class="subclass_filter">
             <div class="subclass_dropdown_btn" @click="subclass_open = !subclass_open">
-                {{ viewed_subclass ? viewed_subclass.name : 'Selecciona una subclase' }} <i>▾</i>
+                {{ viewed_subclass ? viewed_subclass.name : 'Select a Subclass' }} <i>▾</i>
             </div>
             <div v-if="subclass_open" class="subclass_dropdown_menu">
-                <div v-if="loading_subclasses" class="loading">Cargando...</div>
+                <div v-if="loading_subclasses" class="loading">Loading...</div>
                 <div v-else v-for="subclass_data in subclasses_data" :key="subclass_data.id" class="subclass_option" :class="{ selected: current_subclass?.id === subclass_data.id }" @click="pickSubclassToView(subclass_data)">
                     {{ subclass_data.name }}
                 </div>
@@ -163,16 +163,16 @@
         </div>
  
         <!--Detalles de la subclase elegida en el desplegable-->
-        <div v-if="viewed_loading" class="loading">Cargando...</div>
+        <div v-if="viewed_loading" class="loading">Loading...</div>
         <div v-else-if="viewed_subclass" class="subclass_details_card">
             <div class="subclass_details_header">
                 <span class="subclass_details_name">{{ viewed_subclass.name }}</span>
             </div>
  
             <div v-if="viewed_subclass.features?.length" class="subclass_features_section">
-                <h3>Feats by level:</h3>
+                <h3>Features by level:</h3>
                 <div v-for="group in featuresByLevel()" :key="group.level" class="subclass_feature_level_group">
-                    <h4 class="subclass_feature_level_title">Nivel {{ group.level }}</h4>
+                    <h4 class="subclass_feature_level_title">Level {{ group.level }}</h4>
                     <div v-for="f in group.features" :key="f.feature.id" class="subclass_feature_row">
                         <div class="subclass_feature_header">
                             <span class="subclass_feature_name">{{ f.feature.name }}</span>
@@ -182,13 +182,13 @@
             </div>
  
             
-            <button class="subclass_details_select_btn" @click="selectSubclass(viewed_id)" :disabled="saving || current_subclass?.id === viewed_id">
-                {{ saving ? 'Guardando...' : (current_subclass?.id === viewed_id ? 'Subclase actual' : `Elegir ${viewed_subclass.name}`) }}
+            <button class="general_button subclass_details_select_btn" @click="selectSubclass(viewed_id)" :disabled="saving || current_subclass?.id === viewed_id">
+                {{ saving ? 'Saving...' : (current_subclass?.id === viewed_id ? 'Current Subclass' : `Choose ${viewed_subclass.name}`) }}
             </button>
         </div>
 
-        <button class="character_subclass_forward" @click="goBackToLevelUp">Continue Level Up</button>
-        <button class="character_subclass_back" @click="goBackToCharacters">Volver a mis personajes</button>
+        <button class="general_button character_subclass_forward" @click="goBackToLevelUp">Continue Level Up</button>
+        <button class="general_button character_subclass_back" @click="goBackToCharacters">Go Back to Characters</button>
     </div>
 </template>
 

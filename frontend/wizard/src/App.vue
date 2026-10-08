@@ -25,8 +25,9 @@
   import AppCharacterSpells from './components/vueComponents/character/creation/AppCharacterSpells.vue';
   import AppAvatar from './components/vueComponents/main/AppAvatar.vue'
   import AppSettings from './components/vueComponents/main/AppSettings.vue'
+  import SettingsIcon from '@/icons/SettingsIcon.vue'
   import Dialog from 'primevue/dialog'
-
+  import BlobBubble from '@/vueComponents/main/BlobBubble.vue'
 
   import { ref, onMounted } from 'vue'
 
@@ -118,9 +119,13 @@
       <button v-if="currentPage !== 'main'" class="general_button" @click="goBack">Back</button>
       <span class="header_title">{{ currentPage }}</span>
 
-      <button class="header_avatar_btn" @click="showSettings = true" title="Settings" v-no-double-select>
-        <AppAvatar :name="username"/>
-      </button>
+      <div class="header_avatar">
+        <span class="header_avatar_badge" aria-hidden="true"><SettingsIcon /></span>
+        <button class="header_avatar_btn" @click="showSettings = true" title="Settings" aria-label="Settings" v-no-double-select>
+          <AppAvatar :name="username" speaks />
+        </button>
+        <BlobBubble />
+      </div>
     </header>
 
       <div class="app_content">

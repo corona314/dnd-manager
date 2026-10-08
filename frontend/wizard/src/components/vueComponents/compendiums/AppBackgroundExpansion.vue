@@ -1,5 +1,5 @@
 <script setup>
-    import '@/styles/appBackgroundExpansion.css'
+    import '@/styles/compendium/appBackgroundExpansion.css'
     import { ref, onMounted} from 'vue'
     import { marked } from 'marked'
     const props = defineProps({ token: String, backgroundId: Number })

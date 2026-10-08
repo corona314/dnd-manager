@@ -1,5 +1,5 @@
 <script setup>
-    import '@/styles/appSpecieExpansion.css'
+    import '@/styles/compendium/appSpecieExpansion.css'
     import { marked } from 'marked'
     import { ref, onMounted} from 'vue'
     const props = defineProps({ token: String, specieId: Number })
