@@ -73,6 +73,7 @@
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid var(--separator-lines);
+    cursor: default;
 }
 
 .card_expanded_content {

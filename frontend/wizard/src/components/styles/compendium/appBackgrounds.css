@@ -36,58 +36,6 @@
     outline-offset: 2px;
 }
 
-.backgrounds_page{
-    min-height: 100vh;
-    background-color: var(--background);
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    flex-direction: column;
-}
-
-/*Tarjeta de Trasfondo (Sin extender)*/
-.backgrounds_list{
-    display: flex;
-    flex-direction: column;
-    align-items: space-between;
-    justify-content: space-between;
-    width: 75%;
-    margin-top: 30px;
-}
-.background_card{
-    display: flex;
-    background-color: var(--surface);
-    flex-direction: column;
-    padding: 10px;
-    border: solid;
-    border-width: 2px;
-    margin: 10px;
-    justify-content: space-between;
-    position: relative; 
-    height: auto; 
-    transition: height 0.2s;
-}
-.background_card_base{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    width: 100%;
-    height: 40px;
-    flex-shrink: 0;    
-}
-/*Tarjeta de Trasfondo (Extendida)*/
-.background_card_expanded {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--separador);
-}
-.background_card_expanded_content {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    gap: 8px;
-}
 .background_card_expanded_abilities{
     display: flex;
     align-items: center;

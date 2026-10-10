@@ -1,0 +1,98 @@
+    .blob_bubble {
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        width: max-content;
+        max-width: 260px;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        color: var(--text);
+        box-shadow: 0 4px 12px var(--shadow);
+        font-size: 0.85rem;
+        line-height: 1.4;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* Colita que apunta al avatar */
+    .blob_bubble::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        right: 14px;
+        width: 10px;
+        height: 10px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        border-left: 1px solid var(--border);
+        transform: rotate(45deg);
+    }
+
+    /* Botón "Got it" */
+    .blob_gotit {
+        align-self: flex-end;
+        margin-top: 8px;
+        padding: 3px 12px;
+        border: 1px solid var(--accent-strong-border);
+        border-radius: 8px;
+        background: var(--accent-strong);
+        color: var(--text-on-accent);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* Mientras espera, el borde late suavemente para llamar la atención */
+    .blob_bubble--waiting {
+        animation: blob-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes blob-pulse {
+        0%, 100% { box-shadow: 0 4px 12px var(--shadow), 0 0 0 0 transparent; }
+        50%      { box-shadow: 0 4px 12px var(--shadow), 0 0 0 4px var(--accent-bg); }
+    }
+
+    /* Barra de tiempo restante (en la base del bocadillo, recortada a su esquina) */
+    .blob_progress {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        overflow: hidden;
+        border-radius: 0 0 12px 12px;
+    }
+
+    .blob_progress_bar {
+        width: 100%;
+        height: 100%;
+        background: var(--accent);
+        transform-origin: left;
+        animation: blob-shrink linear forwards;
+    }
+
+    @keyframes blob-shrink {
+        from { transform: scaleX(1); }
+        to   { transform: scaleX(0); }
+    }
+
+    .bubble-enter-active,
+    .bubble-leave-active {
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .bubble-enter-from,
+    .bubble-leave-to {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    /* Sin movimiento si el sistema lo pide */
+    @media (prefers-reduced-motion: reduce) {
+        .blob_bubble--waiting { animation: none; }
+    }

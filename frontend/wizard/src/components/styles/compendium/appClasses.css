@@ -1,58 +1,3 @@
-
-
-/*Main-general*/
-.classes_page{
-    min-height: 100vh;
-    background-color: var(--background);
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    flex-direction: column;
-}
-
-/*Tarjeta de Clase (Sin extender)*/
-.classes_list{
-    display: flex;
-    flex-direction: column;
-    align-items: space-between;
-    justify-content: space-between;
-    width: 75%;
-    margin-top: 30px;
-}
-.class_card{
-    display: flex;
-    background-color: var(--surface);
-    flex-direction: column;
-    padding: 10px;
-    border: solid;
-    border-width: 2px;
-    margin: 10px;
-    justify-content: space-between;
-    position: relative; 
-    height: auto; 
-    cursor: pointer;
-    transition: height 0.2s;
-}
-.class_card_base{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    height: 40px;
-    flex-shrink: 0;    
-}
-/*Tarjeta de Clase (Extendida)*/
-.class_card_expanded {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--separador);
-}
-.class_card_expanded_content {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    gap: 8px;
-}
 .comp_class_subclasses {
     display: flex;
     gap: 4px;
@@ -72,4 +17,16 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 6px;
+}
+
+.class_card_base_hitpoint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.class_card_base_hitpoint :deep(svg) {
+    width: 1.1em;
+    height: 1.1em;
+    flex-shrink: 0;
 }

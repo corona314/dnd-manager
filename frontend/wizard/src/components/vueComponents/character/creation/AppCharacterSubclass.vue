@@ -97,13 +97,13 @@
             if (!res.ok) {
                 const body = await res.text()
                 console.error('Subclass POST failed:', res.status, body)
-                error.value = body || 'Error al guardar la subclase'
+                error.value = body || 'Error saving subclass'
                 return
             }
             await fetchCharacter()
         } catch (e) {
             console.error(e)
-            error.value = 'Error de conexión'
+            error.value = 'Connection error'
         } finally {
             saving.value = false
         }

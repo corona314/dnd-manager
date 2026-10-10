@@ -1,4 +1,5 @@
 <script setup>
+import '@/styles/blob/appAvatar.css'
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { Blobatar } from '@blobatar/vue'
 import { gaze } from 'blobatar/gaze'
@@ -87,18 +88,3 @@ onBeforeUnmount(stop)
     <Blobatar :name="name" :expression="expression" animate="hover" />
   </span>
 </template>
-
-<style scoped>
-.avatar_wrapper {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.avatar_wrapper :deep(svg) {
-  --mo-track-travel: 10px;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-</style>

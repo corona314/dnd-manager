@@ -266,8 +266,8 @@ html, body, #app {
 .header_avatar_badge {
   z-index: 0;
   position: absolute;
-  right: -2px;
-  bottom: -2px;
+  right: -0.1em;
+  bottom: -0.1em;
   width: 20px;
   height: 20px;
   display: flex;

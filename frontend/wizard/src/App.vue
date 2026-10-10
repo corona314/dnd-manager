@@ -28,9 +28,9 @@
   import SettingsIcon from '@/icons/SettingsIcon.vue'
   import Dialog from 'primevue/dialog'
   import BlobBubble from '@/vueComponents/main/BlobBubble.vue'
+  import { useBlobChatter } from '@/composables/useBlobChatter.js'
 
   import { ref, onMounted } from 'vue'
-
 
   const username = ref(localStorage.getItem('dnd_username') || 'user')
   const authToken = ref(localStorage.getItem('dnd_token') || '')
@@ -105,6 +105,10 @@
   onMounted(() => {
     applyTheme()
   })
+
+  
+  useBlobChatter(currentPage, () => !authToken.value || showSettings.value)
+
 </script>
 
 <template>
