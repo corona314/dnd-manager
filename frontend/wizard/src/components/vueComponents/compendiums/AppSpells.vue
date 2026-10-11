@@ -92,6 +92,8 @@
 
 <template>
     <div class="compendium_page">
+        <div v-blob-spot class="blob_spot_side"></div>
+
         <!--Filtros de selección-->
         <SpellFilters
             v-model="filters"

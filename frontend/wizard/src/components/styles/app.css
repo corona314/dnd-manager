@@ -232,6 +232,8 @@ html, body, #app {
   display: block;
 }
 
+.header_avatar_btn.avatar_away { visibility: hidden; }
+
 .header_avatar_btn > * {
   width: 100%;
   height: 100%;
@@ -287,4 +289,14 @@ html, body, #app {
 
 .header_avatar:hover .header_avatar_badge {
   transform: rotate(90deg);
+}
+
+.blob_spot_side {
+    position: absolute;      /* .compendium_page ya es position: relative */
+    right: 0;
+    bottom: 70px;            /* justo encima del paginador */
+    width: 12.5%;            /* el margen libre a la derecha de la lista (75% centrada) */
+    max-width: 180px;
+    height: 140px;
+    pointer-events: none;
 }

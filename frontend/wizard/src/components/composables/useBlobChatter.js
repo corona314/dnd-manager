@@ -72,7 +72,7 @@ export function useBlobChatter(page, isBusy = () => false) {
         clearTimeout(tipTimer)
         if (!TIPS[p]) return
         tipTimer = setTimeout(() => {
-            if (canTalk()) sayOnce(`tip-${p}`, TIPS[p], { mood: ['mad', 'sad', 'thinking'][Math.floor(Math.random() * 3)]})
+            if (canTalk()) sayOnce(`tip-${p}`, TIPS[p], {stage: true, mood: ['mad', 'sad', 'love'][Math.floor(Math.random() * 3)], duration: 0})
         }, TIP_DELAY)
     }, { immediate: true })
 

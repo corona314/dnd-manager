@@ -27,10 +27,11 @@
   import AppSettings from './components/vueComponents/main/AppSettings.vue'
   import SettingsIcon from '@/icons/SettingsIcon.vue'
   import Dialog from 'primevue/dialog'
-  import BlobBubble from '@/vueComponents/main/BlobBubble.vue'
   import { useBlobChatter } from '@/composables/useBlobChatter.js'
-
+  import BlobStage from '@/vueComponents/main/BlobStage.vue'
+  import { blob } from '@/composables/useBlobSay.js'
   import { ref, onMounted } from 'vue'
+  import BlobMessage from './components/vueComponents/main/BlobMessage.vue';
 
   const username = ref(localStorage.getItem('dnd_username') || 'user')
   const authToken = ref(localStorage.getItem('dnd_token') || '')
@@ -125,10 +126,10 @@
 
       <div class="header_avatar">
         <span class="header_avatar_badge" aria-hidden="true"><SettingsIcon /></span>
-        <button class="header_avatar_btn" @click="showSettings = true" title="Settings" aria-label="Settings" v-no-double-select>
+        <button class="header_avatar_btn" :class="{ avatar_away: blob.away }" @click="showSettings = true" title="Settings" aria-label="Settings" v-no-double-select>
           <AppAvatar :name="username" speaks />
         </button>
-        <BlobBubble />
+            <BlobMessage v-if="blob.message && !blob.stage" tail="up" />
       </div>
     </header>
 
@@ -158,6 +159,7 @@
       <Dialog v-model:visible="showSettings" modal dismissableMask header="Settings" :style="{ width: '25rem' }">
         <AppSettings :username="username" v-model:dark="isDark" @toggle-theme="toggleTheme" @logout="logout" />      
       </Dialog>
+      <BlobStage :name="username" />
     </div>
   </transition>
 

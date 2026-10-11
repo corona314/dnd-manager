@@ -1,0 +1,107 @@
+.blob_bubble {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    max-width: 260px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 4px 12px var(--shadow);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    cursor: pointer;
+    user-select: none;
+}
+
+.blob_bubble::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--surface);
+    transform: rotate(45deg);
+}
+
+.blob_bubble--tail-up::before {
+    top: -6px;
+    right: 14px;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+}
+
+.blob_bubble--tail-left::before {
+    left: -6px;
+    bottom: 18px;
+    border-left: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.blob_bubble--tail-right::before {
+    right: -6px;
+    bottom: 18px;
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+}
+
+/* Botón "Got it" */
+.blob_gotit {
+    align-self: flex-end;
+    margin-top: 8px;
+    padding: 3px 12px;
+    border: 1px solid var(--accent-strong-border);
+    border-radius: 8px;
+    background: var(--accent-strong);
+    color: var(--text-on-accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Mientras espera, el borde late suavemente */
+.blob_bubble--waiting {
+    animation: blob-pulse 2s ease-in-out infinite;
+}
+
+@keyframes blob-pulse {
+    0%, 100% { box-shadow: 0 4px 12px var(--shadow), 0 0 0 0 transparent; }
+    50%      { box-shadow: 0 4px 12px var(--shadow), 0 0 0 4px var(--accent-bg); }
+}
+
+/* Barra de tiempo restante */
+.blob_progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    overflow: hidden;
+    border-radius: 0 0 12px 12px;
+}
+
+.blob_progress_bar {
+    width: 100%;
+    height: 100%;
+    background: var(--accent);
+    transform-origin: left;
+    animation: blob-shrink linear forwards;
+}
+
+@keyframes blob-shrink {
+    from { transform: scaleX(1); }
+    to   { transform: scaleX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .blob_bubble--waiting { animation: none; }
+}
+
+.header_avatar > .blob_bubble {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: calc(100% - 40px);
+    left: auto;
+    z-index: 1100;
+}
