@@ -1,6 +1,7 @@
 <script setup>
     //import '@/styles/appCharacterSubclass.css'
     import { ref, onMounted, computed } from 'vue'
+    import CharacterBackButton from '../../shared/CharacterBackButton.vue'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true }, classId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'
@@ -190,7 +191,7 @@
         </div>
 
         <button class="general_button character_subclass_forward" @click="goBackToLevelUp">Continue Level Up</button>
-        <button class="general_button character_subclass_back" @click="goBackToCharacters">Go Back to Characters</button>
+        <CharacterBackButton :currentClass="'characterSubclass'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
     </div>
 </template>
 

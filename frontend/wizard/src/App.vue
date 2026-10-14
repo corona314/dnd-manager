@@ -43,6 +43,7 @@
   const selectedBackgroundId = ref(null)
   const selectedCharacterId = ref(null)
   const showSettings = ref(false)
+  const headerCompendiumOpen = ref(false)
  
   function handleLogin(token, name) {
     username.value = name || 'user'
@@ -65,8 +66,12 @@
     selectedCharacterId.value = null
   }
 
-  function goBack() {
-    currentPage.value = backMap[currentPage.value] ?? 'main'
+  function goMain(){
+    currentPage.value = 'main'
+  }
+
+  function goTo(newPage) {
+    currentPage.value = newPage ?? 'main'
   }
 
   function handleNavigate(event) {
@@ -121,8 +126,23 @@
     <div v-if="authToken" class="app_components">
 
     <header class="app_header" v-no-double-select>
-      <button v-if="currentPage !== 'main'" class="general_button" @click="goBack">Back</button>
+      <button v-if="currentPage !== 'main'" class="general_button" @click="goMain">Main</button>
       <span class="header_title">{{ currentPage }}</span>
+
+      <div class="compendium_header">
+        <div class="dropdown_btn" @click="headerCompendiumOpen = !headerCompendiumOpen">
+          Compendiums <i>-</i>
+        </div>
+        <div v-if="headerCompendiumOpen" class="dropdown_menu">   
+          <ul class="list_compendiums">
+            <li @click="goTo('spells')">Spells</li>
+            <li @click="goTo('items')">Items</li>
+            <li @click="goTo('classes')">Classes</li>
+            <li @click="goTo('species')">Species</li>
+            <li @click="goTo('backgrounds')">Backgrounds</li>
+          </ul>
+        </div>
+      </div>
 
       <div class="header_avatar">
         <span class="header_avatar_badge" aria-hidden="true"><SettingsIcon /></span>

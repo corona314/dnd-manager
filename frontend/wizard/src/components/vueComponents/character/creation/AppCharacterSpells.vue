@@ -6,6 +6,7 @@
     import { Components, Schools, createSpellFilters } from '@/composables/spellFilters.js'
     import { ref, reactive, computed, onMounted } from 'vue'
     import { useCardExpansion } from '@/composables/useCardExpansion.js'
+    import CharacterBackButton from '../../shared/CharacterBackButton.vue'
 
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
@@ -269,7 +270,7 @@
         </div>
 
         <div class="character_spell_footer">
-            <button class="general_button character_spell_back" @click="goBackToCharacters">Go Back to Characters</button>
+            <CharacterBackButton :currentClass="'characterSpells'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
             <button class="general_button character_spell_forward" @click="emit('navigate', {page: 'characterFinalize', characterId: props.characterId})">Continue Creation</button>
         </div>
     </div>

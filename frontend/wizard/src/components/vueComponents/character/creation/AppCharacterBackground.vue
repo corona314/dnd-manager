@@ -1,6 +1,7 @@
 <script setup>
     import '@/styles/character/appCharacterBackground.css'
     import { ref, onMounted } from 'vue'
+    import CharacterBackButton from '../../shared/CharacterBackButton.vue'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'
@@ -232,6 +233,6 @@
             </button>
         </div>
         <button class="general_button character_background_forward" @click="emit('navigate', {page: 'characterAbilities', characterId: props.characterId})" :disabled="character?.background === null">Continue Creation</button>
-        <button class="general_button character_background_back" @click="goBackToCharacters">Go Back to Characters</button>
+        <CharacterBackButton :currentClass="'characterBackground'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
     </div>
 </template>
