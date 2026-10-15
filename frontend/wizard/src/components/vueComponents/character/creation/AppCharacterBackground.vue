@@ -232,7 +232,9 @@
                 {{ saving ? 'Saving...' : (character?.background?.id === viewed_id ? 'Current Background' : `Pick ${viewed_background.name}`) }}
             </button>
         </div>
-        <button class="general_button character_background_forward" @click="emit('navigate', {page: 'characterAbilities', characterId: props.characterId})" :disabled="character?.background === null">Continue Creation</button>
-        <CharacterBackButton :currentClass="'characterBackground'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        <div class="character_spell_footer">
+            <button class="general_button character_background_forward" @click="emit('navigate', {page: 'characterAbilities', characterId: props.characterId})" :disabled="character?.background === null">Continue Creation</button>
+            <CharacterBackButton :currentClass="'characterBackground'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        </div>
     </div>
 </template>

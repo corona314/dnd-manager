@@ -485,9 +485,11 @@
                 {{ saving ? 'Saving...' : 'Confirm Equipment' }}
             </button>
         </template>
-
-        <button class="general_button character_equipment_forward" @click="isItMagical">Continue Creation</button>
-        <CharacterBackButton :currentClass="'characterEquipment'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        <div class="character_spell_footer">
+            <button class="general_button character_equipment_forward" @click="isItMagical">Continue Creation</button>
+            <CharacterBackButton :currentClass="'characterEquipment'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        </div>
+        
     </div>
 </template>
 

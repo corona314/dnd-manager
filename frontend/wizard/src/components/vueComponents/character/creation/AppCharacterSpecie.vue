@@ -162,8 +162,10 @@
                 {{ saving ? 'Saving...' : (character?.species?.id === viewed_id ? 'Current Specie' : `Pick ${viewed_specie.name}`) }}
             </button>
         </div>
-        <button class="general_button character_specie_forward" @click="emit('navigate', {page: 'characterBackground', characterId: props.characterId})" :disabled="character?.species === null">Continue Creation</button>
-        <CharacterBackButton :currentClass="'characterSpecie'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        <div class="character_spell_footer">
+            <button class="general_button character_specie_forward" @click="emit('navigate', {page: 'characterBackground', characterId: props.characterId})" :disabled="character?.species === null">Continue Creation</button>
+            <CharacterBackButton :currentClass="'characterSpecie'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        </div>     
     </div>
 </template>
 

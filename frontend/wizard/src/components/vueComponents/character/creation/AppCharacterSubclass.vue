@@ -189,9 +189,11 @@
                 {{ saving ? 'Saving...' : (current_subclass?.id === viewed_id ? 'Current Subclass' : `Choose ${viewed_subclass.name}`) }}
             </button>
         </div>
-
-        <button class="general_button character_subclass_forward" @click="goBackToLevelUp">Continue Level Up</button>
-        <CharacterBackButton :currentClass="'characterSubclass'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        <div class="character_spell_footer">
+            <button class="general_button character_subclass_forward" @click="goBackToLevelUp">Continue Level Up</button>
+            <CharacterBackButton :currentClass="'characterSubclass'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        </div>
+        
     </div>
 </template>
 

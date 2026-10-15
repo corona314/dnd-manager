@@ -347,9 +347,11 @@
         <button class="general_button character_ability_save_btn" @click="saveAbilities" :disabled="saving">
             {{ saving ? 'Saving...' : 'Save Abilities' }}
         </button>
-
-        <button class="general_button character_ability_forward" @click="emit('navigate', {page: 'characterEquipment', characterId: props.characterId})">Continue Creation</button>
-        <CharacterBackButton :currentClass="'characterAbilities'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        <div class="character_spell_footer">
+            <button class="general_button character_ability_forward" @click="emit('navigate', {page: 'characterEquipment', characterId: props.characterId})">Continue Creation</button>
+            <CharacterBackButton :currentClass="'characterAbilities'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        </div>
+        
     </div>
 </template>
 

@@ -286,11 +286,14 @@
 
         <span v-if="error" class="character_finalize_error">{{ error }}</span>
 
-        <button class="general_button character_finalize_save_btn" @click="finalizeCharacter" :disabled="saving || calculated_max_hp === null || character.level !== 1">
-            {{ saving ? 'Finishing...' : 'Finish and Save' }}
-        </button>
-
-        <CharacterBackButton :currentClass="'characterFinalize'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        
+        <div class="character_spell_footer">
+            <button class="general_button character_finalize_save_btn" @click="finalizeCharacter" :disabled="saving || calculated_max_hp === null || character.level !== 1">
+                {{ saving ? 'Finishing...' : 'Finish and Save' }}
+            </button>
+            <CharacterBackButton :currentClass="'characterFinalize'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
+        </div>
+        
     </div>
 </template>
 

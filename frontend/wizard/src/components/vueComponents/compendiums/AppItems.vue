@@ -29,7 +29,7 @@
     const Tabs = [
         { key: 'armor',   label: 'Armor', endpoint: '/items/armor' },
         { key: 'weapons', label: 'Weapons',     endpoint: '/items/weapons' },
-        { key: 'shields', label: 'Shields',   endpoint: '/items/shields' },
+        { key: 'shields', label: 'Shields',   endpoint: '/items/shields', detailEndpoint: '/items/shield'  },
         { key: 'items',   label: 'Other',     endpoint: '/items' },
     ]
     const Rarities = ['Common', 'Uncommon', 'Rare', 'Very Rare',  'Legendary']
@@ -45,9 +45,14 @@
 
     // Expansión de tarjetas: la ruta depende de la pestaña activa
     const currentEndpoint = () => Tabs.find(t => t.key === activeTab.value).endpoint
+
+    const currentDetailEndpoint = () => {
+        const tab = Tabs.find(t => t.key === activeTab.value)
+        return tab.detailEndpoint ?? tab.endpoint
+    }
     
     const { isOpen, isLoading, details, toggle: expandItem, collapseAll, reset } =
-        useCardExpansion(currentEndpoint, () => props.token, { multiple: true })
+        useCardExpansion(currentDetailEndpoint, () => props.token, { multiple: true })
     
         //Filtros generales
     const filter_name = ref('')
