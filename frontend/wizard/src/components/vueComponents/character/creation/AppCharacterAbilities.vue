@@ -1,7 +1,7 @@
 <script setup>
     import '@/styles/character/appCharacterAbilities.css'
+    import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
     import { ref, computed, onMounted } from 'vue'
-    import CharacterBackButton from '../../shared/CharacterBackButton.vue'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'
@@ -11,7 +11,7 @@
         { code: 'STR', label: 'Strength' },
         { code: 'DEX', label: 'Dexterity' },
         { code: 'CON', label: 'Constitution' },
-        { code: 'INT', label: 'Inteligence' },
+        { code: 'INT', label: 'Intelligence' },
         { code: 'WIS', label: 'Wisdom' },
         { code: 'CHA', label: 'Charisma' },
     ]
@@ -214,11 +214,11 @@
     //--- Guardar ---
     async function saveAbilities() {
         if (score_method.value === SCORE_METHOD.POINT_BUY && points_remaining.value !== 0) {
-            error.value = 'Debes gastar exactamente los 27 puntos de Point Buy'
+            error.value = 'You must spend all points before saving'
             return
         }
         if (background_options.value.length && !bonus_is_valid.value) {
-            error.value = 'Falta repartir el bonus de trasfondo'
+            error.value = 'You must assign the background bonus before saving'
             return
         }
 
@@ -239,21 +239,21 @@
                 body: JSON.stringify(payload)
             })
             if (!res.ok) {
-                error.value = 'Error al guardar las características'
+                error.value = 'Error saving abilities'
                 return
             }
             await fetchCharacter()
             abilities_locked.value = true
         } catch (e) {
             console.error(e)
-            error.value = 'Error de conexión'
+            error.value = 'Connection error'
         } finally {
             saving.value = false
         }
     }
 
-    function goBackToCharacters() {
-        emit('navigate', 'characters')
+    function goBack() {
+        emit('navigate', 'characterBackground')
     }
 
     onMounted(async () => {
@@ -263,18 +263,27 @@
 </script>
 
 <template>
-    <div class="character_ability_page">
-        <div v-if="loading_character">Cargando personaje...</div>
-        <div v-else-if="character" class="character_ability_header">
-            <h1>{{ character.name }}</h1>
-        </div>
 
-        <div class="ability_method_selector">
+    <CharacterStep
+        :error="error"
+        :continue-disabled="!abilities_locked"
+        @back="goBack"
+        @continue="emit('navigate', { page: 'characterEquipment', characterId: props.characterId })"
+    >
+        <!--Cabecera con info del personaje-->
+        <template #header>
+            <div v-if="loading_character">Loading Character...</div>
+            <div v-else-if="character" class="character_ability_header">
+                <h1>{{ character.name }}</h1>
+                <span class="header_subtitle">Ability Scores & Modifiers</span>
+            </div>
+        </template>
+
+        <div v-if="!abilities_locked" class="ability_method_selector">
             <button class="general_button" :class="{ active: score_method === 'pointbuy' }" @click="setScoreMethod('pointbuy')">Point Cost</button>
             <button class="general_button" :class="{ active: score_method === 'manual' }" @click="setScoreMethod('manual')">Manual Assignment</button>
         </div>
-
-        <span v-if="error" class="character_ability_error">{{ error }}</span>
+        
         <!--Metodo de selección de puntos, ya sea compra de puntos, asignar-->
         <template v-if="abilities_locked">
             <h2>Abilities already assigned</h2>
@@ -291,40 +300,86 @@
         </template>
         <div class="ability_grid">
             <div v-for="ability in ABILITY_DEFS" :key="ability.code" class="ability_card">
-                <span class="ability_label">{{ ability.label }} ({{ ability.code }})</span>
-                <!-- Modo bloqueado: solo lectura -->
+                <span class="ability_label">{{ ability.label }}</span>
+
+                <span class="ability_code">{{ ability.code }}</span>
+
                 <template v-if="abilities_locked">
-                    <span class="ability_final_score">Score: {{ savedValue(ability.code) }}</span>
-                    <span class="ability_modifier">Modifier: {{ formatModifier(savedModifier(ability.code)) }}</span>
+                    <span class="ability_final_score">{{ savedValue(ability.code) }}</span>
+
+                    <span class="ability_modifier">
+                        Modifier
+                        <strong>
+                            {{ formatModifier(savedModifier(ability.code)) }}
+                        </strong>
+                    </span>
                 </template>
 
-                <!-- Modo edición-->
-                <template v-else>  
+                <template v-else>
                     <div v-if="score_method === 'pointbuy'" class="ability_score_controls">
-                        <button class="general_button" @click="decreaseScore(ability.code)" :disabled="base_scores[ability.code] <= 8">-</button>
-                        <span class="ability_base_score">{{ base_scores[ability.code] }}</span>
-                        <button class="general_button" @click="increaseScore(ability.code)" :disabled="base_scores[ability.code] >= 15">+</button>
+                        <button
+                            class="general_button ability_adjust_btn"
+                            @click="decreaseScore(ability.code)"
+                            :disabled="base_scores[ability.code] <= 8"
+                        >
+                            −
+                        </button>
+
+                        <span class="ability_base_score">
+                            {{ base_scores[ability.code] }}
+                        </span>
+
+                        <button
+                            class="general_button ability_adjust_btn"
+                            @click="increaseScore(ability.code)"
+                            :disabled="
+                                base_scores[ability.code] >= 15 ||
+                                points_remaining <= 0
+                            "
+                        >
+                            +
+                        </button>
                     </div>
-                
+
                     <div v-else class="ability_score_controls">
-                        <input type="number" class="ability_manual_input" :min="MANUAL_MIN" :max="MANUAL_MAX" :value="base_scores[ability.code]" @change="setManualScore(ability.code, $event.target.value)"/>
+                        <input
+                            type="number"
+                            class="ability_manual_input"
+                            :min="MANUAL_MIN"
+                            :max="MANUAL_MAX"
+                            :value="base_scores[ability.code]"
+                            @change="
+                                setManualScore(
+                                    ability.code,
+                                    $event.target.value
+                                )
+                            "
+                        />
                     </div>
-                    <span v-if="bonusFor(ability.code) > 0" class="ability_bg_bonus">
-                        + {{ bonusFor(ability.code) }} (background)
+
+                    <span
+                        v-if="bonusFor(ability.code) > 0"
+                        class="ability_bg_bonus"
+                    >
+                        +{{ bonusFor(ability.code) }} Background
                     </span>
+
                     <span class="ability_final_score">
-                        Score: {{ finalScore(ability.code) }}
+                        Final score: {{ finalScore(ability.code) }}
                     </span>
+
                     <span class="ability_modifier">
-                        Modifier: {{ formatModifier(modifier(ability.code)) }}
+                        Modifier
+                        <strong>
+                            {{ formatModifier(modifier(ability.code)) }}
+                        </strong>
                     </span>
                 </template>
-                    
             </div>
         </div>
 
-        <div v-if="background_options.length" class="background_bonus_section">
-            <h2>Background Bonus</h2>
+        <div v-if="!abilities_locked && background_options.length" class="background_bonus_section">            
+        <h2>Background Bonus</h2>
             <div class="bonus_mode_selector">
                 <button class="general_button" :class="{ active: bonus_mode === '2-1' }" @click="setBonusMode('2-1')">+2 / +1</button>
                 <button class="general_button" :class="{ active: bonus_mode === '1-1-1' }" @click="setBonusMode('1-1-1')">+1 / +1 / +1</button>
@@ -347,14 +402,199 @@
         <button class="general_button character_ability_save_btn" @click="saveAbilities" :disabled="saving">
             {{ saving ? 'Saving...' : 'Save Abilities' }}
         </button>
-        <div class="character_spell_footer">
-            <button class="general_button character_ability_forward" @click="emit('navigate', {page: 'characterEquipment', characterId: props.characterId})">Continue Creation</button>
-            <CharacterBackButton :currentClass="'characterAbilities'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
-        </div>
-        
-    </div>
+
+    </CharacterStep>
 </template>
 
-<style>
+<style scoped>
+    /* Dentro de CharacterStep los hijos ocupan todo el ancho de la columna */
+    h2 {
+        font-size: 1.3rem;
+        text-align: center;
+    }
 
+    /* Cabecera en una sola fila y compacta */
+    .character_ability_header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+    }
+
+    .character_ability_header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .character_ability_subtitle {
+        color: var(--text-color-secondary);
+        font-size: 0.9rem;
+    }
+
+    .ability_method_selector,
+    .bonus_mode_selector {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 16px 0;
+    }
+
+    .ability_grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin: 20px 0;
+    }
+
+    .ability_card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 6px;
+        min-width: 0;
+        padding: 18px 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--default);
+        transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .ability_card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+    }
+
+    .ability_label {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .ability_code {
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        color: var(--text-secondary);
+    }
+
+    .ability_score_controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .ability_base_score {
+        font-size: 1.3rem;
+        font-weight: 700;
+        width: 40px;
+        text-align: center;
+    }
+    .ability_final_score {
+        font-size: 1.2rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .ability_adjust_btn {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        padding: 0;
+        font-size: 1.2rem;
+    }
+
+    .ability_adjust_btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    .ability_manual_input {
+        width: 80px;
+        padding: 8px;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--default);
+        color: inherit;
+    }
+
+    .ability_bg_bonus {
+        color: var(--primary);
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    .ability_modifier {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .ability_modifier strong {
+        font-size: 1rem;
+        color: var(--text);
+    }
+
+    .ability_points_remaining {
+        display: block;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .background_bonus_section {
+        margin-top: 28px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+    }
+
+    .bonus_options {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .bonus_option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+    }
+
+    .character_ability_save_btn {
+        display: block;
+        margin: 24px auto 8px;
+        padding: 12px 20px;
+        font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+        .ability_grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .ability_card {
+            padding: 14px 8px;
+        }
+
+        .bonus_options {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>

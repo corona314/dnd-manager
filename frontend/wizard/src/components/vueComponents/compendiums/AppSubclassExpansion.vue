@@ -53,7 +53,7 @@
 
 <template>
     <div class="subclass_page">
-        <div v-if="loading" class="loading"> Cargando</div>
+        <div v-if="loading" class="loading"> Loading...</div>
         <div v-else class="subclass_info">
             <h1 class="subclass_name">{{ subclass.name }}</h1>
             <div v-if="subclass.features?.length" class="subclass_features">

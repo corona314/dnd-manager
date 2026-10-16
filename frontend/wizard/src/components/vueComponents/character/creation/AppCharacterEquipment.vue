@@ -1,5 +1,6 @@
 <script setup>
     //import '@/styles/appCharacterEquipment.css'
+    import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
     import { ref, computed, onMounted } from 'vue'
     import CharacterBackButton from '../../shared/CharacterBackButton.vue'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
@@ -142,8 +143,8 @@
 
     const class_money = computed(() => {
         if (class_choice.value === 'A') return moneyOf(class_detail.value, 'A')
-       if (class_choice.value === 'B') return moneyOf(class_detail.value, 'B')
-       return 0
+        if (class_choice.value === 'B') return moneyOf(class_detail.value, 'B')
+        return 0
     })
 
     const background_money = computed(() => {
@@ -280,7 +281,6 @@
             }
 
             await fetchCharacter()
-            emit('navigate', { page: 'characterSpells', characterId: props.characterId })
         } catch (e) {
             console.error(e)
             error.value = 'Connection error'
@@ -354,32 +354,37 @@
         }
     }
 
-    function isItMagical() {
-        const isMagical = class_detail.value?.resources.some(resource => resource?.name === 'Cantrips' || resource?.name === 'Prepared Spells')
-        console.log(isMagical)
-        if(isMagical === true){
-            emit('navigate', {page: 'characterSpells', characterId: props.characterId})
-            return
-        }
-        
-        emit('navigate', {page: 'characterFinalize', characterId: props.characterId})   
+    // Siguiente paso: hechizos si la clase los usa; si no, directamente la finalización
+    function goNext() {
+        const isMagical = class_detail.value?.resources?.some(
+            resource => resource?.name === 'Cantrips' || resource?.name === 'Prepared Spells'
+        ) ?? false
+
+        emit('navigate', {
+            page: isMagical ? 'characterSpells' : 'characterFinalize',
+            characterId: props.characterId
+        })
     }
 
-    function goBackToCharacters() {
-        emit('navigate', 'characters')
+    function goBack() {
+        emit('navigate', 'characterAbilities')
     }
 </script>
 
 <template>
-    <div class="character_equipment_page">
-        <div v-if="loading_character">Loading character...</div>
-
-        <div v-else-if="character" class="character_equipment_header">
-            <h1>{{ character.name }}</h1>
-            <span class="equipment_subtitle">Choose your initial equipment</span>
-        </div>
-
-        <span v-if="error" class="character_equipment_error">{{ error }}</span>
+    <CharacterStep
+        :error="error"
+        @back="goBack"
+        @continue="goNext"
+    >
+        <!--Cabecera con info del personaje-->
+        <template #header>
+            <div v-if="loading_character">Loading character...</div>
+            <div v-else-if="character" class="character_equipment_header">
+                <h1>{{ character.name }}</h1>
+                <span class="header_subtitle">Choose your initial equipment</span>
+            </div>
+        </template>
 
         <!--Modo bloqueado: equipo ya asignado-->
         <div v-if="equipment_locked" class="equipment_locked_summary">
@@ -415,20 +420,18 @@
 
                 <div v-if="class_choice === 'A'" class="equipment_items_preview">
                     <div v-for="entry in class_fixed_items" :key="entry.item.id" class="equipment_item_row">
-                        {{ entry.item.name }}     
+                        {{ entry.item.name }}
                         <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
-
                     </div>
                     <div v-if="moneyOf(class_detail, 'A') > 0" class="equipment_item_row">
-                        {{ (moneyOf(class_detail, 'A') / 100).toFixed(2) }} po
+                        {{ (moneyOf(class_detail, 'A') / 100).toFixed(2) }} gp
                     </div>
                     <div v-if="class_optional_items.length" class="equipment_optional_list">
                         <span class="equipment_optional_label">Choose 1:</span>
                         <label v-for="entry in class_optional_items" :key="entry.item.id" class="equipment_optional_row">
                             <input type="radio" name="class_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, class_optional_items)" />
-                            {{ entry.item.name }}                     
+                            {{ entry.item.name }}
                             <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
-
                         </label>
                     </div>
                 </div>
@@ -454,19 +457,18 @@
 
                 <div v-if="background_choice === 'A'" class="equipment_items_preview">
                     <div v-for="entry in background_fixed_items" :key="entry.item.id" class="equipment_item_row">
-                        {{ entry.item.name }}     
+                        {{ entry.item.name }}
                         <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
                     </div>
                     <div v-if="moneyOf(background_detail, 'A') > 0" class="equipment_item_row">
-                        {{ (moneyOf(background_detail, 'A') / 100).toFixed(2) }} po
+                        {{ (moneyOf(background_detail, 'A') / 100).toFixed(2) }} gp
                     </div>
                     <div v-if="background_optional_items.length" class="equipment_optional_list">
                         <span class="equipment_optional_label">Choose 1:</span>
                         <label v-for="entry in background_optional_items" :key="entry.item.id" class="equipment_optional_row">
                             <input type="radio" name="background_optional_choice" :checked="isOptionalSelected(entry.item.id)" @change="toggleOptional(entry.item.id, background_optional_items)" />
-                            {{ entry.item.name }}                     
+                            {{ entry.item.name }}
                             <span v-if="entry.quantity > 1" class="item_qty">x{{ entry.quantity }}</span>
-
                         </label>
                     </div>
                 </div>
@@ -485,14 +487,143 @@
                 {{ saving ? 'Saving...' : 'Confirm Equipment' }}
             </button>
         </template>
-        <div class="character_spell_footer">
-            <button class="general_button character_equipment_forward" @click="isItMagical">Continue Creation</button>
-            <CharacterBackButton :currentClass="'characterEquipment'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
-        </div>
-        
-    </div>
+    </CharacterStep>
 </template>
 
-<style>
+<style scoped>
+    /* ---------- Layout ---------- */
 
+    /* Dentro de CharacterStep los hijos ocupan todo el ancho de la columna */
+    h2 {
+        margin: 0;
+        text-align: center;
+        font-size: 1.3rem;
+    }
+
+    /* Cabecera en una sola fila y compacta */
+    .character_equipment_header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+    }
+
+    .character_equipment_header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    /* ---------- Tarjetas (clase, trasfondo y resumen) ---------- */
+    .equipment_source_card,
+    .equipment_locked_summary {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--surface);
+        margin-bottom: 16px;
+        margin-top: 16px;
+
+    }
+
+    /* Elegir entre paquete de equipo o dinero */
+    .equipment_choice_toggle {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .equipment_choice_toggle .general_button.active {
+        border-color: var(--accent-border);
+        background: var(--accent-bg);
+        font-weight: 600;
+    }
+
+    .general_button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    /* ---------- Lista de objetos ---------- */
+    .equipment_items_preview {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .equipment_item_row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 10px;
+        border: 1px solid var(--separator-lines);
+        border-radius: 6px;
+    }
+
+    .item_qty {
+        margin-left: auto;
+        font-size: 0.9em;
+        opacity: 0.7;
+    }
+
+    /* Objetos entre los que hay que elegir uno */
+    .equipment_optional_list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: 6px;
+        padding-top: 10px;
+        border-top: 1px solid var(--separator-lines);
+    }
+
+    .equipment_optional_label {
+        font-weight: bold;
+    }
+
+    .equipment_optional_row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .equipment_optional_row:hover {
+        background: var(--surface-hover-strong);
+    }
+
+    /* ---------- Dinero ---------- */
+    .equipment_money_preview {
+        padding: 10px;
+        border: 1px dashed var(--border);
+        border-radius: 8px;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+
+    .equipment_total_money {
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    /* ---------- Botones de acción ---------- */
+    .character_equipment_confirm_btn,
+    .character_equipment_reset {
+        align-self: center;
+        padding: 10px 24px;
+        font-weight: 700;
+    }
+
+    .character_equipment_confirm_btn {
+        min-width: 220px;
+    }
 </style>

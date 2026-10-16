@@ -46,7 +46,8 @@
 
 <template>
     <div class="background_page">
-        <div v-if="loading" class="loading"> Cargando</div>
+        <div v-blob-spot class="blob_spot_side"></div>
+        <div v-if="loading" class="loading"> Loading...</div>
         <div v-else class="background_info">
             <h1 class="background_name">{{ background.name }}</h1>
             <p class="background_description">{{ background.description }}</p>

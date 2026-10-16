@@ -1,7 +1,8 @@
 <script setup>
     import '@/styles/character/appCharacterClass.css'
     import { ref, computed, onMounted } from 'vue'
-    import CharacterBackButton from '../../shared/CharacterBackButton.vue'
+    import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
+    import { renderDescription } from '@/composables/renderDescription.js'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'
@@ -19,6 +20,17 @@
     const viewed_class = ref(null)
     const viewed_loading = ref(false)
     const viewed_id = ref(null)
+
+    //Features expandidas (por id)
+    const expanded_features = ref(new Set())
+
+    function toggleFeature(id) {
+        if (expanded_features.value.has(id)) {
+            expanded_features.value.delete(id)
+        } else {
+            expanded_features.value.add(id)
+        }
+    }
 
     //Const de tools
     const selected_tools_ids = ref([])
@@ -106,6 +118,7 @@
             viewed_class.value = await res.json()
             viewed_id.value = class_data.id
             selected_tools_ids.value = []
+            expanded_features.value = new Set()
         }catch(e){
             console.error(e)
         }finally{
@@ -126,11 +139,11 @@
                     headers: { Authorization: `Bearer ${props.token}` }
                 })
                 if (!deleteRes.ok) {
-                    error.value = 'Error al quitar la clase anterior'
+                    error.value = 'Error removing previous class'
                     return
                 }
                 if (!(await removePreviousClassTools())) {
-                    error.value = 'Error al quitar las herramientas anteriores'
+                    error.value = 'Error removing previous class tools'
                     return
                 }
                 await fetchCharacter()
@@ -205,10 +218,10 @@
                     )
                 )
                 added = toAdd.filter((id, i) => results[i].ok)
-                if (results.some(r => !r.ok)) error.value = 'Error al guardar las herramientas de clase'
+                if (results.some(r => !r.ok)) error.value = 'Error saving some tools.'
             } catch (e) {
                 console.error(e)
-                error.value = 'Error de conexión al guardar herramientas'
+                error.value = 'Connection error.'
             }
         }
         saveSource('class', added, granted)
@@ -287,26 +300,31 @@
         }))
     }
 
-    function goBackToCharacters() {
+    function goBack() {
         emit('navigate', 'characters')
     }
 </script>
 
 <template>
-    <div class="character_class_page">
+    <CharacterStep
+        :error="error"
+        :continue-disabled="!character?.classes?.length"
+        @back="goBack"
+        @continue="emit('navigate', { page: 'characterSpecies', characterId: props.characterId })"
+    >
         <!--Cabecera con info del personaje-->
-        <div v-if="loading_character">Loading Character...</div>
-        <div v-else-if="character" class="character_class_header">
-            <h1>{{ character.name }}</h1>
-            <span v-if="character.classes?.length" class="character_class_current">
-                Current Class: {{ character.classes[0].classEntity.name }}
-            </span>
-            <span v-else class="character_class_current character_class_current--empty">
-                No Class assigned
-            </span>
-        </div>
-
-        <span v-if="error" class="character_class_error">{{ error }}</span>
+        <template #header>
+            <div v-if="loading_character">Loading Character...</div>
+            <div v-else-if="character" class="character_class_header">
+                <h1>{{ character.name }}</h1>
+                <span v-if="character.classes?.length" class="header_subtitle">
+                    Current Class: {{ character.classes[0].classEntity.name }}
+                </span>
+                <span v-else class="character_class_current character_class_current--empty">
+                    No Class assigned
+                </span>
+            </div>
+        </template>
 
         <!--Desplegable de clases-->
         <h2>Pick a Class</h2>
@@ -325,7 +343,7 @@
         <!--Detalles de la clase elegida en el desplegable-->
         <div v-if="viewed_loading" class="loading">Loading...</div>
         <div v-else-if="viewed_class" class="class_details_card">
-            <div class="class_details_header">
+            <div v-no-double-select class="class_details_header">
                 <span class="class_details_name">{{ viewed_class.name }}</span>
                 <span class="class_details_hitpoint">Dice: {{ viewed_class.hitPointDie }}</span>
             </div>
@@ -351,20 +369,24 @@
 
             <div v-if="viewed_class.skills?.length" class="comp_class_skills">
                 <h3>Skill Proficiencies({{viewed_class.numberSkills}} to pick)</h3>
-                <div v-for="skill in viewed_class.skills" :key="skill.skill.id" class="view_skill_row">
+                <div v-for="skill in viewed_class.skills" :key="skill.skill" class="view_skill_row">
                     <span>{{ skill.skill }}</span>
                     <span>({{ skill.ability }})</span>
                 </div>
             </div>
 
             <div v-if="viewed_class.features?.length" class="class_features_section">
-                <h3>Feats by level:</h3>
+                <h3>Features by level:</h3>
                 <div v-for="group in featuresByLevel()" :key="group.level" class="class_feature_level_group">
-                    <h4 class="class_feature_level_title">Nivel {{ group.level }}</h4>
+                    <h4 class="class_feature_level_title">Level {{ group.level }}</h4>
                     <div v-for="f in group.features" :key="f.feature.id" class="class_feature_row">
                         <div class="class_feature_header" @click="toggleFeature(f.feature.id)">
                             <span class="class_feature_name">{{ f.feature.name }}</span>
+                            <button class="class_feature_toggle_btn" :class="{ 'class_feature_toggle_btn--open': expanded_features.has(f.feature.id) }">
+                                {{ expanded_features.has(f.feature.id) ? '−' : '+' }}
+                            </button>
                         </div>
+                        <div v-if="expanded_features.has(f.feature.id)" class="class_feature_description" v-html="renderDescription(f.feature.description)"></div>
                     </div>
                 </div>
             </div>
@@ -392,18 +414,51 @@
             </div>
 
         </div>
-        <div class="character_spell_footer">
-            <button class="general_button class_details_select_btn" @click="selectClass(viewed_id)" :disabled="!viewed_class || saving || character?.classes?.[0]?.classEntity?.id === viewed_id || (tool_mode === 'choose' && picks_left !== 0)">
-                {{ saving ? 'Saving...' : (character?.classes?.[0]?.classEntity?.id === viewed_id ? 'Current Class' : `Pick ${viewed_class?.name ?? ''}`) }}
-            </button>
-            
-            <button class="general_button character_class_forward" @click="emit('navigate', {page: 'characterSpecie', characterId: props.characterId})" :disabled="!character?.classes?.length">Continue Creation</button>
-            
-            <CharacterBackButton :currentClass="'characterClass'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
-        </div>  
-    </div>
+    </CharacterStep>
 </template>
 
-<style>
+<style scoped>
+    /* Dentro de CharacterStep los hijos ocupan todo el ancho de la columna */
+    h2 {
+        text-align: center;
+    }
 
+    /* Cabecera en una sola fila y compacta */
+    .character_class_header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+    }
+
+    .character_class_header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    /* El menú del desplegable flota encima del contenido en vez de empujarlo */
+    .class_filter {
+        position: relative;
+        align-self: center;
+    }
+
+    .class_dropdown_menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 10;
+        min-width: 100%;
+        max-height: 260px;
+        overflow-y: auto;
+        padding: 5px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--default);
+    }
+
+    .class_details_card {
+        width: 100%;
+        box-sizing: border-box;
+    }
 </style>

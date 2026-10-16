@@ -39,6 +39,7 @@
 
 <template>
     <div class="compendium_page">
+        <div v-blob-spot class="blob_spot_side"></div>
         <h1 class="classes_title">Class Compendium</h1>
 
         <div v-if="loading" class="loading">Loading...</div>

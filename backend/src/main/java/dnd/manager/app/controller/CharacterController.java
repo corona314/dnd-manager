@@ -186,7 +186,7 @@ public class CharacterController {
         return ResponseEntity.ok(service.addItem(user.getId(), id, itemId, dto));
     }
 
-    @PatchMapping("/{id}/items/{itemId}/buy")
+    @PatchMapping("/{id}/items/{itemId}")
     public ResponseEntity<CharacterResponseDto> updateItem(
         @AuthenticationPrincipal User user,
         @PathVariable Long id,

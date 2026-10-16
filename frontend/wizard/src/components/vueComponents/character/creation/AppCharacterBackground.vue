@@ -1,7 +1,9 @@
 <script setup>
     import '@/styles/character/appCharacterBackground.css'
+    import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
     import { ref, onMounted } from 'vue'
     import CharacterBackButton from '../../shared/CharacterBackButton.vue'
+
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'
@@ -10,12 +12,12 @@
     const character = ref(null)
     const loading_character = ref(false)
 
-    //Constantes de Especie
-    const background = ref([])
+    //Constantes de trasfondos
+    const backgrounds = ref([])
     const loading_background = ref(false)
     const background_open = ref(false)
 
-    //Const clase seleccionada (para ver detalles)
+    //Const trasfondo seleccionado (para ver detalles)
     const viewed_background = ref(null)
     const viewed_loading = ref(false)
     const viewed_id = ref(null)
@@ -23,6 +25,25 @@
     //Guardado
     const saving = ref(false)
     const error = ref('')
+
+    //Registro de lo que ha dado cada fuente (clase, trasfondo...), para poder quitarlo luego
+    //sin tocar lo que viene de otra fuente. Las herramientas comparten registro con AppCharacterClass.
+    const toolSourcesKey = `tool_sources_${props.characterId}`
+    const skillSourcesKey = `skill_sources_${props.characterId}`
+
+    function readSources(key) {
+        try {
+            return JSON.parse(localStorage.getItem(key) ?? '{}')
+        } catch {
+            return {}
+        }
+    }
+
+    function saveSource(key, name, added, granted) {
+        const sources = readSources(key)
+        sources[name] = { added, granted }
+        localStorage.setItem(key, JSON.stringify(sources))
+    }
 
     //Metodos
     async function fetchCharacter() {
@@ -46,7 +67,7 @@
             headers: { Authorization: `Bearer ${props.token}` }
             })
             const data = await res.json()
-            background.value = data.content
+            backgrounds.value = data.content
 
         }catch (e){
             console.error(e)
@@ -84,6 +105,20 @@
         saving.value = true
         error.value = ''
         try {
+            //Si ya tenía otro trasfondo, primero quitamos lo que dio ese trasfondo
+            const previous = character.value?.background
+            if (previous && previous.id !== backgroundId) {
+                if (!(await removePreviousBackgroundTools())) {
+                    error.value = 'Error while removing previous background tools'
+                    return
+                }
+                if (!(await removePreviousBackgroundSkills())) {
+                    error.value = 'Error while removing previous background skills'
+                    return
+                }
+                await fetchCharacter()
+            }
+
             const res = await fetch(`${API_BASE}/characters/${props.characterId}`, {
                 method: 'PATCH',
                 headers: {
@@ -93,7 +128,7 @@
                 body: JSON.stringify({ backgroundId: backgroundId })
             })
             if (!res.ok) {
-                error.value = 'Error al guardar el trasfondo'
+                error.value = 'Error saving background'
                 return
             }
             await applyBackgroundSkills()
@@ -101,15 +136,69 @@
             await fetchCharacter()
         } catch (e) {
             console.error(e)
-            error.value = 'Error de conexión'
+            error.value = 'Connection error'
         } finally {
             saving.value = false
         }
     }
 
+    //Quita las herramientas que añadió el trasfondo anterior (salvo las que dé otra fuente)
+    async function removePreviousBackgroundTools() {
+        const sources = readSources(toolSourcesKey)
+        const others = new Set(
+            Object.entries(sources)
+                .filter(([name]) => name !== 'background')
+                .flatMap(([, v]) => v.granted ?? [])
+        )
+        const ids = (sources.background?.added ?? []).filter(id => !others.has(id))
+
+        if (ids.length) {
+            const results = await Promise.all(
+                ids.map(id =>
+                    fetch(`${API_BASE}/characters/${props.characterId}/tools/${id}`, {
+                        method: 'DELETE',
+                        headers: { Authorization: `Bearer ${props.token}` }
+                    })
+                )
+            )
+            if (results.some(r => !r.ok)) return false
+        }
+        saveSource(toolSourcesKey, 'background', [], [])
+        return true
+    }
+
+    //Quita las competencias que activó el trasfondo anterior (solo las que él activó)
+    async function removePreviousBackgroundSkills() {
+        const sources = readSources(skillSourcesKey)
+        const ids = new Set(sources.background?.added ?? [])
+
+        if (ids.size) {
+            const merged = (character.value?.skills ?? []).map(s => ({
+                skillId: s.skill.id,
+                proficient: ids.has(s.skill.id) ? false : s.proficient,
+                expertise: ids.has(s.skill.id) ? false : s.expertise
+            }))
+
+            const res = await fetch(`${API_BASE}/characters/${props.characterId}/skills`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${props.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(merged)
+            })
+            if (!res.ok) return false
+        }
+        saveSource(skillSourcesKey, 'background', [], [])
+        return true
+    }
+
     async function applyBackgroundSkills() {
-        const grantedSkills = viewed_background.value?.skills ?? [] 
-        if (!grantedSkills.length) return
+        const grantedSkills = viewed_background.value?.skills ?? []
+        if (!grantedSkills.length) {
+            saveSource(skillSourcesKey, 'background', [], [])
+            return
+        }
 
         const existing = (character.value?.skills ?? []).map(s => ({
             skillId: s.skill.id,
@@ -117,13 +206,20 @@
             expertise: s.expertise
         }))
 
+        //'added' = solo las competencias que este trasfondo ha activado de verdad
+        //(las que ya eran competentes no cuentan, para no quitarlas después)
         const merged = [...existing]
+        const added = []
         grantedSkills.forEach(gs => {
             const found = merged.find(m => m.skillId === gs.id)
             if (found) {
-                found.proficient = true
+                if (!found.proficient) {
+                    found.proficient = true
+                    added.push(gs.id)
+                }
             } else {
                 merged.push({ skillId: gs.id, proficient: true, expertise: false })
+                added.push(gs.id)
             }
         })
 
@@ -137,63 +233,71 @@
                 body: JSON.stringify(merged)
             })
             if (!res.ok) {
-                error.value = 'Error al guardar las competencias del trasfondo'
+                error.value = 'Error saving background skills'
+                return
             }
+            saveSource(skillSourcesKey, 'background', added, grantedSkills.map(g => g.id))
         } catch (e) {
             console.error(e)
-            error.value = 'Error de conexión al guardar competencias'
+            error.value = 'Connection error while saving skills'
         }
     }
 
     async function applyBackgroundTools() {
-        const grantedTools = viewed_background.value?.tools ?? []
-        if (!grantedTools.length) return
-
+        const granted = (viewed_background.value?.tools ?? []).map(t => t.id)
         const existingIds = new Set((character.value?.tools ?? []).map(t => t.id))
+        const toAdd = granted.filter(id => !existingIds.has(id))
+        let added = []
 
-        const toAdd = grantedTools.filter(t => !existingIds.has(t.id))
-        if (!toAdd.length) return
-
-        try {
-            const results = await Promise.all(
-                toAdd.map(t =>
-                    fetch(`${API_BASE}/characters/${props.characterId}/tools/${t.id}`, {
-                        method: 'POST',
-                        headers: { Authorization: `Bearer ${props.token}` }
-                    })
+        if (toAdd.length) {
+            try {
+                const results = await Promise.all(
+                    toAdd.map(id =>
+                        fetch(`${API_BASE}/characters/${props.characterId}/tools/${id}`, {
+                            method: 'POST',
+                            headers: { Authorization: `Bearer ${props.token}` }
+                        })
+                    )
                 )
-            )
-            if (results.some(r => !r.ok)) {
-                error.value = 'Error al guardar las herramientas del trasfondo'
+                added = toAdd.filter((id, i) => results[i].ok)
+                if (results.some(r => !r.ok)) {
+                    error.value = 'Error saving background tools'
+                }
+            } catch (e) {
+                console.error(e)
+                error.value = 'Connection error while saving tools'
             }
-        } catch (e) {
-            console.error(e)
-            error.value = 'Error de conexión al guardar herramientas'
         }
+        saveSource(toolSourcesKey, 'background', added, granted)
     }
 
-    function goBackToCharacters() {
-        emit('navigate', 'characters')
+    function goBack() {
+        emit('navigate', 'characterSpecies')
     }
 </script>
 
 <template>
-    <div class="character_background_page">
+    <CharacterStep
+        :error="error"
+        :continue-disabled="!character?.background"
+        @back="goBack"
+        @continue="emit('navigate', { page: 'characterAbilities', characterId: props.characterId })"
+    >
         <!--Cabecera con info del personaje-->
-        <div v-if="loading_character">Loading Character...</div>
-        <div v-else-if="character" class="character_background_header">
-            <h1>{{ character.name }}</h1>
-            <span v-if="character.background" class="character_backgroundcurrent">
-                Current Background: {{ character.background.name }}
-            </span>
-            <span v-else class="character_background_current character_background_current--empty">
-                No Background assigned
-            </span>
-        </div>
+        <template #header>
+            <div v-if="loading_character">Loading Character...</div>
+            <div v-else-if="character" class="character_background_header">
+                <h1>{{ character.name }}</h1>
+                <span v-if="character.background" class="header_subtitle">
+                    Current Background: {{ character.background.name }}
+                </span>
+                <span v-else class="character_background_current character_background_current--empty">
+                    No Background assigned
+                </span>
+            </div>
+        </template>
 
-        <span v-if="error" class="character_background_error">{{ error }}</span>
-
-        <!--Desplegable de clases-->
+        <!--Desplegable de trasfondos-->
         <h2>Pick a Background</h2>
         <div class="background_filter">
             <div class="background_dropdown_btn" @click="background_open = !background_open">
@@ -201,13 +305,13 @@
             </div>
             <div v-if="background_open" class="background_dropdown_menu">
                 <div v-if="loading_background" class="loading">Loading...</div>
-                <div v-else v-for="background in background" :key="background.name" class="background_option" :class="{ selected: character?.background?.id === background.id }" @click="pickBackgroundToView(background)">
-                    {{ background.name }}
+                <div v-else v-for="b in backgrounds" :key="b.id" class="background_option" :class="{ selected: character?.background?.id === b.id }" @click="pickBackgroundToView(b)">
+                    {{ b.name }}
                 </div>
             </div>
         </div>
 
-        <!--Detalles de la clase elegida en el desplegable-->
+        <!--Detalles del trasfondo elegido en el desplegable-->
         <div v-if="viewed_loading" class="loading">Loading...</div>
         <div v-else-if="viewed_background" class="background_details_card">
             <div class="background_details_header">
@@ -232,9 +336,51 @@
                 {{ saving ? 'Saving...' : (character?.background?.id === viewed_id ? 'Current Background' : `Pick ${viewed_background.name}`) }}
             </button>
         </div>
-        <div class="character_spell_footer">
-            <button class="general_button character_background_forward" @click="emit('navigate', {page: 'characterAbilities', characterId: props.characterId})" :disabled="character?.background === null">Continue Creation</button>
-            <CharacterBackButton :currentClass="'characterBackground'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
-        </div>
-    </div>
+    </CharacterStep>
 </template>
+
+<style scoped>
+    /* Dentro de CharacterStep los hijos ocupan todo el ancho de la columna */
+    h2 {
+        text-align: center;
+    }
+
+    .background_details_card {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Cabecera en una sola fila y compacta */
+    .character_background_header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+    }
+
+    .character_background_header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    /* El menú del desplegable flota encima del contenido en vez de empujarlo */
+    .background_filter {
+        position: relative;
+        align-self: center;
+    }
+
+    .background_dropdown_menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 10;
+        min-width: 100%;
+        max-height: 260px;
+        overflow-y: auto;
+        padding: 5px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--default);
+    }
+</style>

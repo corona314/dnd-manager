@@ -1,6 +1,7 @@
 <script setup>
     import '@/styles/compendium/appSpells.css'
     import '@/styles/character/appCharacterSpells.css'
+    import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
     import SpellFilters from '@/vueComponents/shared/SpellFilters.vue'
     import SpellCard from '@/vueComponents/shared/SpellCard.vue'
     import { Components, Schools, createSpellFilters } from '@/composables/spellFilters.js'
@@ -91,7 +92,7 @@
             await addSpellToCharacter(spell)
         } catch (e) {
             console.error(e)
-            error.value = 'No se pudo añadir el hechizo. Inténtalo de nuevo.'
+            error.value = 'It was not possible to add the spell. Please try again.'
             // Rollback: lo quitamos si el backend falló
             selected_spells.value = selected_spells.value.filter(s => s.id !== spell.id)
         }
@@ -164,8 +165,7 @@
     })
 
     // Expansión de tarjetas
-
-    const { isOpen, isLoading, details, toggle: expandSpell } = useCardExpansion('/spells', () => props.token, {multiple: true})
+    const { isOpen, isLoading, details, toggle: expandSpell } = useCardExpansion('/spells', () => props.token, { multiple: true })
 
     // Carga de datos
     async function fetchCharacter() {
@@ -212,82 +212,95 @@
         fetchCharacter()
     })
 
-    function goBackToCharacters() {
-        emit('navigate', 'characters')
+    function goBack() {
+        emit('navigate', 'characterEquipment')
     }
 </script>
 
 <template>
-    <div class="character_spell_page">
-        <div v-if="loading_character">Loading Character...</div>
-
-        <div v-else-if="character" class="character_spell_summary">
-            <h1>{{ character.name }}</h1>
-        </div>
-
-        <span v-if="error" class="character_spell_error">{{ error }}</span>
-
-        <div v-if="class_detail" class="spell_page">
-
-            <SpellFilters
-                v-model="filters"
-                :min-level="1"
-                :max-level="Math.max(max_level, 1)"
-                :show-level="spell_tab === 'spell' && max_level >= 1"
-            />
-
-            <div class="spell_tabs">
-                <button
-                    :class="{ active: spell_tab === 'cantrip' }"
-                    @click="spell_tab = 'cantrip'"
-                    :disabled="!canUseCantrips"
-                >
-                    Cantrips ({{ selected_cantrips.length }}/{{ cantripLimit }})
-                </button>
-                <button
-                    :class="{ active: spell_tab === 'spell' }"
-                    @click="spell_tab = 'spell'"
-                >
-                    Spells ({{ selected_leveled_spells.length }}/{{ preparedSpellsLimit }})
-                </button>
+    <CharacterStep
+        :error="error"
+        @back="goBack"
+        @continue="emit('navigate', { page: 'characterFinalize', characterId: props.characterId })"
+    >
+        <!--Cabecera con info del personaje-->
+        <template #header>
+            <div v-if="loading_character">Loading Character...</div>
+            <div v-else-if="character" class="character_spell_header">
+                <h1>{{ character.name }}</h1>
             </div>
+        </template>
 
-            <div class="spell_list compendium_scroll">
-                <SpellCard
-                    v-for="spell in filteredSpells"
-                    :key="spell.id"
-                    :spell="spell"
-                    :expanded="isOpen(spell.id)"
-                    :detail="details[spell.id]"
-                    :loading="isLoading(spell.id)"
-                    selectable
-                    :selected="isSelected(spell)"
-                    :select-disabled="!isSelected(spell) && !canSelect(spell)"
-                    @expand="expandSpell"
-                    @toggle-select="toggleSpell"
+        <!--Zona fija: filtros y pestañas (no hacen scroll)-->
+        <template #toolbar>
+            <template v-if="class_detail">
+                <SpellFilters
+                    v-model="filters"
+                    :min-level="1"
+                    :max-level="Math.max(max_level, 1)"
+                    :show-level="spell_tab === 'spell' && max_level >= 1"
                 />
-            </div>
-        </div>
 
-        <div class="character_spell_footer">
-            <CharacterBackButton :currentClass="'characterSpells'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
-            <button class="general_button character_spell_forward" @click="emit('navigate', {page: 'characterFinalize', characterId: props.characterId})">Continue Creation</button>
+                <div class="spell_tabs">
+                    <button
+                        :class="{ active: spell_tab === 'cantrip' }"
+                        @click="spell_tab = 'cantrip'"
+                        :disabled="!canUseCantrips"
+                    >
+                        Cantrips ({{ selected_cantrips.length }}/{{ cantripLimit }})
+                    </button>
+                    <button
+                        :class="{ active: spell_tab === 'spell' }"
+                        @click="spell_tab = 'spell'"
+                    >
+                        Spells ({{ selected_leveled_spells.length }}/{{ preparedSpellsLimit }})
+                    </button>
+                </div>
+            </template>
+        </template>
+
+        <!--Lista de conjuros (esto es lo que hace scroll)-->
+        <div v-if="class_detail" class="spell_list">
+            <SpellCard
+                v-for="spell in filteredSpells"
+                :key="spell.id"
+                :spell="spell"
+                :expanded="isOpen(spell.id)"
+                :detail="details[spell.id]"
+                :loading="isLoading(spell.id)"
+                selectable
+                :selected="isSelected(spell)"
+                :select-disabled="!isSelected(spell) && !canSelect(spell)"
+                @expand="expandSpell"
+                @toggle-select="toggleSpell"
+            />
         </div>
-    </div>
+    </CharacterStep>
 </template>
 
 <style scoped>
-    /* Solo lo propio de esta pantalla: las pestañas.
-       El checkbox y la cabecera de la tarjeta viven ahora en SpellCard.vue. */
+    /* Cabecera en una sola fila y compacta */
+    .character_spell_header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+    }
 
+    .character_spell_header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    /* Pestañas: alineadas con la columna de la lista (75%) */
     .spell_tabs {
         display: flex;
         gap: 8px;
         width: 75%;
-        margin: 20px 0 10px 0;
+        margin: 10px 0;
         flex-shrink: 0;
     }
-
 
     .spell_tabs button {
         padding: 6px 14px;

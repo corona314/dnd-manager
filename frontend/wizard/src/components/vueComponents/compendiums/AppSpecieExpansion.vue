@@ -46,7 +46,8 @@
 
 <template>
     <div class="specie_page">
-        <div v-if="loading" class="loading"> Cargando</div>
+        <div v-blob-spot class="blob_spot_side"></div>
+        <div v-if="loading" class="loading"> Loading...</div>
         <div v-else class="specie_info">
             <h1 class="specie_name">{{ specie.name }}</h1>
             <div v-if="specie.features?.length" class="specie_features">

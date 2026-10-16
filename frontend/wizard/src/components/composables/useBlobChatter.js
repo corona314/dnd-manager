@@ -11,6 +11,9 @@ const TIPS = {
     items: 'Tip: TIP SUPER IMPORTANTE DE ITEMS.',
     classes: 'Tip: TIP SUPER IMPORTANTE DE CLASSES.',
     species: 'Tip: TIP SUPER IMPORTANTE DE SPECIES.',
+    characterSpecies: 'Tip: TIP SUPER IMPORTANTE DE CHARACTER SPECIES.',
+    species: 'Tip: TIP SUPER IMPORTANTE DE SPECIES.',
+    species: 'Tip: TIP SUPER IMPORTANTE DE SPECIES.',
     backgrounds: 'Tip: TIP SUPER IMPORTANTE DE BACKGROUNDS.'
 }
 

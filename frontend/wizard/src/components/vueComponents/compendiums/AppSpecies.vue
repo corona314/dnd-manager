@@ -37,6 +37,7 @@
 
 <template>
     <div class="compendium_page">
+        <div v-blob-spot class="blob_spot_side"></div>
         <div v-if="loading" class="loading">Loading...</div>
         <div v-else class="compendium_scroll">
             <CompendiumCard

@@ -14,7 +14,7 @@
   import AppBackgroundExpansion from './components/vueComponents/compendiums/AppBackgroundExpansion.vue';
   import AppCharacters from './components/vueComponents/compendiums/AppCharacters.vue';
   import AppCharacterClass from './components/vueComponents/character/creation/AppCharacterClass.vue';
-  import AppCharacterSpecie from './components/vueComponents/character/creation/AppCharacterSpecie.vue';
+  import AppCharacterSpecies from './components/vueComponents/character/creation/AppCharacterSpecies.vue';
   import AppCharacterBackground from './components/vueComponents/character/creation/AppCharacterBackground.vue';
   import AppCharacterAbilities from './components/vueComponents/character/creation/AppCharacterAbilities.vue';
   import AppCharacterFinalize from './components/vueComponents/character/creation/AppCharacterFinalize.vue';
@@ -35,8 +35,8 @@
 
   const username = ref(localStorage.getItem('dnd_username') || 'user')
   const authToken = ref(localStorage.getItem('dnd_token') || '')
-  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecie' | 'characterBackground' | 'characterAbility' | 'characterFinalize' | 'characterView' | 'characterLevelUp' | 'characterSubclass' | 'characterEquipment' | 'characterSpells'
-  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecie: 'characterClass', characterBackground: 'characterSpecie', characterAbilities: 'characterBackground', characterFinalize: 'characterSpells', characterView: 'characters', characterLevelUp: 'characters', characterSubclass: 'characterLevelUp', characterEquipment: 'characterAbilities', characterSpells: 'characterEquipment'}
+  const currentPage = ref('main')  // 'main' | 'spells' | 'items' | 'classes' | 'classExtended' | 'subclassExtended' | 'species' | 'specieExtended' | 'backgrounds' | 'backgroundExtended' | 'characters' | 'characterClass' | 'characterSpecies' | 'characterBackground' | 'characterAbility' | 'characterFinalize' | 'characterView' | 'characterLevelUp' | 'characterSubclass' | 'characterEquipment' | 'characterSpells'
+  const backMap = {spells: 'main', items: 'main', classes: 'main', classExtended: 'classes', subclassExtended: 'classExtended', species: 'main', backgrounds: 'main', specieExtended: 'species', backgroundExtended: 'backgrounds', characters: 'main', characterClass: 'characters', characterSpecies: 'characterClass', characterBackground: 'characterSpecies', characterAbilities: 'characterBackground', characterFinalize: 'characterSpells', characterView: 'characters', characterLevelUp: 'characters', characterSubclass: 'characterLevelUp', characterEquipment: 'characterAbilities', characterSpells: 'characterEquipment'}
   const selectedClassId = ref(null)
   const selectedSubclassId = ref(null)
   const selectedSpecieId = ref(null)
@@ -166,7 +166,7 @@
         <AppBackgroundExpansion v-if="currentPage === 'backgroundExtended'" :backgroundId="selectedBackgroundId" @navigate="handleNavigate" :token="authToken"></AppBackgroundExpansion>
         <AppCharacters v-if="currentPage === 'characters'" @navigate="handleNavigate" :token="authToken"/>
         <AppCharacterClass v-if="currentPage === 'characterClass'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterClass>
-        <AppCharacterSpecie v-if="currentPage === 'characterSpecie'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSpecie>
+        <AppCharacterSpecies v-if="currentPage === 'characterSpecies'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterSpecies>
         <AppCharacterBackground v-if="currentPage === 'characterBackground'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterBackground>
         <AppCharacterAbilities v-if="currentPage === 'characterAbilities'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterAbilities>
         <AppCharacterFinalize v-if="currentPage === 'characterFinalize'" :characterId="selectedCharacterId" @navigate="handleNavigate" :token="authToken"></AppCharacterFinalize>

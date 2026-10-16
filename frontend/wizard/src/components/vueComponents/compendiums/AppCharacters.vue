@@ -43,7 +43,7 @@ function onCharacterCreated(newId) {
 
 function determineResumeStep(character) {
     if (!character.classEntity) return 'characterClass'
-    if (!character.species) return 'characterSpecie'
+    if (!character.species) return 'characterSpecies'
     if (!character.background) return 'characterBackground'
     if (!character.abilities?.length) return 'characterAbilities'
     if (!character.items?.length) return 'characterEquipment'
@@ -78,6 +78,7 @@ onMounted(() => fetchCharacters())
 
 <template>
     <div class="characters_page">
+        <div v-blob-spot class="blob_spot_side"></div>
         <h1>My Characters</h1>
         <button class="general_button" @click="createCharacter">+ New Character</button>
         <div v-if="loading">Loading...</div>

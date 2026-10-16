@@ -1,5 +1,6 @@
 <script setup>
     import '@/styles/character/appCharacterFinalize.css'
+    import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
     import { ref, computed, onMounted } from 'vue'
     import CharacterBackButton from '../../shared/CharacterBackButton.vue'
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
@@ -62,7 +63,7 @@
     }
 
     //--- Selección de skills de clase ---
-   const skill_limit = computed(() => class_detail.value?.numberSkills ?? 0)
+    const skill_limit = computed(() => class_detail.value?.numberSkills ?? 0)
 
     function isPregranted(skillId) {
         return pregranted_skill_ids.value.includes(skillId)
@@ -222,58 +223,79 @@
             saving.value = false
         }
     }
+    function goBack() {
+        const isMagical = class_detail.value?.resources?.some(
+            resource => resource?.name === 'Cantrips' || resource?.name === 'Prepared Spells'
+        ) ?? false
 
-    function goBackToCharacters() {
-        emit('navigate', 'characters')
+        emit('navigate', {
+            page: isMagical ? 'characterSpells' : 'characterEquipment',
+            characterId: props.characterId
+        })
     }
+    
 </script>
 
 <template>
-    <div class="character_finalize_page">
-        <div v-if="loading_character">Loading Character...</div>
-
-        <div v-else-if="character" class="character_finalize_summary">
-            <h1>{{ character.name }}</h1>
-            <span class="finalize_level">Current Level: {{ character.level - 1 }} → 1</span>
-
-            <div class="finalize_section">
-                <span class="finalize_label">Species:</span>
-                <span>{{ character.species?.name ?? 'Not assigned' }}</span>
+    <CharacterStep
+        :error="error"
+        :continue-label="saving ? 'Finishing...' : 'Finish and Save'"
+        :continue-disabled="saving || calculated_max_hp === null || character?.level !== 1"
+        @back="goBack"
+        @continue="finalizeCharacter"
+    >
+        <!--Cabecera con info del personaje-->
+        <template #header>
+            <div v-if="loading_character">Loading Character...</div>
+            <div v-else-if="character" class="character_finalize_header">
+                <h1>{{ character.name }}</h1>
+                <span class="header_subtitle">Current Level: {{ character.level - 1 }} → 1</span>
             </div>
+        </template>
 
-            <div class="finalize_section">
-                <span class="finalize_label">Class:</span>
-                <span>{{ character.classes?.[0]?.classEntity?.name ?? 'Not assigned' }} ({{ character.classes?.[0]?.classEntity?.hitPointDie ?? '—' }})</span>
-            </div>
+        <template v-if="character">
+            <!--Resumen: especie, clase y trasfondo-->
+            <div class="finalize_card">
+                <div class="finalize_section">
+                    <span class="finalize_label">Species:</span>
+                    <span>{{ character.species?.name ?? 'Not assigned' }}</span>
+                </div>
 
-            <div class="finalize_section">
-                <span class="finalize_label">Background:</span>
-                <span>{{ character.background?.name ?? 'Not assigned' }}</span>
-            </div>
+                <div class="finalize_section">
+                    <span class="finalize_label">Class:</span>
+                    <span>{{ character.classes?.[0]?.classEntity?.name ?? 'Not assigned' }} ({{ character.classes?.[0]?.classEntity?.hitPointDie ?? '—' }})</span>
+                </div>
 
-            <div class="finalize_abilities">
-                <h2>Abilities</h2>
-                <div v-for="ab in character.abilities" :key="ab.ability" class="finalize_ability_row">
-                    <span>{{ ab.ability }}</span>
-                    <span>{{ ab.baseValue }}</span>
-                    <span>({{ formatModifier(modifierOf(ab.ability)) }})</span>
+                <div class="finalize_section">
+                    <span class="finalize_label">Background:</span>
+                    <span>{{ character.background?.name ?? 'Not assigned' }}</span>
                 </div>
             </div>
 
-            <div v-if="class_detail" class="finalize_class_skills">
+            <!--Características-->
+            <div class="finalize_card finalize_abilities">
+                <h2>Abilities</h2>
+                <div v-for="ab in character.abilities" :key="ab.ability" class="finalize_ability_row">
+                    <span class="finalize_ability_code">{{ ab.ability }}</span>
+                    <span class="finalize_ability_value">{{ ab.baseValue }}</span>
+                    <span class="finalize_ability_mod">({{ formatModifier(modifierOf(ab.ability)) }})</span>
+                </div>
+            </div>
+
+            <!--Habilidades de clase a elegir-->
+            <div v-if="class_detail" class="finalize_card finalize_class_skills">
                 <h2>Class Skills ({{ selected_skill_ids.length }} / {{ skill_limit }})</h2>
-                <span v-if="skills_error" class="finalize_skills_error">{{ skills_error }}</span>
                 <div class="finalize_skill_list">
                     <label v-for="s in class_detail.skills" :key="s.id" class="finalize_skill_row">
                         <input type="checkbox" :checked="isSkillSelected(s.id)" :disabled="isPregranted(s.id) || (!isSkillSelected(s.id) && !canToggleOn())" @change="toggleSkill(s.id)"/>
-                            {{ s.skill }} <em>({{ s.ability }})</em>
-                            <span v-if="isPregranted(s.id)" class="finalize_skill_from_background">(adquired by background)</span>
+                        <span>{{ s.skill }} <em>({{ s.ability }})</em></span>
+                        <span v-if="isPregranted(s.id)" class="finalize_skill_from_background">(acquired from background)</span>
                     </label>
                 </div>
             </div>
-            
 
-            <div class="finalize_hp_preview">
+            <!--Vida calculada-->
+            <div class="finalize_card finalize_hp_preview">
                 <h2>Health (calculated)</h2>
                 <span v-if="calculated_max_hp !== null">
                     {{ hit_die_max }} (die) {{ formatModifier(con_modifier) }} (CON) = <strong>{{ calculated_max_hp }} HP</strong>
@@ -282,21 +304,143 @@
                     It cannot be calculated because the character has no class assigned yet.
                 </span>
             </div>
-        </div>
-
-        <span v-if="error" class="character_finalize_error">{{ error }}</span>
-
-        
-        <div class="character_spell_footer">
-            <button class="general_button character_finalize_save_btn" @click="finalizeCharacter" :disabled="saving || calculated_max_hp === null || character.level !== 1">
-                {{ saving ? 'Finishing...' : 'Finish and Save' }}
-            </button>
-            <CharacterBackButton :currentClass="'characterFinalize'" :characterId="props.characterId" @navigate="emit('navigate', $event)"></CharacterBackButton>
-        </div>
-        
-    </div>
+        </template>
+    </CharacterStep>
 </template>
 
-<style>
+<style scoped>
+    /* ---------- Cabecera ---------- */
+    .character_finalize_header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+    }
 
+    .character_finalize_header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    /* ---------- Tarjetas ---------- */
+    .finalize_card {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--surface);
+    }
+
+    .finalize_card h2 {
+        margin: 0 0 4px;
+        font-size: 1.1rem;
+    }
+
+    /* Especie / clase / trasfondo */
+    .finalize_section {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 4px 0;
+        border-bottom: 1px solid var(--separator-lines);
+    }
+
+    .finalize_section:last-child {
+        border-bottom: none;
+    }
+
+    .finalize_label {
+        font-weight: bold;
+    }
+
+    /* Características: tres por fila */
+    .finalize_abilities {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .finalize_abilities h2 {
+        grid-column: 1 / -1;
+    }
+
+    .finalize_ability_row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 6px 10px;
+        border: 1px solid var(--separator-lines);
+        border-radius: 6px;
+    }
+
+    .finalize_ability_code {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--text-secondary);
+    }
+
+    .finalize_ability_value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-left: auto;
+    }
+
+    .finalize_ability_mod {
+        min-width: 2.5em;
+        text-align: right;
+        font-size: 0.85rem;
+    }
+
+    /* Habilidades de clase */
+    .finalize_skill_list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 6px;
+    }
+
+    .finalize_skill_row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .finalize_skill_row:hover {
+        background: var(--surface-hover-strong);
+    }
+
+    .finalize_skill_row em {
+        color: var(--text-secondary);
+        font-size: 0.85em;
+    }
+
+    .finalize_skill_from_background {
+        margin-left: auto;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
+
+    /* Vida */
+    .finalize_hp_preview strong {
+        color: var(--accent);
+    }
+
+    .finalize_hp_warning {
+        color: var(--danger);
+    }
+
+    @media (max-width: 600px) {
+        .finalize_abilities {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
 </style>

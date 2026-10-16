@@ -10,7 +10,7 @@ const saving = ref(false)
 
 async function createCharacter() {
     if (!name.value.trim()) {
-        error.value = 'El nombre no puede estar vacío'
+        error.value = 'Name cannot be empty'
         return
     }
     saving.value = true
@@ -24,14 +24,14 @@ async function createCharacter() {
             body: JSON.stringify({ name: name.value.trim() })
         })
         if (!res.ok) {
-            error.value = 'Error al crear el personaje'
+            error.value = 'Error creating character'
         }else{
             const created = await res.json()
             emit('created', created.id)
         }
     } catch (e) {
         console.error(e)
-        error.value = 'Error de conexión'
+        error.value = 'Connection error'
     } finally {
         saving.value = false
     }
@@ -40,9 +40,9 @@ async function createCharacter() {
 
 <template>
     <div class="character_create_page">
-        <h1>Nuevo Personaje</h1>
+        <h1>New Character</h1>
         <div class="character_create_form">
-            <input type="text" v-model="name" placeholder="Nombre del personaje" @keyup.enter="createCharacter"/>
+            <input type="text" v-model="name" placeholder="Character name" @keyup.enter="createCharacter"/>
             <span v-if="error" class="character_create_error">{{ error }}</span>
             <button class="general_button" @click="createCharacter" :disabled="saving">
                 {{ saving ? 'Saving...' : 'Create' }}

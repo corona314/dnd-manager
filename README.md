@@ -1,232 +1,272 @@
 # D&D Manager
 
-Una plataforma de gestión integral para Dungeons & Dragons que combinará un compendio exhaustivo, herramientas de creación de personajes y un ecosistema de contenido personalizado (homebrew). Diseñada con arquitectura escalable para soportar campañas colaborativas en tiempo real. Toda la información está sacada del SRD 5.2 de D&D.
-
-## Descripción General
-
-**D&D Manager** es un proyecto full-stack que busca consolidarse como una solución profesional de referencia para la comunidad D&D. El proyecto implementará patrones de arquitectura moderna y una experiencia de usuario intuitiva.
-
-La plataforma estará estructurada en módulos independientes que funcionan de manera cohesiva:
-
-1. **Compendio centralizado**: Base de datos exhaustiva y searchable de reglas, items, hechizos, clases y razas
-2. **Asistente de creación de personajes**: Wizard interactivo multi-paso con validación en tiempo real
-3. **Gestor de homebrew**: Contenido personalizado gestionado localmente 
-   mediante IndexedDB con capacidad de exportar/importar en formato JSON
-4. **Foro de comunidad**: Plataforma abierta para compartir y descubrir creaciones homebrew
-5. **Sistema colaborativo DM-Players**: Gestión de sesiones, sincronización de experiencia y control de progresión
+Plataforma de gestión para Dungeons & Dragons: un compendio consultable con filtros, un asistente de creación de personajes y, más adelante, un ecosistema de contenido personalizado (homebrew) y herramientas colaborativas para DMs y jugadores. Toda la información de reglas procede del **SRD 5.2** de D&D (ver [Licencia y atribución](#licencia-y-atribución)).
 
 ---
 
-## Arquitectura Técnica
+## Estado del proyecto
+
+| Módulo | Estado |
+|--------|--------|
+| Registro e inicio de sesión (JWT) | Hecho |
+| Compendio: hechizos, objetos, clases y subclases, especies, trasfondos | Hecho |
+| Asistente de creación de personajes (clase, especie, trasfondo, características, equipo, hechizos, finalización) | En proceso |
+| Vista de personaje y subida de nivel | Hecho (En proceso de front) |
+| Ajustes de usuario, tema claro/oscuro y avatar | En proceso |
+| Exportación de personajes a PDF | Pendiente |
+| Gestor de homebrew (IndexedDB, exportar/importar JSON) | Pendiente |
+| Foro de comunidad | Pendiente |
+| Gestor de iniciativas | Pendiente |
+| Sistema colaborativo DM-Players (WebSockets) | Pendiente |
+
+---
+
+## Funcionalidades
+
+### Compendio
+- Páginas de **hechizos**, **objetos** (armaduras, armas, escudos y otros), **clases**, **especies** y **trasfondos**, con páginas de detalle para clases, subclases, especies y trasfondos.
+- **Filtros de tres estados** (requerido, excluido, ignorado): clic para avanzar, clic derecho para retroceder. Además, búsqueda por nombre, rango de nivel o precio, escuela, rareza, ordenación y paginación en servidor.
+- Tarjetas expandibles: se pueden abrir **varias a la vez** para comparar, y el detalle ya cargado se conserva.
+- Descripciones en Markdown (con tablas) renderizadas con `marked`.
+
+### Personajes
+- Creación guiada paso a paso: **clase → especie → trasfondo → características → equipo → hechizos → finalización**.
+- Selección de hechizos con límites por truco y por hechizo preparado, guardada en el servidor al marcar o desmarcar.
+- Vista de personaje y flujo de subida de nivel.
+
+### Experiencia de usuario
+- **Tema claro/oscuro** (respeta la preferencia del sistema la primera vez).
+- **Ajustes** en un diálogo sobre la pantalla actual: modo oscuro, iconos o letras, consejos del blob, cierre de sesión y demás configuraciones.
+- **Avatar con personalidad**: cada usuario tiene un blob generado a partir de su nombre ([Blobatar](https://www.npmjs.com/package/blobatar)) que sigue el cursor, cambia de expresión y puede dar consejos contextuales, desde un bocadillo en la cabecera o saliendo "al escenario" en pantalla. Se puede silenciar en Ajustes.
+
+---
+
+## Arquitectura técnica
 
 ### Backend (Spring Boot 4.0.6 + Java 21)
 
 **Patrones utilizados:**
-- **MVC + Capas**: Separación clara entre `controller` → `service` → `repository` → `model`
-- **DTOs (Data Transfer Objects)**: Mapeo de entidades con Lombok para reducir boilerplate
-- **Repository Pattern**: Acceso a datos abstrayendo la complejidad de JPA
-- **REST API**: Endpoints RESTful con validación de entrada y manejo de errores consistente
+- **MVC por capas**: `controller` → `service` → `repository` → `model`
+- **DTOs**: separación entre las entidades y lo que expone la API, con Lombok para reducir código repetitivo
+- **Repository Pattern**: acceso a datos sobre JPA
+- **REST API**: endpoints con validación de entrada y respuestas paginadas
 
 **Herramientas principales:**
-- `Spring Boot Starter Data JPA`: ORM con Hibernate para persistencia relacional
-- `Spring Boot Starter WebMVC`: Construcción de API REST y manejo de HTTP
-- `MySQL Connector`: Driver nativo para bases de datos MySQL
-- `Lombok`: Generación automática de getters, setters y constructores
-- `Spring Boot DevTools`: Hot reload para desarrollo ágil
+- Spring Boot Starter Data JPA (Hibernate)
+- Spring Boot Starter WebMVC
+- Spring Security con JWT (jjwt 0.11.5)
+- MySQL Connector
+- Lombok y Spring Boot DevTools
 
-**Estructura de carpetas backend:**
+**Estructura:**
 ```
 backend/
-├── controller/      # Endpoints REST y mapping de requests
-├── service/         # Lógica de negocio e integración de entidades
-├── repository/      # Interfaces JPA para consultas a BD
-├── model/           # Entidades JPA mapeadas a tablas
-├── dto/             # Objetos de transferencia de datos (segregación por tipo)
+├── controller/      # Endpoints REST
+├── service/         # Lógica de negocio
+├── repository/      # Interfaces JPA
+├── model/           # Entidades JPA
+├── dto/             # Objetos de transferencia de datos
 ├── mapper/          # Conversión entre DTOs y modelos
-└── config/          # Configuración de Spring Security, CORS, etc.
+└── config/          # Seguridad, CORS, etc.
 ```
 
-### Frontend (Vue 3 + TypeScript + Vite)
+### Frontend (Vue 3 + Vite)
 
-**Filosofía de diseño:**
-- **Componentes reutilizables**: SFCs (Single File Components) con scoped styling
-- **Type Safety**: TypeScript strict para evitar errores en tiempo de compilación
-- **Experiencia moderna**: Vite para desarrollo ultra-rápido con HMR (Hot Module Replacement)
+**Filosofía:**
+- **Composition API** con `<script setup>` en JavaScript.
+- **Componentes compartidos** para lo que se repite entre pantallas: la carcasa de las tarjetas, las tarjetas y los filtros de hechizos.
+- **Lógica reutilizable en composables**, no copiada entre archivos.
+- **Sin router**: la navegación se gestiona con estado en `App.vue` (ver [Navegación](#navegación)).
 
-**Stack tecnológico:**
-- **Vue 3 (Composition API)**: Framework progresivo con reactividad granular
-- **TypeScript 6.0**: Type checking completo en frontend
-- **Vite**: Bundler de próxima generación (desarrollo <100ms, build optimizado)
-- **PrimeVue 4.5**: Librería de componentes profesionales pre-estilizados (DataTable, Dialog, Forms, etc.)
-- **Marked**: Parser de Markdown para renderizar documentación de hechizos/items
-
-**Estructura de carpetas frontend:**
+**Estructura** (el alias `@` apunta a `src/components`, no a `src`):
 ```
 frontend/wizard/
-├── src/
-│   ├── components/      # Componentes Vue reutilizables
-│   ├── api/             # Cliente HTTP y servicios de integración
-│   ├── assets/          # Estilos CSS modularizados
-│   └── App.vue          # Componente raíz
-├── vite.config.ts       # Configuración de bundler y plugins
-└── tsconfig.json        # Configuración TypeScript strict
+├── index.html
+├── vite.config            # alias "@" → src/components
+└── src/
+    ├── main.js            # PrimeVue (tema Aura) y directivas globales
+    ├── App.vue            # navegación, cabecera, tema y ajustes
+    ├── directives/
+    │   ├── noDoubleSelect.js   # evita seleccionar texto con doble clic
+    │   └── blobSpot.js         # marca dónde puede ponerse el blob en pantalla
+    └── components/        # ← "@"
+        ├── composables/   # lógica reutilizable (ver tabla)
+        ├── icons/         # iconos SVG como componentes
+        ├── styles/        # CSS por pantalla + appCompendium.css (carcasa común)
+        │   └── themes/colors.css   # variables de color, tema claro y oscuro
+        └── vueComponents/
+            ├── main/          # AppLogin, AppMain, AppSettings, AppAvatar, Blob*
+            ├── shared/        # CompendiumCard, SpellCard, SpellFilters
+            ├── compendiums/   # AppSpells, AppItems, AppClasses, AppSpecies, AppBackgrounds,
+            │                  # páginas de detalle (…Expansion) y AppCharacters
+            └── character/
+                ├── creation/    # pasos del asistente de creación
+                └── management/  # vista de personaje y subida de nivel
 ```
 
-### Base de Datos
+**Composables:**
 
-**Gestión:**
-- **MySQL (Principal)**: Almacena datos canónicos (items, hechizos, clases, razas, users)
-- **IndexedDB (Homebrew)**: Almacenamiento local en navegador para contenido 
-  personalizado, sin límite de creación y sin dependencia del servidor
-- **Docker Compose**: Orquestación de contenedores para levantar MySQL en desarrollo
+| Archivo | Para qué sirve |
+|---------|----------------|
+| `useCardExpansion.js` | Abrir y cerrar tarjetas, con carga del detalle y caché; admite varias abiertas a la vez |
+| `spellFilters.js` | Constantes y estado inicial de los filtros de hechizos |
+| `renderDescription.js` | Markdown a HTML, arreglando tablas mal formadas |
+| `usePreferences.js` | Preferencias del usuario (iconos o letras, consejos del blob) guardadas en `localStorage` |
+| `useBlobSay.js` | API para que el blob diga algo: `say`, `sayOnce`, `hush` |
+| `useBlobChatter.js` | Consejos de primera visita y frases ocasionales por pantalla |
+| `useBlobSpots.js` | Registro de los sitios donde puede ponerse el blob |
 
-**Características:**
-- Soporte para exportación/importación de datos en formato estándar (JSON/SQL)
-- Diseño de schema escalable para soportar relaciones complejas entre entidades
-- Seeding automático de datos canónicos mediante scripts Python
+### Navegación
+
+No hay `vue-router`. `App.vue` guarda la pantalla actual en `currentPage` y los identificadores seleccionados (clase, especie, personaje…). Los componentes emiten `navigate` con el nombre de la página o con un objeto como `{ page: 'classExtended', classId: 3 }`, y `backMap` define a dónde vuelve el botón "Back". Una consecuencia es que las pantallas no tienen URL propia.
+
+### Datos guardados en el navegador
+
+| Clave de `localStorage` | Contenido |
+|-------------------------|-----------|
+| `dnd_token`, `dnd_username` | Sesión |
+| `dnd_theme` | Tema claro u oscuro |
+| `dnd_use_icons` | Iconos o letras en las tarjetas y filtros |
+| `dnd_blob_talks` | Si el blob da consejos |
+| `dnd_blob_seen` | Consejos de primera visita ya mostrados |
+
+### Base de datos
+
+- **MySQL** (principal): datos canónicos (objetos, hechizos, clases, especies, usuarios, personajes).
+- **IndexedDB** (planificado): contenido homebrew en el navegador, sin límite de creación y sin depender del servidor.
+- **Docker Compose** para levantar MySQL en desarrollo.
+- Seeding de los datos canónicos mediante scripts Python.
 
 ---
 
-## Stack Detallado
+## Stack
 
-| Componente | Tecnología | Versión | Propósito |
-|-----------|-----------|---------|----------|
-| **Lenguaje Backend** | Java | 21 | Performance, type safety, ecosystem maduro |
-| **Framework Backend** | Spring Boot | 4.0.6 | Abstracción de boilerplate, producción-ready |
-| **ORM** | JPA + Hibernate | Built-in | Mapeo objeto-relacional, queries optimizadas |
-| **Seguridad** | Spring Security | 4.0.6 | Autenticación, autorización, filtros |
-| **Autenticación** | JWT | 0.11.5 | Tokens stateless, escalable |
-| **BD Principal** | MySQL | 8.0+ | ACID, confiable, escalable |
-| **Lenguaje Frontend** | TypeScript | 6.0 | Type safety en frontend |
-| **Framework Frontend** | Vue 3 | 3.5.32 | Reactivo, componentes, DX excelente |
-| **Bundler** | Vite | 8.0.8 | Desarrollo rápido, build optimizado |
-| **Componentes UI** | PrimeVue | 4.5.5 | Componentes profesionales, accesibles |
-| **Parseo Markdown** | Marked | 18.0.5 | Renderizado de documentación en-app |
-| **Contenedores** | Docker | Latest | Reproducibilidad de entorno |
-| **Orquestación** | Docker Compose | - | Levantar stack completo en desarrollo |
+| Componente | Tecnología | Versión |
+|-----------|-----------|---------|
+| Lenguaje backend | Java | 21 |
+| Framework backend | Spring Boot | 4.0.6 |
+| ORM | JPA + Hibernate | (incluido en Spring Boot) |
+| Seguridad | Spring Security + JWT (jjwt) | Spring Security según Spring Boot; jjwt 0.11.5 |
+| Base de datos | MySQL | 8.0+ |
+| Lenguaje frontend | JavaScript (ES modules) | — |
+| Framework frontend | Vue 3 | 3.5.32 |
+| Bundler | Vite | 8.0.8 |
+| Componentes UI | PrimeVue (tema Aura) | 4.5.5 |
+| Markdown | Marked | 18.0.5 |
+| Avatares | Blobatar (`blobatar`, `@blobatar/vue`) | 2.7.0 |
+| Contenedores | Docker y Docker Compose | — |
 
 ---
 
-## Instalación y Ejecución
+## Instalación y ejecución
 
 ### Requisitos previos
 ```
 Java 21+
 Node.js 20.19.0 o 22.12.0+
-npm / pnpm
-Docker & Docker Compose
-MySQL 8.0+ (o levantar con Docker)
+npm
+Docker y Docker Compose
 ```
 
-### Pasos de instalación actual
+### Pasos
 
-**1. Clonar repositorio**
+**1. Clonar el repositorio**
 ```bash
 git clone https://github.com/corona314/dnd-manager.git
 cd dnd-manager
 ```
 
-**2. Iniciar base de datos con Docker**
+**2. Iniciar la base de datos**
 ```bash
 docker-compose up -d
 ```
-Esto levanta MySQL en `localhost:3306` con credenciales de desarrollo.
+Levanta MySQL en `localhost:3306` con credenciales de desarrollo.
 
-**3. Ejecutar backend**
+**3. Ejecutar el backend**
 ```bash
 cd backend
-
-# Compilar proyecto (descarga dependencias automáticamente)
 ./mvnw clean package
-
-# Ejecutar en desarrollo (con hot reload)
 ./mvnw spring-boot:run
 ```
-Backend disponible en `http://localhost:8080`
+Disponible en `http://localhost:8080`.
 
-**4. Ejecutar frontend**
+**4. Ejecutar el frontend**
 ```bash
 cd frontend/wizard
-
-# Instalar dependencias
 npm install
-
-# Ejecutar en desarrollo (Vite HMR activo)
 npm run dev
 ```
-Frontend disponible en `http://localhost:5173`
+Disponible en `http://localhost:5173`. El frontend llama a la API en `http://localhost:8080/api`.
 
-### Build para producción
+### Build de producción
 
-**Backend (JAR empaquetado):**
+**Backend:**
 ```bash
 cd backend
 ./mvnw clean package -DskipTests
-# Genera: target/app-0.0.1-SNAPSHOT.jar
 java -jar target/app-0.0.1-SNAPSHOT.jar
 ```
 
-**Frontend (Build estático):**
+**Frontend:**
 ```bash
 cd frontend/wizard
 npm run build
-# Genera: dist/ (listo para servir con nginx)
+# genera dist/, listo para servir con nginx
 ```
 
 ---
 
-## Flujos de Desarrollo
+## API
 
-### Ejemplo: Agregar nuevo endpoint de items
+Resumen de los endpoints que usa el frontend. Todos, salvo los de `/auth`, requieren la cabecera `Authorization: Bearer <token>`. Los listados devuelven páginas de Spring (`content`, `totalPages`, `number`).
 
-1. **Backend (Spring Boot)**
-   - Crear método en `ItemService` con lógica
-   - Crear `@RestController` endpoint en `ItemController`
-   - Retornar `ItemSummaryDto` (no exposer entidad directa)
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/auth/register`, `/auth/login` | Alta e inicio de sesión; devuelven un JWT |
+| GET | `/spells`, `/spells/{id}` | Listado filtrado y detalle |
+| GET | `/items`, `/items/armor`, `/items/weapons`, `/items/shields` (+ `/{id}`) | Objetos por categoría |
+| GET | `/classes`, `/species`, `/backgrounds` (+ `/{id}`) | Compendio |
+| GET | `/characters/{id}` | Personaje con clases, recursos, espacios de conjuro y hechizos |
+| POST, DELETE | `/characters/{id}/spells/{spellId}` | Añadir o quitar un hechizo del personaje |
+| ... | `...` | ... |
 
-2. **Frontend (Vue 3)**
-   - Crear función en `api/api.js` que llame al endpoint
-   - Crear componente Vue que use la API
-   - Agregar al router si es una nueva página
+**Parámetros de `/spells`:** `page`, `size`, `sort`, `name`, `levelMin`, `levelMax`, `schoolId` (repetible), `components` (`V`, `S`, `M`; con `!` para excluir, como `!M`), `ritual`, `concentration` (`1` o `0`).
 
-3. **Validación**
-   - Probar manualmente lo desarrollado
-   - Verificar hot reload en frontend
-   - Revisar logs de Spring Boot para errores
+**Parámetros de los objetos:** `name`, `sort`, `magic`, `attunement` (`1` o `0`), `priceMin` y `priceMax` (en piezas de cobre), `rarity` (repetible) y filtros propios de cada categoría (`armorType`, `weaponType`, `category`, `itemType`).
 
----
-
-## Notas de Desarrollo
-
-### Por qué estas tecnologías
-
-- **Spring Boot 4.0.6**: Versión más reciente, soporte a Java 21, nuevas optimizaciones
-- **Vue 3 + TypeScript**: Balance entre curva de aprendizaje y potencia; type safety sin verbosidad de Java
-- **Vite**: Desarrollo ultra-rápido (vs Webpack); tiempo de compilación <100ms
-- **PrimeVue**: Componentes enterprise-grade sin necesidad de construir UI from scratch
-- **MySQL**: ACID compliant, familiar para equipos, excelente soporte
-
-### Decisiones de arquitectura
-
-- **DTO segregation**: DTOs separados para cada tipo de entidad evita conflictos y hace explícito qué datos se exponen
-- **Service layer**: Centraliza lógica de negocio, facilita testing
-- **Local homebrew DB**: Evita centralización, permite que usuarios controlen su contenido
+...
 
 ---
 
-## Próximos Pasos
+## Hoja de ruta
 
-1. Completar wizard de creación de personajes (Q3 2026)
-2. Implementar exportación de personajes a PDF
-3. Iniciar construcción del creador de homebrew
-4. Agregar foro básico de comunidad
+1. Pulir y terminar el asistente de creación de personajes
+2. Exportar personajes a PDF
+3. Gestor de homebrew con IndexedDB
+4. Foro básico de comunidad
 5. Gestor de iniciativas
 6. Sistema colaborativo DM-Players con WebSockets
+
+**Mejoras técnicas previstas:**
+- Mover la URL de la API (hoy escrita en cada componente) a una variable de entorno de Vite
+- Añadir `vue-router` para que las pantallas tengan URL y funcione el botón atrás del navegador
+- Unificar el CSS de filtros que comparten hechizos y objetos
+
+---
+
+## Licencia y atribución
+
+Las reglas, hechizos, objetos y demás contenido de juego proceden del System Reference Document 5.2:
+
+> This work includes material from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.
+
+El código de este repositorio: *licencia por definir*.
 
 ---
 
 ## Autores
 
-Desarrollado como proyecto portfolio serio entre dos devs: 
-- Backend: Imanol Eguidón (corona314 en GitHub)
-- Frontend: Irune Cereijo (Iruneca en GitHub)
+Proyecto de portfolio desarrollado entre dos personas:
+
+- Backend y mejoras puntuales de interfaz: Imanol Eguidón ([corona314](https://github.com/corona314))
+- Frontend: Irune Cereijo ([Iruneca](https://github.com/Iruneca))

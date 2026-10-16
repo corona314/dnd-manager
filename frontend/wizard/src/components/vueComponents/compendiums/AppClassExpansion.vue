@@ -54,6 +54,7 @@
 
 <template>
     <div class="class_page">
+        <div v-blob-spot class="blob_spot_side"></div>
         <div v-if="loading" class="loading"> Cargando</div>
         <div v-else class="class_info">
             <h1 class="class_name">{{ class_data.name }}</h1>

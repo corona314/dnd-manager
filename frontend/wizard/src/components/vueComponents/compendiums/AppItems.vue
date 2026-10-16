@@ -217,6 +217,8 @@
 
 <template>
     <div class="compendium_page">
+        <div v-blob-spot class="blob_spot_side"></div>
+
         <!-- Pestañas -->
         <div class="tabs">
             <button v-for="tab in Tabs" :key="tab.key"

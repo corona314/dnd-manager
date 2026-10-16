@@ -1,194 +1,238 @@
 # Estado Actual del Desarrollo
 
-### Fase 1: Compendio (Completado)
+Resumen del progreso por fases. Para instalación, arquitectura y stack, ver el [README](README.md).
 
-**Qué se hizo:**
-- API REST completa con búsqueda y filtrado avanzado para items, hechizos, clases, razas y trasfondos
-- Endpoints paginados para manejo eficiente de grandes volúmenes de datos
-- Filtros multi-criterio: rarity, attunement, magic, armor type, price range, weight, range, etc.
-- Seeding de datos canónicos desde scripts Python (seed_*.py)
-- Autenticación básica durante desarrollo con JWT
+| Fase | Estado |
+|------|--------|
+| 1. Compendio | Completada |
+| 2. Creador de personajes | Flujo principal hecho, en pulido |
+| 3. Creador de homebrew | Planificada |
+| 4. Foro homebrew | Planificada |
+| 5. Gestor de iniciativas | Planificada |
+| 6. Sistema colaborativo DM-Players | Visión a futuro |
 
-**Endpoints implementados:**
-- `GET /api/items` - Items con filtros completos
-- `GET /api/items/armor` - Armaduras específicamente
-- `GET /api/items/weapons` - Armas
-- `GET /api/classes` - Clases de personajes
-- `GET /api/species` - Razas (species)
-- `GET /api/spells` - Hechizos
-- `GET /api/backgrounds` - Trasfondos de personaje
-- `POST /api/auth/login` y `POST /api/auth/register` - Autenticación
+---
 
-**Frontend del compendio:**
-- Interfaz de búsqueda con filtros dinámicos
-- Vistas detalladas de cada entidad
-- Renderizado de Markdown para descripciones de hechizos
-- Responsive design con PrimeVue DataTable
+## Fase 1: Compendio (Completada)
 
-### Fase 2: Creador de Personajes (En Desarrollo)
+**Backend:**
+- API REST con búsqueda y filtrado avanzado para objetos, hechizos, clases, especies y trasfondos
+- Endpoints paginados para manejar grandes volúmenes de datos
+- Filtros multi-criterio: rareza, sintonización, magia, tipo de armadura, rango de precio, peso, alcance, etc.
+- Seeding de datos canónicos desde scripts Python (`seed_*.py`)
+- Autenticación con JWT
 
-**Objetivo:**
-Implementar un wizard multi-step que guíe al usuario a través de la creación de un personaje D&D completo.
+**Endpoints:**
+- `GET /api/items` y `GET /api/items/{armor|weapons|shields}`: objetos, con filtros completos
+- `GET /api/classes`, `GET /api/species`, `GET /api/backgrounds`, `GET /api/feats`: clases, especies, trasfondos  y dotes (cada uno con `/{id}` para el detalle)
+- `GET /api/spells` y `GET /api/spells/{id}`: hechizos
+- `POST /api/auth/login` y `POST /api/auth/register`: autenticación
 
-**Pasos del wizard:**
-1. **Selección de raza** - Elegir species y revisar bonificadores de atributos
-2. **Selección de clase** - Escoger clase y revisar habilidades iniciales
-3. **Selección de trasfondo** - Escoger trasfondo y puntos de habilidades adicionales
-4. **Selección de subclase** - Elección especializada dentro de la clase
-5. **Distribución de atributos** - Asignar puntos a STR, DEX, CON, INT, WIS, CHA
-6. **Selección de hechizos** - Si la clase lo permite, elegir spell list
-7. **Selección de equipo** - Escoger armadura, arma y items iniciales
-8. **Revisión final** - Preview del personaje antes de guardar
+**Frontend:**
+- Una pantalla por entidad: hechizos, objetos (con pestañas por categoría), clases, especies y trasfondos
+- Páginas de detalle para clases, subclases, especies y trasfondos
+- Filtros de tres estados (requerido, excluido, ignorado), búsqueda por nombre, ordenación y paginación en servidor
+- Tarjetas expandibles, con varias abiertas a la vez para poder comparar
+- Descripciones en Markdown con tablas, renderizadas con `marked`
+- Carcasa de tarjeta, tarjeta de hechizo y panel de filtros compartidos entre pantallas
 
-**Características técnicas:**
-- Validación en tiempo real de restricciones (ej: hechizos solo para clases mágicas)
-- Estado persistente en frontend durante el wizard
-- Cálculo automático de modificadores y stats derivados
-- Guardado del personaje en BD asociado al usuario autenticado
-- Exportación del personaje en múltiples formatos (PDF, JSON)
+---
 
-**Componentes Vue a implementar:**
-- `AppClasses.vue` - Selección de clase
-- `AppClassExpansion.vue` - Detalles de clase expandible
-- `AppSpells.vue` - Selector de hechizos con filtrado
-- Componente de distribución de atributos
-- Preview y confirmación final
-
-### Fase 3: Creador de Homebrew (Planificado)
+## Fase 2: Creador de personajes (Flujo principal hecho, en pulido)
 
 **Objetivo:**
-Permitir que usuarios creen contenido personalizado sin tocar la BD principal.
+Un asistente multi-paso que guíe al usuario hasta tener un personaje D&D completo guardado en su cuenta.
+
+**Pasos del asistente (en el orden actual):**
+1. **Clase**: elegir clase y revisar sus competencias iniciales
+2. **Especie**: elegir especie
+3. **Trasfondo**: elegir trasfondo
+4. **Características**: distribuir las puntuaciones (FUE, DES, CON, INT, SAB, CAR)
+5. **Equipo**: elegir el equipo inicial
+6. **Hechizos**: elegir trucos y hechizos preparados, si la clase los tiene
+7. **Finalización**: revisión antes de dar por terminado el personaje
+
+La **subclase** no es un paso de la creación: se elige durante la subida de nivel.
+
+**Gestión de personajes (hecho):**
+- Lista de personajes del usuario
+- Vista de personaje
+- Subida de nivel, incluida la elección de subclase
+
+**Cómo funciona:**
+- El personaje se crea en el servidor y cada paso trabaja sobre su identificador
+- La selección de hechizos se guarda al marcar o desmarcar, con rollback si el servidor falla
+- Los límites de trucos y de hechizos preparados salen de los recursos del personaje, y la pestaña de trucos se desactiva si la clase no los tiene
+
+**Componentes (`vueComponents/character/`):**
+- `creation/`: `AppCharacterClass`, `AppCharacterSpecies`, `AppCharacterBackground`, `AppCharacterAbilities`, `AppCharacterEquipment`, `AppCharacterSpells1`, `AppCharacterFinalize`, `AppCharacterSubclass`
+- `management/`: `AppCharacterView`, `AppCharacterLevelUp`
+
+**Pendiente de esta fase:**
+- [ ] Revisar la validación en tiempo real de todos los pasos, más allá de los límites de hechizos
+- [ ] Revisar el cálculo de modificadores y estadísticas derivadas
+- [ ] Exportación del personaje a PDF y JSON
+
+---
+
+## Trabajo transversal (hecho)
+
+- Tema claro y oscuro, con la preferencia guardada
+- Diálogo de ajustes sobre la pantalla actual: tema, iconos o letras, consejos del blob y cierre de sesión
+- Avatar por usuario (Blobatar), con mirada que sigue el cursor, expresiones y consejos contextuales por pantalla
+- Componentes y composables compartidos para no repetir código entre pantallas
+
+---
+
+## Fase 3: Creador de Homebrew (Planificado)
+
+**Objetivo:**
+Permitir que los usuarios creen contenido personalizado sin tocar la base de datos principal.
 
 **Funcionalidades:**
-- Editor visual para items, hechizos, clases y razas personalizadas
-- Validación de reglas básicas (rareza vs precio, balanceo de stats)
-- Almacenamiento local en el navegador (IndexedDB) sin límite de creación
+- Editor visual para objetos, hechizos, clases y especies personalizadas
+- Validación de reglas básicas (rareza frente a precio, equilibrio de estadísticas)
+- Almacenamiento local en el navegador (IndexedDB), sin límite de creación
 - Exportación a JSON para compartir con otros usuarios
 - Importación de contenido homebrew de otros jugadores
 
 **Arquitectura:**
-- Contenido homebrew descentralizado por usuario via IndexedDB
-- Exportación/importación mediante JSON con UUID por entidad para evitar conflictos
-- Sistema de versionado en el JSON para gestionar actualizaciones de contenido compartido
+- Contenido homebrew descentralizado por usuario, mediante IndexedDB
+- Exportación e importación con JSON, con un UUID por entidad para evitar conflictos
+- Versionado dentro del JSON para gestionar actualizaciones del contenido compartido
 
-### Fase 4: Foro Homebrew (Planificado)
+---
+
+## Fase 4: Foro Homebrew (Planificado)
 
 **Objetivo:**
-Comunidad abierta para compartir y descubrir contenido personalizado.
+Una comunidad abierta para compartir y descubrir contenido personalizado.
 
 **Características:**
-- Posts de usuario con contenido homebrew (items, hechizos, clases)
-- Sistema de valoraciones (likes, ratings)
-- Comentarios y discusión en cada post
-- Búsqueda y filtrado por tipo de contenido, popularidad...
+- Publicaciones con contenido homebrew (objetos, hechizos, clases)
+- Valoraciones (me gusta, puntuaciones)
+- Comentarios y discusión en cada publicación
+- Búsqueda y filtrado por tipo de contenido, popularidad, etc.
 - Moderación básica y reportes de contenido
-- Descarga de homebrew directamente desde posts
+- Descarga del homebrew directamente desde las publicaciones
 
 **Tecnología:**
-- Endpoint REST para CRUD de posts y comentarios
+- Endpoints REST para publicaciones y comentarios
 - Sistema de reputación de usuarios
-- Caching de contenido popular con Redis (muy a futuro)
+- Caché del contenido popular con Redis (a muy largo plazo)
 
-### Fase 5: Gestor de Iniciativas (Planificado)
+---
+
+## Fase 5: Gestor de Iniciativas (Planificado)
 
 **Objetivo:**
-Herramienta para gestionar combates en tiempo real durante sesiones.
+Una herramienta para gestionar combates durante las sesiones.
 
 **Funcionalidades:**
-- Rastreo de turno y orden de iniciativa
-- Tracker de HP (hit points) de enemigos y aliados
-- Gestión de effects y buffs/debuffs (duración de 1-N turnos)
+- Seguimiento de turnos y del orden de iniciativa
+- Control de puntos de golpe de enemigos y aliados
+- Efectos, ventajas y desventajas con duración de 1 a N turnos
 - Notas por turno (acciones realizadas)
-- Exportación de resumen de combate
-- Interfaz intuitiva con drag-drop para reordenar turnos
+- Exportación de un resumen del combate
+- Reordenación de turnos arrastrando
 
 **Ejemplo de uso:**
-1. DM añade enemigos (cantidad, tipo, stats)
-2. Jugadores añaden sus personajes
-3. Se lanzan iniciativas automáticamente
-4. Sistema ordena el turno (DEX-based)
-5. Se rastrean acciones, daño, effects
-6. Se exporta resumen al finalizar
+1. El DM añade enemigos (cantidad, tipo, estadísticas)
+2. Los jugadores añaden sus personajes
+3. Se tiran las iniciativas automáticamente
+4. El sistema ordena los turnos
+5. Se registran acciones, daño y efectos
+6. Se exporta un resumen al terminar
 
-### Fase 6: Sistema Colaborativo DM-Players (Futuro - Visión)
+---
+
+## Fase 6: Sistema Colaborativo DM-Players (Futuro, visión)
 
 **Objetivo:**
-Convertir D&D Manager en plataforma de campaña colaborativa en tiempo real.
+Convertir D&D Manager en una plataforma de campaña colaborativa en tiempo real.
 
 **Arquitectura de campaña:**
 
 ```
-Campaign (Campaña)
+Campaña
 ├── DM (Director de Juego)
-│   ├── Crear/gestionar sesiones
-│   ├── Controlar progresión de jugadores
-│   ├── Distribuir recompensas
-│   └── Ver estado de la party en tiempo real
-├── Players (Jugadores)
-│   ├── Ver su personaje y progresión
-│   ├── Recibir notificaciones de level-up
-│   ├── Ver items mágicos asignados por DM
-│   └── Participar en iniciativas/combates
-└── Party Data (Datos compartidos)
+│   ├── Crear y gestionar sesiones
+│   ├── Controlar la progresión de los jugadores
+│   ├── Repartir recompensas
+│   └── Ver el estado del grupo en tiempo real
+├── Jugadores
+│   ├── Ver su personaje y su progresión
+│   ├── Recibir avisos de subida de nivel
+│   ├── Ver los objetos mágicos que les asigna el DM
+│   └── Participar en iniciativas y combates
+└── Datos del grupo
     ├── XP acumulada
-    ├── Items mágicos distribuidos
+    ├── Objetos mágicos repartidos
     ├── Misiones completadas
     └── Historia de la campaña
 ```
 
 **Características principales:**
 
-1. **Gestión de sesiones sincronizadas:**
-   - DM crea sesión y players se unen con código
-   - Sincronización en tiempo real de eventos (combate iniciado, level-up, etc.)
-   - WebSocket para comunicación bidireccional instantánea
-   - Persistencia de sesiones para continuidad entre reuniones
+1. **Sesiones sincronizadas**
+   - El DM crea la sesión y los jugadores se unen con un código
+   - Sincronización en tiempo real de eventos (combate iniciado, subida de nivel, etc.)
+   - WebSocket para comunicación bidireccional
+   - Persistencia de las sesiones para continuar entre partidas
 
-2. **Sistema de experiencia y progresión:**
-   - DM otorga XP después de sesiones/combates
-   - Sistema automático de nivel-up con cálculo de nuevos stats
-   - Notificaciones al jugador de ganancia de nivel
-   - Historial de ganancia de XP por sesión
+2. **Experiencia y progresión**
+   - El DM otorga XP tras sesiones o combates
+   - Subida de nivel automática, con el cálculo de las nuevas estadísticas
+   - Aviso al jugador cuando sube de nivel
+   - Historial de XP por sesión
 
-3. **Distribución de recompensas:**
-   - DM puede asignar items mágicos al jugador
-   - Items aparecen en inventario del personaje del jugador
-   - Sistema de aprobación (el jugador ve el item ofrecido antes de aceptar)
+3. **Reparto de recompensas**
+   - El DM puede asignar objetos mágicos a un jugador
+   - Los objetos aparecen en el inventario del personaje
+   - Sistema de aceptación: el jugador ve el objeto ofrecido antes de aceptarlo
    - Historial de recompensas recibidas
 
-4. **Colaboración en combate:**
-   - DM inicia combate y players ven el rastreador de iniciativas
-   - Solo el DM puede modificar enemigos
-   - Jugadores pueden ver HP de aliados pero no de enemigos
-   - Chat integrado para comunicación durante combate
-   - Sincronización de turnos: todos ven quién está en turno
+4. **Colaboración en combate**
+   - El DM inicia el combate y los jugadores ven el rastreador de iniciativa
+   - Solo el DM puede modificar a los enemigos
+   - Los jugadores ven los PG de sus aliados pero no los de los enemigos
+   - Chat integrado durante el combate
+   - Turnos sincronizados: todos ven a quién le toca
 
-5. **Dashboard por rol:**
-   - **DM Dashboard**: Lista de jugadores, estado de party, herramientas de administración
-   - **Player Dashboard**: Mi personaje, XP acumulada, items asignados, historial de sesiones
+5. **Panel por rol**
+   - **DM**: lista de jugadores, estado del grupo y herramientas de administración
+   - **Jugador**: su personaje, XP acumulada, objetos asignados e historial de sesiones
 
-6. **Herramientas de administración:**
-   - Reroll de stats de jugador si es necesario
-   - Ajuste manual de XP/nivel (correcciones)
+6. **Herramientas de administración**
+   - Repetir las tiradas de un jugador si hace falta
+   - Ajuste manual de XP y nivel (correcciones)
    - Historial de cambios para auditoría
-   - Exportación de datos de campaña
+   - Exportación de los datos de la campaña
 
-**Idea de stack para esta etapa de desarrollo (WebSockets):**
-- `Spring WebSocket`: Soporte nativo para comunicación bidireccional
-- `STOMP Protocol`: Protocolo sobre WebSocket para mensajería
-- `SockJS`: Fallback para navegadores sin WebSocket
+**Stack previsto (WebSockets):**
+- `Spring WebSocket`: comunicación bidireccional nativa
+- `STOMP`: protocolo de mensajería sobre WebSocket
+- `SockJS`: alternativa para navegadores sin WebSocket
 
 **Caso de uso:**
 
 ```
-1. DM crea campaña "Culto del Colmillo Blanco"
-2. Players se unen con código (e.g., "CdCB314")
-3. Después de 3 sesiones, DM otorga +450 XP al grupo
-4. Sistema automático detecta que alguien llega a siguiente nivel
-5. Notificación en tiempo real: "¡Has subido a Nivel 4!"
-6. Player ve nuevas habilidades disponibles
-7. DM encuentra "Espada +1" en cofre
-8. Ofrece item a player → Player lo acepta
-9. Item aparece en inventario del personaje
-10. DM puede exportar "Campaña - Session 4 Summary" en JSON
+1. El DM crea la campaña "Culto del Colmillo Blanco"
+2. Los jugadores se unen con un código (p. ej. "CdCB314")
+3. Tras 3 sesiones, el DM otorga +450 XP al grupo
+4. El sistema detecta que alguien alcanza el siguiente nivel
+5. Aviso en tiempo real: "¡Has subido a nivel 4!"
+6. El jugador ve sus nuevas habilidades
+7. El DM encuentra una "Espada +1" en un cofre
+8. Se la ofrece a un jugador, que la acepta
+9. El objeto aparece en el inventario de su personaje
+10. El DM exporta "Campaña - Resumen de la sesión 4" en JSON
 ```
+
+---
+
+## Deuda técnica
+
+- [ ] Mover la URL de la API (hoy escrita en cada componente) a una variable de entorno de Vite
+- [ ] Añadir `vue-router`: ahora las pantallas no tienen URL ni funciona el botón atrás del navegador
+- [ ] Unificar el CSS
