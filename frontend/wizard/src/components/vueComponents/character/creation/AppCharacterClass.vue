@@ -412,7 +412,9 @@
                     </label>
                 </div>
             </div>
-
+            <button class="general_button class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classes?.[0]?.classEntity?.id === viewed_id || (tool_mode === 'choose' && picks_left !== 0)">
+                {{ saving ? 'Saving...' : (character?.classes?.[0]?.classEntity?.id === viewed_id ? 'Current Class' : `Pick ${viewed_class.name}`) }}
+            </button>
         </div>
     </CharacterStep>
 </template>
