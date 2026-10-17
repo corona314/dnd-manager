@@ -3,6 +3,8 @@
     import { ref, onMounted } from 'vue'
     import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
     import { renderDescription } from '@/composables/renderDescription.js'
+    import CharacterPicker from '@/vueComponents/shared/CharacterPicker.vue'
+
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'
@@ -76,7 +78,7 @@
         }
     })
 
-    async function pickSpecieToView(specie) {
+    async function pickSpeciesToView(specie) {
         specie_open.value = false
         viewed_loading.value = true
         try{
@@ -93,7 +95,7 @@
         }
     }
 
-    async function selectSpecie(specieId) {
+    async function selectSpecies(specieId) {
         saving.value = true
         error.value = ''
         try {
@@ -133,9 +135,9 @@
         <!--Cabecera con info del personaje-->
         <template #header>
             <div v-if="loading_character">Loading Character...</div>
-            <div v-else-if="character" class="character_specie_header">
+            <div v-else-if="character" class="character_header">
                 <h1>{{ character.name }}</h1>
-                <span v-if="character.species" class="header_subtitle">
+                <span v-if="character.species" class="character_header_subtitle">
                     Current Species: {{ character.species.name }}
                 </span>
                 <span v-else class="character_specie_current character_specie_current--empty">
@@ -144,19 +146,20 @@
             </div>
         </template>
 
-        <!--Desplegable de especies-->
-        <h2>Pick a Species</h2>
-        <div class="specie_filter">
-            <div class="specie_dropdown_btn" @click="specie_open = !specie_open">
-                {{ viewed_specie ? viewed_specie.name : 'Select a Species' }} <i>▾</i>
-            </div>
-            <div v-if="specie_open" class="specie_dropdown_menu">
-                <div v-if="loading_species" class="loading">Loading...</div>
-                <div v-else v-for="specie in species" :key="specie.name" class="specie_option" :class="{ selected: character?.species?.id === specie.id }" @click="pickSpecieToView(specie)">
-                    {{ specie.name }}
-                </div>
-            </div>
-        </div>
+
+        <template #toolbar>
+            <CharacterPicker
+                noun="Species"
+                :options="species"
+                :loading="loading_species"
+                :viewed-id="viewed_id"
+                :viewed-name="viewed_specie?.name"
+                :current-id="character?.species?.id"
+                :saving="saving"
+                @view="pickSpeciesToView"
+                @pick="selectSpecies(viewed_id)"
+            />
+        </template>
 
         <!--Detalles de la especie elegida en el desplegable-->
         <div v-if="viewed_loading" class="loading">Loading...</div>
@@ -180,34 +183,14 @@
                     <div v-if="expanded_features.has(f.id)" class="specie_feature_description" v-html="renderDescription(f.description)"></div>
                 </div>
             </div>
-            <button class="general_button specie_details_select_btn" @click="selectSpecie(viewed_id)" :disabled="saving || character?.species?.id === viewed_id">
-                {{ saving ? 'Saving...' : (character?.species?.id === viewed_id ? 'Current Species' : `Pick ${viewed_specie.name}`) }}
-            </button>
         </div>
+        <p v-else-if="!loading_character" class="empty_hint">Select a species from the list to see its details.</p>
     </CharacterStep>
 </template>
 
 <style scoped>
-    /* Dentro de CharacterStep los hijos ocupan todo el ancho de la columna */
-    h2 {
-        text-align: center;
-    }
 
-    /* Cabecera en una sola fila y compacta */
-    .character_specie_header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 6px 16px;
-    }
-
-    .character_specie_header h1 {
-        margin: 0;
-        font-size: 1.5rem;
-    }
-
-    /* El menú del desplegable flota encima del contenido en vez de empujarlo */
+/* El menú del desplegable flota encima del contenido en vez de empujarlo */
     .specie_filter {
         position: relative;
         align-self: center;

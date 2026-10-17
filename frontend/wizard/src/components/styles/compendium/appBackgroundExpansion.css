@@ -90,7 +90,6 @@
     border-top: 1px solid var(--divider-subtle);
 }
 .background_feat_prerequisite {
-    font-style: italic;
     margin: 0 0 6px 0;
     color: var(--text-secondary);
 }

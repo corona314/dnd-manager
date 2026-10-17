@@ -2,7 +2,7 @@
     //import '@/styles/appCharacterEquipment.css'
     import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
     import { ref, computed, onMounted } from 'vue'
-    import CharacterBackButton from '../../shared/CharacterBackButton.vue'
+
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'

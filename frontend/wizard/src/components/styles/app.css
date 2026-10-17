@@ -318,3 +318,28 @@ html, body, #app {
 }
 
 /*Layout reutilizable para el creador de personajes*/
+.empty_hint {
+    margin: 24px 0;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.character_header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+}
+
+.character_header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.character_header_subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+

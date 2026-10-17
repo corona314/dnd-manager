@@ -2,7 +2,9 @@
     import '@/styles/character/appCharacterClass.css'
     import { ref, computed, onMounted } from 'vue'
     import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
+    import CharacterPicker from '@/vueComponents/shared/CharacterPicker.vue'
     import { renderDescription } from '@/composables/renderDescription.js'
+
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
     const API_BASE = 'http://localhost:8080/api'
@@ -14,7 +16,6 @@
     //Constantes de clases
     const classes_data = ref([])
     const loading_classes = ref(false)
-    const class_open = ref(false)
 
     //Const clase seleccionada (para ver detalles)
     const viewed_class = ref(null)
@@ -109,7 +110,6 @@
     })
 
     async function pickClassToView(class_data) {
-        class_open.value = false
         viewed_loading.value = true
         try{
             const res = await fetch(`${API_BASE}/classes/${class_data.id}`, {
@@ -307,6 +307,7 @@
 
 <template>
     <CharacterStep
+        back-label="Back to Characters"
         :error="error"
         :continue-disabled="!character?.classes?.length"
         @back="goBack"
@@ -315,30 +316,33 @@
         <!--Cabecera con info del personaje-->
         <template #header>
             <div v-if="loading_character">Loading Character...</div>
-            <div v-else-if="character" class="character_class_header">
+            <div v-else-if="character" class="character_header">
                 <h1>{{ character.name }}</h1>
                 <span v-if="character.classes?.length" class="header_subtitle">
                     Current Class: {{ character.classes[0].classEntity.name }}
                 </span>
-                <span v-else class="character_class_current character_class_current--empty">
+                <span v-else class="character_class_current--empty">
                     No Class assigned
                 </span>
             </div>
         </template>
 
-        <!--Desplegable de clases-->
-        <h2>Pick a Class</h2>
-        <div class="class_filter">
-            <div class="class_dropdown_btn" @click="class_open = !class_open">
-                {{ viewed_class ? viewed_class.name : 'Select a Class' }} <i>▾</i>
-            </div>
-            <div v-if="class_open" class="class_dropdown_menu">
-                <div v-if="loading_classes" class="loading">Loading...</div>
-                <div v-else v-for="class_data in classes_data" :key="class_data.name" class="class_option" :class="{ selected: character?.classes?.[0]?.classEntity?.id === class_data.id }" @click="pickClassToView(class_data)">
-                    {{ class_data.name }}
-                </div>
-            </div>
-        </div>
+        <!--Zona fija: selector de clase y botón de elegir-->
+        <template #toolbar>
+            <CharacterPicker
+                noun="Class"
+                :options="classes_data"
+                :loading="loading_classes"
+                :viewed-id="viewed_id"
+                :viewed-name="viewed_class?.name"
+                :current-id="character?.classes?.[0]?.classEntity?.id"
+                :saving="saving"
+                :pick-disabled="tool_mode === 'choose' && picks_left !== 0"
+                :hint="tool_mode === 'choose' && picks_left !== 0 ? `Choose ${picks_left} more tool proficiency below` : ''"
+                @view="pickClassToView"
+                @pick="selectClass(viewed_id)"
+            />
+        </template>
 
         <!--Detalles de la clase elegida en el desplegable-->
         <div v-if="viewed_loading" class="loading">Loading...</div>
@@ -368,7 +372,7 @@
             </div>
 
             <div v-if="viewed_class.skills?.length" class="comp_class_skills">
-                <h3>Skill Proficiencies({{viewed_class.numberSkills}} to pick)</h3>
+                <h3>Skill Proficiencies ({{viewed_class.numberSkills}} to pick)</h3>
                 <div v-for="skill in viewed_class.skills" :key="skill.skill" class="view_skill_row">
                     <span>{{ skill.skill }}</span>
                     <span>({{ skill.ability }})</span>
@@ -399,7 +403,7 @@
                 </span>
             </div>
             <!-- Tools a elegir -->
-            <div v-if="tool_mode === 'choose'" class="finalize_class_skills">
+            <div v-if="tool_mode === 'choose'" class="class_tools_choose">
                 <h3>
                     Tool proficiencies
                     <span>({{ tool_limit - picks_left }} / {{ tool_limit }})</span>
@@ -412,55 +416,204 @@
                     </label>
                 </div>
             </div>
-            <button class="general_button class_details_select_btn" @click="selectClass(viewed_id)" :disabled="saving || character?.classes?.[0]?.classEntity?.id === viewed_id || (tool_mode === 'choose' && picks_left !== 0)">
-                {{ saving ? 'Saving...' : (character?.classes?.[0]?.classEntity?.id === viewed_id ? 'Current Class' : `Pick ${viewed_class.name}`) }}
-            </button>
         </div>
+        <p v-else-if="!loading_character" class="empty_hint">Select a class from the list to see its details.</p>
     </CharacterStep>
 </template>
 
 <style scoped>
-    /* Dentro de CharacterStep los hijos ocupan todo el ancho de la columna */
-    h2 {
-        text-align: center;
+    /* ---------- Cabecera ---------- */
+
+    .character_class_current--empty {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
     }
 
-    /* Cabecera en una sola fila y compacta */
-    .character_class_header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 6px 16px;
-    }
-
-    .character_class_header h1 {
-        margin: 0;
-        font-size: 1.5rem;
-    }
-
-    /* El menú del desplegable flota encima del contenido en vez de empujarlo */
-    .class_filter {
-        position: relative;
-        align-self: center;
-    }
-
-    .class_dropdown_menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        z-index: 10;
-        min-width: 100%;
-        max-height: 260px;
-        overflow-y: auto;
-        padding: 5px;
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        background: var(--default);
-    }
-
+    /* ---------- Tarjeta de detalle ---------- */
     .class_details_card {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
         width: 100%;
         box-sizing: border-box;
+        padding: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+    }
+
+    .class_details_header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--separator-lines);
+    }
+
+    .class_details_name {
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .class_details_hitpoint {
+        color: var(--text-secondary);
+    }
+
+    .comp_class_saving_throws,
+    .class_armor_types,
+    .class_tools_auto {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .comp_class_saving_throws_label,
+    .class_section_label {
+        margin-right: 6px;
+        font-weight: bold;
+    }
+
+    .comp_class_saving_throws_chip,
+    .class_armor_chip {
+        padding: 2px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 0.85rem;
+        text-transform: capitalize;
+    }
+
+    .comp_class_skills h3,
+    .class_features_section h3,
+    .class_tools_auto h3,
+    .class_tools_choose h3 {
+        margin: 0 0 6px;
+        font-size: 1.05rem;
+    }
+
+    .class_tools_auto h3 {
+        width: 100%;
+    }
+
+    /* Habilidades */
+    .comp_class_skills {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 4px 16px;
+    }
+
+    .comp_class_skills h3 {
+        grid-column: 1 / -1;
+    }
+
+    .view_skill_row {
+        display: flex;
+        gap: 6px;
+    }
+
+    .view_skill_row span:last-child {
+        color: var(--text-secondary);
+    }
+
+    /* Rasgos por nivel */
+    .class_feature_level_group {
+        margin-bottom: 14px;
+    }
+
+    .class_feature_level_title {
+        margin: 0 0 6px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid var(--separator-lines);
+        font-size: 1rem;
+    }
+
+    .class_feature_row {
+        margin-bottom: 6px;
+        border: 1px solid var(--separator-lines);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .class_feature_header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .class_feature_header:hover {
+        background: var(--surface-hover-strong);
+    }
+
+    .class_feature_name {
+        font-weight: bold;
+    }
+
+    .class_feature_toggle_btn {
+        width: 24px;
+        height: 24px;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        background: var(--surface);
+        font-weight: bold;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .class_feature_toggle_btn--open {
+        border-color: var(--accent-strong-border);
+        background: var(--accent-strong);
+        color: var(--text-on-accent);
+    }
+
+    .class_feature_description {
+        padding: 10px 12px;
+        border-top: 1px solid var(--separator-lines);
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    /* El contenido de v-html no lleva el atributo de scoped: hay que usar :deep */
+    .class_feature_description :deep(table) {
+        width: 100%;
+        margin: 8px 0;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    .class_feature_description :deep(th),
+    .class_feature_description :deep(td) {
+        padding: 4px 10px;
+        border: 1px solid var(--separator-lines);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    /* Herramientas a elegir */
+    .tool_list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 6px;
+    }
+
+    .tool_row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .tool_row:hover {
+        background: var(--surface-hover-strong);
+    }
+
+    .tool_granted {
+        margin-left: auto;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
     }
 </style>

@@ -1,8 +1,8 @@
 <script setup>
     import '@/styles/character/appCharacterBackground.css'
     import CharacterStep from '@/vueComponents/shared/CharacterStep.vue'
+    import CharacterPicker from '@/vueComponents/shared/CharacterPicker.vue'
     import { ref, onMounted } from 'vue'
-    import CharacterBackButton from '../../shared/CharacterBackButton.vue'
 
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
@@ -15,7 +15,6 @@
     //Constantes de trasfondos
     const backgrounds = ref([])
     const loading_background = ref(false)
-    const background_open = ref(false)
 
     //Const trasfondo seleccionado (para ver detalles)
     const viewed_background = ref(null)
@@ -86,7 +85,6 @@
     })
 
     async function pickBackgroundToView(background) {
-        background_open.value = false
         viewed_loading.value = true
         try{
             const res = await fetch(`${API_BASE}/backgrounds/${background.id}`, {
@@ -279,6 +277,7 @@
 <template>
     <CharacterStep
         :error="error"
+        back-label="Previous Step"
         :continue-disabled="!character?.background"
         @back="goBack"
         @continue="emit('navigate', { page: 'characterAbilities', characterId: props.characterId })"
@@ -286,37 +285,37 @@
         <!--Cabecera con info del personaje-->
         <template #header>
             <div v-if="loading_character">Loading Character...</div>
-            <div v-else-if="character" class="character_background_header">
+            <div v-else-if="character" class="character_header">
                 <h1>{{ character.name }}</h1>
-                <span v-if="character.background" class="header_subtitle">
+                <span v-if="character.background" class="character_header_subtitle">
                     Current Background: {{ character.background.name }}
                 </span>
-                <span v-else class="character_background_current character_background_current--empty">
+                <span v-else class="character_background_current--empty">
                     No Background assigned
                 </span>
             </div>
         </template>
 
-        <!--Desplegable de trasfondos-->
-        <h2>Pick a Background</h2>
-        <div class="background_filter">
-            <div class="background_dropdown_btn" @click="background_open = !background_open">
-                {{ viewed_background ? viewed_background.name : 'Select a Background' }} <i>▾</i>
-            </div>
-            <div v-if="background_open" class="background_dropdown_menu">
-                <div v-if="loading_background" class="loading">Loading...</div>
-                <div v-else v-for="b in backgrounds" :key="b.id" class="background_option" :class="{ selected: character?.background?.id === b.id }" @click="pickBackgroundToView(b)">
-                    {{ b.name }}
-                </div>
-            </div>
-        </div>
+        <!--Zona fija: selector de trasfondo y botón de elegir-->
+        <template #toolbar>
+            <CharacterPicker
+                noun="Background"
+                :options="backgrounds"
+                :loading="loading_background"
+                :viewed-id="viewed_id"
+                :viewed-name="viewed_background?.name"
+                :current-id="character?.background?.id"
+                :saving="saving"
+                @view="pickBackgroundToView"
+                @pick="selectBackground(viewed_id)"
+            />
+        </template>
 
         <!--Detalles del trasfondo elegido en el desplegable-->
         <div v-if="viewed_loading" class="loading">Loading...</div>
         <div v-else-if="viewed_background" class="background_details_card">
             <div class="background_details_header">
                 <span class="background_details_name">{{ viewed_background.name }}</span>
-                <div></div>
                 <span class="background_details_description">{{ viewed_background.description }}</span>
             </div>
             <div v-if="viewed_background.skills?.length" class="background_skills">
@@ -331,26 +330,13 @@
                     {{ t.name }}
                 </span>
             </div>
-
-            <button class="general_button background_details_select_btn" @click="selectBackground(viewed_id)" :disabled="saving || character?.background?.id === viewed_id">
-                {{ saving ? 'Saving...' : (character?.background?.id === viewed_id ? 'Current Background' : `Pick ${viewed_background.name}`) }}
-            </button>
         </div>
+        <p v-else-if="!loading_character" class="empty_hint">Select a background from the list to see its details.</p>
     </CharacterStep>
 </template>
 
 <style scoped>
-    /* Dentro de CharacterStep los hijos ocupan todo el ancho de la columna */
-    h2 {
-        text-align: center;
-    }
-
-    .background_details_card {
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    /* Cabecera en una sola fila y compacta */
+    /* ---------- Cabecera ---------- */
     .character_background_header {
         display: flex;
         align-items: center;
@@ -364,23 +350,70 @@
         font-size: 1.5rem;
     }
 
-    /* El menú del desplegable flota encima del contenido en vez de empujarlo */
-    .background_filter {
-        position: relative;
-        align-self: center;
+    .header_subtitle,
+    .character_background_current--empty {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
     }
 
-    .background_dropdown_menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        z-index: 10;
-        min-width: 100%;
-        max-height: 260px;
-        overflow-y: auto;
-        padding: 5px;
+    .empty_hint {
+        margin: 24px 0;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+
+    /* ---------- Tarjeta de detalle ---------- */
+    .background_details_card {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 16px;
         border: 1px solid var(--border);
-        border-radius: 4px;
-        background: var(--default);
+        border-radius: 10px;
+        background: var(--surface);
+    }
+
+    .background_details_header {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--separator-lines);
+    }
+
+    .background_details_name {
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .background_details_description {
+        line-height: 1.5;
+    }
+
+    .background_skills,
+    .background_tools {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .background_section_label {
+        margin-right: 6px;
+        font-weight: bold;
+    }
+
+    .background_skill_chip,
+    .background_tool_chip {
+        padding: 2px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 0.85rem;
+    }
+
+    .background_tool_chip {
+        cursor: help;
     }
 </style>

@@ -48,6 +48,7 @@
 </template>
 
 <style scoped>
+    
     .character_step {
         height: 100%;
         display: flex;
@@ -120,7 +121,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 100%;
+        width: 75%;
         padding: 10px 20px;
         border-top: 2px solid var(--border);
         background-color: var(--background);

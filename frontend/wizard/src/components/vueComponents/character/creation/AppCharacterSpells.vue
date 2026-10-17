@@ -7,7 +7,6 @@
     import { Components, Schools, createSpellFilters } from '@/composables/spellFilters.js'
     import { ref, reactive, computed, onMounted } from 'vue'
     import { useCardExpansion } from '@/composables/useCardExpansion.js'
-    import CharacterBackButton from '../../shared/CharacterBackButton.vue'
 
     const props = defineProps({ token: String, characterId: { type: [Number, String], required: true } })
     const emit = defineEmits(['navigate'])
